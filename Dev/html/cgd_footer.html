@@ -1,0 +1,172 @@
+{% assign contactus_url = sitemarkers['Contact Us'].url %}
+{% assign connexion_url = sitemarkers['Connexion'].url %}
+{% assign contract_url = sitemarkers['Contract'].url %}
+{% assign home_url = sitemarkers['Home'].url %}
+
+<footer class="region wrapper-main-footer region-footer">
+  <div class="container">
+    <div id="block-footer-site-branding" class="block block-system block-system-branding-block">
+      <div class="footer-logo hidden-xs hidden-sm">
+        <div class="logo">
+          <h1 class="site-name">
+            <a href="{{home_url}}" title="Accueil" rel="home" class="site-logo"></a>
+          </h1>
+        </div>
+      </div>
+    </div>
+    <div id="block-footer-cta-button-anonymous" class="footer-right">
+      <div class="clearfix text-formatted field field--name-body field--type-text-with-summary field--label-hidden field__item">
+        <div class="consult">
+          <a class="btn btn-primary" href="{{contactus_url}}">Contactez-nous</a>
+        </div>
+      </div>    
+    </div>
+    <div id="block-cogedim-common-footer-menu" class="footer-bottom">
+      <div class="trademark">Cogedim est une marque du groupe Altarea Cogedim</div>
+      <nav class="menu-footer">
+        <ul class="menu">
+          <li class="menu-item">
+            <a href="http://www.cogedim.com" data-drupal-link-system-path="node/25">CGU</a>
+          </li>
+          <li class="menu-item">
+            <a href="http://www.cogedim.com" data-drupal-link-system-path="node/26">Mentions légales</a>
+          </li>
+          <li class="menu-item">
+            <a href="http://www.cogedim.com" class="0" target="_blank">
+              Cogedim
+              <span class="0">
+                <span class="element-invisible"> </span>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <nav class="menu-external">
+        <div class="title">Nos autres sites :</div>
+        <ul class="menu">
+          <li class="menu-item">
+            <a href="http://www.cogedim-partenaire.com/" class="0" target="_blank">    Espace Partenaires
+              <span class="0">
+                <span class="element-invisible"> </span>
+              </span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="http://www.cogedim-club.com/" class="0" target="_blank">
+              Cogedim Club ®
+              <span class="0">
+                <span class="element-invisible"> </span>
+              </span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a href="http://www.altareacogedim.com/" class="0" target="_blank"> 
+              Groupe Altarea Cogedim
+              <span class="0">
+                <span class="element-invisible"> </span>
+              </span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<script type="text/javascript" src="/cgd_slick.min.js"></script>
+<script type="text/javascript">
+  
+  $(window).ready(function(){
+
+    $('.menu-item a').removeClass('.is-active');
+
+    if(window.location.pathname == '{{home_url}}')
+      $('.menu-item-accueil a').addClass('is-active');
+    if(window.location.pathname == '{{contactus_url}}')
+      $('.menu-item-contact a').addClass('is-active');
+    if(window.location.pathname == '{{connexion_url}}')
+      $('.menu-item-connexion, #block-userlogin').remove();
+
+    $(window).scroll(function(){
+
+      if($(document).scrollTop() > 0)
+        $('header').addClass('header-scrolled');
+      else
+        $('header').removeClass('header-scrolled');
+    });
+
+    $('[data-toggle="popover"]').popover();  
+
+    $('.menu-header-toggle').click(function(){
+
+      $('.menu-header').hasClass('expanded') ?
+        $('.menu-header').removeClass('expanded') :
+        $('.menu-header').addClass('expanded');
+    });
+
+    $('.menu-bar-toggle').click(function(){
+
+      $('.main-header-wrapper').hasClass('menu-expanded') ?
+        $('.main-header-wrapper').removeClass('menu-expanded') :
+        $('.main-header-wrapper').addClass('menu-expanded');
+    });
+
+    $('.menu-bar-inner .menu-user-mobile a').click(function(){
+
+      if($(this).hasClass('expanded')){
+        $(this).removeClass('expanded');
+        $(this).next().addClass('hidden');
+      }
+      else{
+        $(this).addClass('expanded');
+        $(this).next().removeClass('hidden');       
+      }
+    });
+
+    $('h3.lot-title').click(function(){
+
+      $(this).parent().hasClass('expanded') ?
+        $(this).parent().removeClass('expanded') :
+        $(this).parent().addClass('expanded');
+    });
+
+    $('.contract-item').click(function(){
+
+      $('.contract-item').removeClass('selected-contract')
+      $(this).addClass('selected-contract');
+
+      //Récupération des données du contrat sélectionné
+      var rrc = $(this).attr('rrc');
+      var trancheName = $(this).attr('trancheName');
+      var lots = $(this).attr('lots').split('|');
+      var contractName = $(this).attr('contractName');
+      var program = new Object();
+      program.name = $(this).attr('programName');
+      program.adress = $(this).attr('adress');
+
+      //Mise à jour des données de la page
+      $('.title .field--name-name').val(program.programName);
+      $('.title .address-3').val(program.adress);
+      $('.info .field__item').remove();
+
+      for (var i = 0; i < lots.length - 1 ; i++) {
+        $('.lot-items').append('<li class="field__item"><a href="{{contract_url}}"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>')
+      }
+    });
+
+    $('.contrat-slider-panel').slick({
+      prevArrow: '<a href="#" class="slick-prev">prev</a>',
+      nextArrow: '<a href="#" class="slick-next">next</a>',
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      autoplay: true,
+      autoplaySpeed: 5000,
+      cssEase: 'ease',
+      arrows: true,
+      useTransform: true,
+      infinite: true,
+      variableWidth: false
+    });
+  });
+
+</script>

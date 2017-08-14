@@ -1,0 +1,282 @@
+body {
+	font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif !important;
+	font-size: 12px !important;
+	line-height: 1.428571429 !important;
+	color: #4d4d53 !important;
+}
+
+footer .footer-top{
+	background-color: white;
+}
+
+#info-test{
+	width: 100%;
+	height: 54px;
+	background: #a31a7e;
+	padding-left: 40px;
+	padding-right: 40px;
+	padding-top: 15px;
+	color: #ffffff;
+	font-size: 16px;
+	font-weight: bold;
+	border: none;
+	border-radius: 37px;
+}
+
+.footer-bottom{
+	padding: 0px;
+}
+
+.footer-logo{
+	float: left;
+}
+
+.contract-item{
+	background: rgba(55,55,55,0.2);
+	text-align: center;
+	border-radius: 5px;
+	border: solid 2px white;
+}
+
+.selected-contract{
+	border: solid 2px red;
+}
+
+.logo a{
+	background: url("cgd_logo.png") !important;
+	background-size: cover !important;
+	background-repeat: no-repeat !important;
+	width: 204px !important;
+	height: 102px !important;
+}
+
+.h4-min{
+	font-size: 17px !important;
+}
+
+.field__items li a{
+	margin-left: 0px;
+}
+
+.contract-multi-selection{
+	margin-left: 0px !important;
+	margin-right: 0px !important;
+}
+
+.wrapper-main-footer .container:before{
+  	display: block;
+  	width: 200px;
+  	height: 50px;
+  	background: url("cgd_bg_footer.jpg");
+  	content: " ";
+  	position: absolute;
+  	left: 0;
+  	top: -50px;
+  	z-index: 200;
+  	pointer-events: none; 
+}
+
+.error-message{
+	padding-bottom: 10px;
+}
+
+.error{
+	margin-bottom: 0px !important;
+}
+
+.wrapper-main-footer .container {
+	position: relative;
+	padding-top: 50px;
+	padding-bottom: 40px;
+}
+
+.menu-bar .menu-bar-toggle,
+.menu-expanded .menu-bar-toggle,
+.block-cogedim-about .about-box .more-link a,
+.block-contrat-info .downloads .download,
+.menu-header .menu-header-toggle::before, 
+.menu-header.expanded .menu-header-toggle::before,
+.consult .btn::before, 
+.error-message::before,
+.top-bar .messages-notify a::before, 
+.block-connexion .block-title::before,
+.block-account-contracts .block-title::before,
+.block-system-content .faq-items .item.faq::before,
+.block-system-content .contact-items .item.phone .item-label::before,
+.block-system-content .contact-items .item.schedule .item-label::before,
+.block-contrat-additional .additional-icon a.icon-faq::before, 
+.block-contrat-additional .additional-icon span.icon-faq::before,
+.block-contrat-additional .additional-icon a.icon-documents::before, 
+.block-contrat-additional .additional-icon span.icon-documents::before,
+.block-contrat-additional .additional-icon a.icon-parrainage::before,
+.block-contrat-additional .additional-icon span.icon-parrainage::before,
+.btn.btn-consult::before,
+.btn.btn-consult-2::before,
+.slick-prev::before,
+.slick-next::before,
+.form-connexion .form-identifiant::after, 
+.form-connexion .form-mot-de-passe::after,
+.block-contrat-lots .lot-title::after,
+.top-bar .bell > a::before{
+	background-position: 0px !important;
+	background-size: cover !important;
+}
+
+.menu-header .menu-header-toggle::before, .menu-bar .menu-bar-toggle{
+	background-image: url("cgd_open_mobile_menu.png");
+}
+
+.menu-header.expanded .menu-header-toggle::before, .menu-expanded .menu-bar-toggle{
+	background-image: url("cgd_close_mobile_menu.png");
+}
+
+.consult .btn::before, .top-bar .messages-notify a::before,
+.btn.btn-consult-2::before{
+	background-image: url("cgd_contact.png");
+}
+
+.btn.btn-consult::before{
+	background-image: url("cgd_contact_color.png");
+}
+
+.block-connexion .block-title::before{
+	background-image: url("cgd_locker.png");
+}
+
+.form-connexion .form-identifiant::after{
+	background-image: url("cgd_user.png");
+}
+
+.form-connexion .form-mot-de-passe::after{
+	background-image: url("cgd_password_key.png");
+}
+
+.top-bar .bell > a::before{
+	background-image: url("cgd_alert.png");
+}
+
+.cogedim-about-wrapper{
+	background-image: url("cgd_bg_about.jpg");
+}
+
+.block-account-contracts .block-title::before{
+	background-image: url("cgd_contract_logo.png");
+}
+
+.block-account-contracts::before{
+	background-image: url("cgd_link_contracts.png");
+}
+
+.block-contract-boxes .contract-box::after,
+.block-contrat-slider .contrat-slider-panel::after{
+	background-image: url("cgd_bg_preface.png");
+}
+
+.block-contract-boxes .contract-box::before,
+.block-contrat-slider .contrat-slider-panel::before{
+	background-image: url("cgd_bg_preface_before.png");
+}
+
+.block-system-content .contact-items .item.phone .item-label::before{
+	background-image: url("cgd_phone.png");
+}
+
+.block-system-content .contact-items .item.schedule .item-label::before{
+	background-image: url("cgd_time.png");
+}
+
+.block-contrat-info .downloads .download{
+	background-image: url("cgd_download.png");
+}
+
+.block-contrat-additional .additional-icon a.icon-faq::before, 
+.block-contrat-additional .additional-icon span.icon-faq::before,
+.block-system-content .faq-items .item.faq::before{
+	background-image: url("cgd_question.png");
+}
+
+.block-contrat-additional .additional-icon a.icon-documents::before, 
+.block-contrat-additional .additional-icon span.icon-documents::before{
+	background-image: url("cgd_notepad.png");
+}
+
+.block-contrat-additional .additional-icon a.icon-parrainage::before, 
+.block-contrat-additional .additional-icon span.icon-parrainage::before{
+	background-image: url("cgd_parrain.png");
+}
+
+.block-contrat-lots .lot-title::after{
+	background-image: url("cgd_arrow_down.png") !important;
+}
+
+.block-contrat-lots .expanded .lot-title::after{
+	background-image: url("cgd_arrow_up.png") !important;
+}
+
+.slick-prev::before{
+	background-image: url("cgd_arrow_left.png") !important;
+}
+
+.slick-next::before{
+	background-image: url("cgd_arrow_right.png") !important;
+}
+
+.error-message::before {
+	background-image: url("cgd_danger.png");
+}
+
+@media (min-width: 610px) and (max-width: 991px) {
+
+  	.toolbar-fixed .header-scrolled {
+    	position: fixed;
+    	top: 39px; 
+	} 
+}
+
+@media (min-width: 992px) {
+
+  	.header-scrolled .logo {
+    	height: 66px; 
+    }
+    
+    .header-scrolled .logo a {
+      	width: 132px !important;
+      	height: 66px !important;
+      	background-size: 132px 66px; 
+  	}
+
+  	.header-wrapper, .main-header-wrapper::before{
+		background-image: url("cgd_beta_logo_desktop.png");
+		background-repeat: no-repeat;
+	}
+
+	.block-cogedim-about .about-box .more-link a {
+		background-image: url("cgd_more_links.png");
+	}
+
+	.page-header-wrapper {
+		padding: 83px 0 53px;
+	}
+}
+
+@media (min-width: 0) and (max-width: 991px) {
+
+  	.logo a {
+        width: 132px !important;
+        height: 66px !important;
+        background-size: 132px 66px; 
+    }
+
+    .header-wrapper, .main-header-wrapper:before{
+		background-image: url("cgd_beta_logo_mobile.png");
+		background-repeat: no-repeat;
+	}
+
+	.page-header-wrapper {
+		padding: 0px 0px 28px;
+	}
+
+	#user-login-form{
+		margin-left: 15px;
+	}
+}

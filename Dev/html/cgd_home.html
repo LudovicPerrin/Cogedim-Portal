@@ -1,0 +1,225 @@
+{% assign contract_url = sitemarkers['Contract'].url %}
+
+{% fetchxml contracts %}
+  <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+    <entity name="acq_contrats">
+      <all-attributes />
+      <filter>
+        <condition attribute="acq_gestionnairedubien" operator="eq" value="{{user.id}}" />
+      </filter>
+      <order attribute="createdon" descending="true" />
+    </entity>
+  </fetch>
+{% endfetchxml %}
+
+<div class="contract-boxes-wrapper">
+  <div class="container">
+    <div id="block-userwelcome" class="block block-ce-common block-ce-common-user-welcome block-page-title">
+      <h1 class="page-title">{{user.firstname | prepend: "Bienvenue " | append: ","}}</h1>
+    </div>
+
+    {% for contract in contracts.results.entities %}
+
+      {% assign contractName =  contract.acq_name %}
+
+      {% fetchxml lots %}
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+          <entity name="acq_lot">
+            <all-attributes />
+            <filter>
+              <condition attribute="acq_lot" operator="eq" value="{{contract.acq_contratsid}}" />
+            </filter>
+            <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche" >
+              <all-attributes/>
+              <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme" >
+                <all-attributes/>
+              </link-entity>
+            </link-entity>
+          </entity>
+        </fetch>
+      {% endfetchxml %}
+
+      {% assign cpt = 1 %}
+      {% assign contractLots = '' %}
+      {% assign trancheName =  lots.results.entities[0]['tranche.acq_name'] %}
+      {% assign RRCName = lots.results.entities[0]['programme.ownerid_owneridyominame'] %}
+      {% assign programName =  lots.results.entities[0]['programme.acq_name'] %}
+      {% assign programCity =  lots.results.entities[0]['programme.acq_ville'] %}
+      {% assign programPostCode = lots.results.entities[0]['programme.acq_codepostal'] %}
+
+      {% for lot in lots.results.entities %}
+        
+        {% if(cpt != lots.results.entities.size) %}
+          {% assign contractLots = contractLots | append: lot.acq_idlot | append: '|' %}
+        {% else %}
+          {% assign contractLots = contractLots | append: lot.acq_idlot %}
+        {% endif %}
+
+        {% if forloop.first and cpt == 1 %}
+            {% assign preSelectedProgramName =  programName %}
+            {% assign preSelectedProgramCity =  programCity %}
+            {% assign preSelectedProgramPostCode = programPostCode %}
+        {% endif %}
+
+        {% assign cpt = cpt | plus: 1 %}
+      {% endfor %}
+
+      {% assign contractLots = contractLots | split: '|' %}
+
+      {% if(forloop.first) %}
+        {% assign preSelectedContractLots = contractLots %}
+      {% endif %}
+
+      {% if contracts.results.entities.size > 1 %}
+        {% if forloop.first %}
+          <div class="contract-multi-selection row">
+        {% endif%}
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 contract-item {% if forloop.first %}selected-contract{% endif %}" contractName="{{contractName}}" programName="{{programName}}" adress="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" rrc="{{RRCName}}">
+          <a href="#" title="<strong>Contrat: </strong>{{contractName}}" data-html="true" data-placement="bottom" data-toggle="popover" data-trigger="hover" data-content="<strong>Programme: </strong>{{programName}}<br><strong>Adresse: </strong>{{programPostCode | append: ' - ' | append: programCity}}<br><strong>Tranche: </strong>{{trancheName}}<hr><strong>Lot(s): </strong><br><ul>{% for lot in contractLots %}<li>{{lot}}</li>{% endfor %}</ul><hr><strong>Nom du RRC: </strong>{{RRCName}}">
+            <ul>
+              <li>
+                <strong>Contrat: </strong>{{contractName}}
+              </li>
+              <li>
+                <strong>Programme: </strong>{{programName}}
+              </li>
+              <li>
+                <strong>Adresse: </strong>{{programPostCode | append: ' - ' | append: programCity}}
+              </li>
+            </ul>
+          </a>
+        </div>
+        {% if forloop.last %}
+          </div>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+
+    <div id="block-views-block-user-user-contracts" class="block block-views block-views-blockuser-user-contracts block-contract-boxes">
+      <div class="content">
+        <div class="view view-user view-id-user view-display-id-user_contracts js-view-dom-id-d332c544557e6e973ddf470b032d764c295ec0401a2e5ee6924c8c205d7204ad">
+          <div class="view-content">
+            <div class="views-row">
+              <article typeof="schema:Person" about="/user/750" class="profile">
+                <div class="field field--name-field-main-contract field--type-entity-reference field--label-hidden field__item contract-box">
+                  <div class="image">
+                    <div class="field field--name-field-media field--type-cogedim-media field--label-hidden field__items">
+                      <div class="field__item">
+                        <img src="http://www.cogedim-logement.com/sites/default/files/assets/images/18280_presentationn_17.jpg" alt="" typeof=" foaf:Image">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="title">
+                    <h3>
+                      <div class="field field--name-name field--type-string field--label-hidden field__item">{{preSelectedProgramName}}</div>
+                    </h3>
+                    <div class="address-1">Rue de la Tour d'Auvergne</div>
+                    <div class="address-3">{{preSelectedProgramPostCode | append: ' - ' | append: preSelectedProgramCity}}</div>
+                  </div>
+                  <div class="info">
+                    <div class="field field--name-field-lot field--type-entity-reference field--label-hidden field__items specification">
+                      <ul class="lot-items">
+                        {% for lot in preSelectedContractLots %}
+                          <li class="field__item">
+                            <a href="{{contract_url}}">
+                              <article role="article">
+                                <div class="content">
+                                  {{lot}}
+                                  <!-- <span>(Lot 99001)</span> -->
+                                </div>
+                              </article>
+                            </a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </div>
+                    <div class="action">
+                      <a href="{{contract_url}}" class="btn btn-white"> Voir Mon contrat</a>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="account-contracts-wrapper">
+  <div class="container">
+    <div id="block-views-block-frontpage-block-home" class="block-account-contracts">  
+      <div class="view view-frontpage view-id-frontpage view-display-id-block_home js-view-dom-id-7a8cc1c27a164e5b7911ca40d60a3fa515ecce5251f34363ebfa0dfa8d2a39fb">
+        <div class="view-content">
+          <div class="views-row">
+            <article role="article" about="/vous-avez-deja-un-compte-sur-lextranet-cogedim-0" class="node node--type-custom-page node--promoted node--view-mode-block clearfix">
+              <div class="block-title">
+                <span class="field field--name-title field--type-string field--label-hidden">Vous avez déjà un compte sur l’extranet Cogedim?</span>
+              </div>
+              <div class="node__content clearfix content description">
+                <div class="description field field--name-body field--type-text-with-summary field--label-hidden field__item">
+                  <p>Vous pouvez rattacher le(s) contrat(s) ci-dessus à ce compte.</p>
+                </div>
+                <div class="action">
+                  <a href="#attachContractsPopup" data-toggle="modal" data-target="#attachContractsPopup" class="btn btn-primary">Rattacher Mes contrats</a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="cogedim-about-wrapper">
+  <div id="block-views-block-autopromos-homepage-li-autopromos" class="block block-views block-views-blockautopromos-homepage-li-autopromos block-cogedim-about">
+    <div class="view view-autopromos view-id-autopromos view-display-id-homepage_li_autopromos js-view-dom-id-f3e368c975463cf3356d58711b475bb87ced790346a1029e7cdcd2931ad86ae8">
+      <div class="view-content">
+        <div class="content">
+          <div class="views-row about-box">
+            <article role="article" about="/gagnez-2-000eu-de-cadeaux" class="node node--type-autopromo node--view-mode-teaser-authenticated clearfix">
+              <header></header>
+              <div class="title">
+                <a href="  https://mon-cogedim.com/sponsorship"><span class="field field--name-title field--type-string field--label-hidden">Gagnez 2 000€ de cadeaux</span></a>
+              </div>
+              <div class="text">
+                <div class="field field--name-field-body field--type-string-long field--label-hidden field__item">Laissez-nous récompenser votre confiance en participant à notre programme de parrainage</div>
+              </div>
+            </article>
+            <div class="more-link">
+              <a href="  https://mon-cogedim.com/sponsorship"><span class="hidden-md hidden-lg">En savoir plus</span></a>
+            </div>
+          </div>
+          <div class="views-row about-box">
+            <article role="article" about="/une-gestion-locative-sur-mesure-0" class="node node--type-autopromo node--view-mode-teaser-authenticated clearfix">
+              <header></header>
+              <div class="title">
+                <a href="  /une-gestion-locative-sur-mesure"><span class="field field--name-title field--type-string field--label-hidden">Une gestion locative sur-mesure</span></a>
+              </div>
+              <div class="text">
+                <div class="field field--name-field-body field--type-string-long field--label-hidden field__item">Vous investissez, Cogedim Gestion &amp; Services prend le relais !<br>Pour vous libérer des contraintes de logistiques, administratives et fiscales.</div>
+              </div>
+            </article>
+            <div class="more-link">
+              <a href="  /une-gestion-locative-sur-mesure"><span class="hidden-md hidden-lg">En savoir plus</span></a>
+            </div>
+          </div>
+          <div class="views-row about-box">
+            <article role="article" about="/personnalisez-votre-logement" class="node node--type-autopromo node--promoted node--view-mode-teaser-authenticated clearfix">
+              <header></header>
+              <div class="title">
+                <a href="  /personnalisez-votre-logement-avec-les-options-et-les-tma"><span class="field field--name-title field--type-string   field--label-hidden">Personnalisez votre logement </span></a>
+              </div>
+              <div class="text">
+                <div class="field field--name-field-body field--type-string-long field--label-hidden field__item">Au moment de la signature de votre  contrat de réservation, votre conseiller Cogedim vous a peut-être remis un catalogue vous présentant la liste des options proposées pour   votre logement. Les demandes hors catalogue pourront, dans certains cas, faire l’objet de Travaux Modificatifs Acquéreurs.</div>
+              </div>
+            </article>
+            <div class="more-link">
+              <a href="  /personnalisez-votre-logement-avec-les-options-et-les-tma"><span class="hidden-md hidden-lg">En savoir plus</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

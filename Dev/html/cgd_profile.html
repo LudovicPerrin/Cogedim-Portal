@@ -1,0 +1,150 @@
+<div class="page-header-wrapper">
+  <div class="container">
+    <div id="block-pagetitle" class="block block-core block-page-title-block block-page-title">
+      <h1 class="page-title">Mon profil</h1>
+    </div>
+  </div>
+</div>
+<div class="content-wrapper">
+  <div class="container">
+    <div class="block-system-content block-contact-content block-contact-rrc-content">
+      <div class="row clearfix">
+        <div class="content-col">
+          <div id="block-cogedimusercontent" class="block block-ce-user block-ce-user-content">
+            <div class="block-system-content block-user-content">
+              <div class="row clearfix">
+                <div class="content-col">
+
+                  {% fetchxml query %}
+                    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+                      <entity name="contact" >
+                        <attribute name="telephone2" />
+                        <attribute name="gendercode" />
+                        <attribute name="address1_telephone1" />
+                        <attribute name="address1_line3" />
+                        <attribute name="address1_postalcode" />
+                        <attribute name="address1_city" />
+                        <attribute name="lastname" />
+                        <attribute name="telephone1" />
+                        <attribute name="address1_line1" />
+                        <attribute name="firstname" />
+                        <attribute name="address1_line2" />
+                        <attribute name="emailaddress1" />
+                        <filter>
+                          <condition attribute="contactid" operator="eq" value="{{user.id}}" />
+                        </filter>
+                      </entity>
+                    </fetch>
+                  {% endfetchxml %}
+
+                  {% for contact in query.results.entities %}
+                    
+                    {% assign gender = contact.gendercode.value %}
+                    {% assign firstName = contact.firstname %}
+                    {% assign name = contact.lastname %}
+                    {% assign address1 = contact.address1_line1 %}
+                    {% assign address2 = contact.address1_line2 %}
+                    {% assign address3 = contact.address1_line3 %}
+                    {% assign postalCode = contact.address1_postalcode %}
+                    {% assign city = contact.address1_city %}
+                    {% assign phonePerso = contact.telephone2 %}
+                    {% assign phoneDom = contact.address1_telephone1 %}
+                    {% assign phonePro = contact.telephone1 %}
+                    {% assign email = contact.emailaddress1 %}
+                      
+                    <div class="user-information-pane personal-data">
+                      <div class="item full-width">
+                        <div class="item-label">CIVILITÉ</div>
+                        <div class="item-value">{% if gender == 1 %}Monsieur{% else %}Madame{% endif %}</div>
+                      </div>
+                      <div class="item half-width">
+                          <div class="item-label">NOM </div>
+                          <div class="item-value">{{name}}</div>
+                      </div>
+                      <div class="item half-width">
+                        <div class="item-label">PRÉNOM</div>
+                        <div class="item-value">{{firstName}}</div>
+                      </div>
+                    </div>
+                    <div class="user-information-pane address-data">
+                      <div class="item full-width">
+                        <div class="item-label">ADRESSE</div>
+                        <div class="item-value">{{address1}}</div>
+                      </div>
+                      <div class="item half-width">
+                        <div class="item-label">CODE POSTAL</div>
+                        <div class="item-value">{{postalCode}}</div>
+                      </div>
+                      <div class="item half-width">
+                        <div class="item-label">VILLE</div>
+                        <div class="item-value">{{city}}</div>
+                      </div>
+                    </div>
+                    <div class="user-information-pane contacts-data">
+                      <div class="item half-width">
+                        <div class="item-label">TEL. PORTABLE</div>
+                        <div class="item-value">{{phonePerso}}</div>
+                      </div>
+                      <div class="item half-width">
+                        <div class="item-label">TEL. DOMICILE</div>
+                        <div class="item-value">{{phoneDom}}</div>
+                      </div>
+                      <div class="item full-width">
+                        <div class="item-label">TEL. PROFESSIONNEL</div>
+                        <div class="item-value">{{phonePro}}</div>
+                      </div>
+                      <div class="item full-width">
+                        <div class="item-label">EMAIL</div>
+                        <div class="item-value">{{email}}</div>
+                      </div>
+                    </div>
+
+                  {% endfor %}
+                  
+                  <div class="user-information-note">
+                    <p>Pour modifier une information, merci d'envoyer un message à votre correspondant Cogedim</p>
+                    <div class="consult">
+                      <a href="/user/contact-rrc" class="btn btn-primary">Contactez-nous</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-col">
+          <div id="block-rrcinformation" class="block block-ce-contact block-ce-contact-rrc-information">
+            <div class="aside-contact">
+              <div class="aside-thumb">
+                <img src="/sites/default/files/styles/225x124_sc/public/2017-03/Geoffrey%20Raimbault_0.jpg?itok=JgiU7Ikg" alt="" typeof="foaf:Image" class="image-style-_25x124-sc" width="225" height="124">
+              </div>
+              <div class="aside-label">
+                Votre Responsable Relation Client
+              </div>
+              <div class="title">Geoffrey Raimbault</div>
+              <div class="contact-items">
+                <div class="item phone">
+                  <div class="item-label"><span>Tel</span></div>
+                  <div class="item-value">+33 (0)2 51 86 00 20</div>
+                </div>
+                <div class="item schedule">
+                  <div class="item-label"></div>
+                  <div class="item-value">
+                    Du lundi au vendredi de 9h à 12h30 et de 14h à 19h.
+                  </div>
+                </div>
+              </div>
+              <div class="faq-actions">
+                <div class="item">
+                  <a href="/user/contact-rrc" class="btn btn-consult-2">
+                    CONTACTEZ-NOUS
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

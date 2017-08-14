@@ -1,0 +1,101 @@
+<script type="text/javascript">
+  
+  function IsValid(){
+
+    var userName = $('#Username').val();
+    var password = $('#Password').val();
+    $('.error-message').remove();
+
+    if(userName != "" && password != ""){
+
+      $.blockUI({ message: null, overlayCSS: { opacity: .3 } });
+      return true;
+    }
+
+    if(userName == ""){
+
+      $('#Username').addClass('error');
+      $('#Username').after('<div class="error-message">Le champ Nom d\'utilisateur est requis.</div>');  
+    }
+    else
+      $('#Username').removeClass('error');
+
+    if(password == ""){
+
+      $('#Password').addClass('error');
+      $('#Password').after('<div class="error-message">Le champ Mot de passe est requis.</div>');  
+    }
+    else
+      $('#Password').removeClass('error');
+
+    return false;
+  }
+
+</script>
+<div class="page-header-wrapper">
+  <div class="container">
+    <div id="block-pagetitle" class="block block-core block-page-title-block block-page-title">
+      <h1 class="page-title">CONNEXION</h1>
+    </div>
+  </div>
+</div>
+<div class="region region-content">
+  <div class="container">
+    <div id="content-container" class="container">
+      <div id="content">
+        <div class="page-content">
+          <div class="xrm-editable-html xrm-attribute no-value page-copy">
+            <div class="xrm-attribute-value"></div>
+          </div>
+          <div class="row">
+            <form action="/SignIn" onsubmit="return IsValid()" method="post" class="form-connexion" data-drupal-selector="user-login-form" id="user-login-form" accept-charset="UTF-8" novalidate="novalidate">
+              <input name="__RequestVerificationToken" value="Mmhpanuh7L8B1qvLLkSil_-6oCBGS5tuj0fh4z_11UW9Ff33m5isNxAjK-9b8WXHWoc1EGxTe0sfrD-0_Lez8N66zEY7Uxbw-qE6af8BtCE1" type="hidden">
+              <div class="form-horizontal">
+                <fieldset>
+                  <div class="js-form-item form-identifiant form-item js-form-type-textfield form-type-textfield js-form-item-name form-item-name">
+                    <label class="col-sm-4 control-label required js-form-required form-required" for="Username"><span class="xrm-editable-text xrm-attribute"><span class="xrm-attribute-value-encoded xrm-attribute-value">Nom d'utilisateur</span></span>
+                    </label>
+                    <input placeholder="Votre identifiant" aria-label="Le champ Nom d'utilisateur est obligatoire." class="form-control form-text required" data-drupal-selector="edit-name" aria-describedby="edit-name--description" id="Username" name="Username" value="" size="60" maxlength="60" required="required" aria-required="true" type="text">
+                    <div id="edit-name--description" class="description">Saisissez votre nom d'utilisateur pour Espace Client Cogedim.</div>
+                  </div>
+                  <div class="js-form-item form-mot-de-passe form-item js-form-type-password form-type-password js-form-item-pass form-item-pass">
+                    <label class="col-sm-4 control-label required js-form-required form-required" for="Password"><span class="xrm-editable-text xrm-attribute"><span class="xrm-attribute-value-encoded xrm-attribute-value">Mot de passe</span></span>
+                    </label>
+                    <input placeholder="Mot de passe" aria-label="Le champ Mot de passe est obligatoire." autocomplete="off" class="form-control form-pass form-text required" data-drupal-selector="edit-pass" aria-describedby="edit-pass--description" data-val="true" data-val-required="Le champ Mot de passe est obligatoire." id="Password" name="Password" size="60" maxlength="128" required="required" aria-required="true" type="password">
+                    <div id="edit-pass--description" class="description">Saisissez le mot de passe correspondant à votre nom d'utilisateur.</div>
+                  </div>
+                  <div class="form-actions js-form-wrapper form-wrapper" data-drupal-selector="edit-actions" id="edit-actions">
+                    <button data-drupal-selector="edit-submit" id="submit-signin-local" name="op" class="btn btn-primary button js-form-submit form-submit" title="Se connecter">CONNEXION</button>
+                  </div>
+                  <!-- <span id="info-test" class="btn button js-form-submit form-submit" title="CONNEXION">CONNEXION</span> -->
+                  <div class="text-after">
+                    <ul class="menu">
+                      <li class="menu-item">
+                        <a href="/Account/Login/ForgotPassword" data-drupal-link-system-path="/Account/Login/ForgotPassword">Mot de passe oublié?</a>
+                      </li>
+                      <li class="menu-item">
+                        <a href="/je-nai-pas-recu-mes-acces" data-drupal-link-system-path="node/33">Je n’ai pas reçu d’accès</a>
+                      </li>
+                    </ul>
+                  </div>
+                </fieldset>
+              </div>
+            </form>
+          </div>
+          <script type="text/javascript">
+          $(document).ready(function() {
+            shell.refreshToken();
+            if ($('#loginValidationSummary').length) {
+              if ($('#loginValidationSummary').find('li').length > 0) {
+                $('#loginValidationSummary').attr("role", "alert");
+                $('#loginValidationSummary').attr("aria-live", "assertive");
+                $('#loginValidationSummary').focus();
+              }
+            }
+          });
+          </script>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

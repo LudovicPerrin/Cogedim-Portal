@@ -1,0 +1,68 @@
+{
+  "name": "jquery-once",
+  "title": "jQuery Once",
+  "description": "Act on jQuery elements only once.",
+  "version": "2.2.0",
+  "keywords": [
+    "jquery",
+    "jquery-plugin"
+  ],
+  "homepage": "https://github.com/RobLoach/jquery-once",
+  "author": "Rob Loach (http://github.com/RobLoach)",
+  "maintainers": [
+    "Rob Loach (https://github.com/RobLoach)"
+  ],
+  "types": "jquery.once.d.ts",
+  "main": "jquery.once.js",
+  "contributors": [
+    "JohnAlbin (https://github.com/JohnAlbin)",
+    "Rob Loach <robloach@gmail.com> (https://github.com/RobLoach)",
+    "theodoreb (https://github.com/theodoreb)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RobLoach/jquery-once.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RobLoach/jquery-once/issues"
+  },
+  "license": "(GPL-2.0 OR MIT)",
+  "engines": {
+    "node": ">=4"
+  },
+  "dependencies": {
+    "jquery": "*"
+  },
+  "devDependencies": {
+    "@types/jquery": "*",
+    "jsdoc-to-markdown": "^3.0.0",
+    "jsdom": "~11.1.0",
+    "mocha": "~3.4.2",
+    "mocha-jsdom": "robloach/mocha-jsdom#update-jsdom",
+    "uglify-js": "~3.0.25",
+    "xo": "^0.18.2"
+  },
+  "scripts": {
+    "test": "mocha test/test.js",
+    "posttest": "xo --space --no-esnext",
+    "docs": "jsdoc2md jquery.once.js > API.md",
+    "build": "uglifyjs -o jquery.once.min.js --comments --source-map filename=jquery.once.min.js,url=jquery.once.min.js.map --mangle -- jquery.once.js",
+    "package": "npm install && npm run test && npm run docs && npm run build",
+    "coverage": "npm i istanbul && istanbul cover test",
+    "coveralls": "npm run coverage && npm i coveralls && cat ./coverage/lcov.info | coveralls"
+  },
+  "files": [
+    "jquery.once.js",
+    "jquery.once.d.ts",
+    "jquery.once.min.js",
+    "jquery.once.min.js.map"
+  ],
+  "browser": "./jquery.once.min.js",
+  "browserPackage": {
+    "files": [
+      "jquery.once.js",
+      "jquery.once.min.js",
+      "jquery.once.min.js.map"
+    ]
+  }
+}

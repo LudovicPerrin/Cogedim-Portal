@@ -1,0 +1,103 @@
+{% assign contactus_url = sitemarkers['Contact Us'].url %}
+{% assign profile_url = sitemarkers['Main Profile'].url %}
+{% assign connexion_url = sitemarkers['Connexion'].url %}
+{% assign documents_url = sitemarkers['Documents'].url %}
+{% assign contract_url = sitemarkers['Contract'].url %}
+{% assign home_url = sitemarkers['Main Home'].url %}
+
+<header class="region region-header main-header-wrapper">
+  <div class="container">
+    <div class="main-header">
+      <div id="block-cogedim-branding" class="block block-system block-system-branding-block">
+        <div class="logo">
+          <h1 class="site-name">
+            <a href="{{home_url}}" title="Accueil" rel="home" class="site-logo"></a>
+          </h1>
+        </div>
+      </div>
+      <div id="block-user-header-bar" class="block block-ce-common block-ce-common-user-header-bar top-bar">    
+        <div class="user">
+          <a id="userLabel" data-target="#" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+            <span class="username">{{user.fullname}}</span>
+            <span class="dropdown-caret"></span>
+          </a>  
+          <ul class="dropdown-menu" aria-labelledby="userLabel">
+            <li class="menu-item menu-item--collapsed">
+              <a href="{{profile_url}}" class="menu-item menu-item--collapsed" data-drupal-link-system-path="user">Mon profil</a>
+            </li>
+            <li class="menu-item">
+              <a href="/sponsorship" class="menu-item" data-drupal-link-system-path="sponsorship">Parrainage</a>
+            </li>
+            <li class="menu-logout menu-item">
+              <a href="/user/logout" class="menu-logout menu-item" data-drupal-link-system-path="user/logout">Se déconnecter</a>
+            </li>
+          </ul>
+        </div>
+        <div class="bell">
+          <a id="bellLabel" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="pointer-events: none;"><i>Notifications</i></a>
+          <ul class="dropdown-menu notification-menu" aria-labelledby="bellLabel"></ul>
+        </div>
+        <div class="messages-notify">
+          <a href="/user/contact-rrc" role="button"><i>CONTACTEZ-NOUS</i></a>
+        </div>
+      </div>
+      <div id="block-user-navigation-menu" class="block block-system block-system-menu-blockuser-navigation-menu menu-bar">    
+        <span class="menu-bar-toggle"></span>
+        <div class="menu-bar-inner">
+          <div typeof="schema:Person" about="/user/750" class="contracts no-dropdown">
+            <!-- <a href="/contract/18280-990001-1">Mon contrat</a> -->
+            <a href="{{contract_url}}">Mon contrat</a>
+          </div>
+          <div class="menu-user-mobile">
+            <a href="#">
+              <span>
+                <span class="username">Madame Sabrina Le Houerou et Monsieur Stéphane Bordage</span>
+                <span class="dropdown-caret"></span>
+              </span>
+            </a>
+            <ul class="hidden">
+              <li class="menu-item menu-item--collapsed">
+                <a href="{{profile_url}}" class="menu-item menu-item--collapsed" data-drupal-link-system-path="user">Mon profil</a>
+              </li>
+              <li class="menu-item">
+                <a href="/sponsorship" class="menu-item" data-drupal-link-system-path="sponsorship">Parrainage</a>
+              </li>
+              <li class="menu-logout menu-item">
+                <a href="/user/logout" class="menu-logout menu-item" data-drupal-link-system-path="user/logout">Se déconnecter</a>
+              </li>
+            </ul>
+          </div>
+          <div class="menu-bell-mobile">
+            <a href="undefined" style="pointer-events: none;"><span><i>Notifications</i></span></a>
+            <ul class="notification-menu hidden"></ul>
+          </div>
+          <div class="menu-contact-mobile">
+            <a href="/user/contact-rrc"><span><i>CONTACTEZ-NOUS</i></span></a>
+          </div>
+          <div class="contracts-mobile no-dropdown">
+            <a href="{{contract_url}}">Mon contrat</a>
+          </div>
+          <nav class="menu">
+            <ul>
+              <li class="menu-item menu-item--active-trail">
+                <a href="/faq">FAQ</a>
+              </li>
+              <li class="menu-item">
+                <a href="{{documents_url}}">Documents</a>
+              </li>
+              <li class="menu-item">
+                <a href="/user/messages">Messages</a>
+              </li>
+              <li class="menu-item">
+                <a href="/fiches-pratiques">Fiches pratiques</a>
+              </li>
+            </ul>
+          </nav>
+          <div class="consult consult-mobile">
+            <a href="#" class="btn btn-primary">Contacter mon conseiller</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

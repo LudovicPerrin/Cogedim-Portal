@@ -1,0 +1,175 @@
+{% assign contactus_url = sitemarkers['Contact Us'].url %}
+{% assign profile_url = sitemarkers['Main Profile'].url %}
+{% assign connexion_url = sitemarkers['Connexion'].url %}
+{% assign documents_url = sitemarkers['Documents'].url %}
+{% assign main_home_url = sitemarkers['Main Home'].url %}
+{% assign contract_url = sitemarkers['Contract'].url %}
+{% assign home_url = sitemarkers['Home'].url %}
+
+{% if user %}
+  <header class="region region-header main-header-wrapper">
+    <div class="container">
+      <div class="main-header">
+        <div id="block-cogedim-branding" class="block block-system block-system-branding-block">
+          <div class="logo">
+            <h1 class="site-name">
+              <a href="{{main_home_url}}" title="Accueil" rel="home" class="site-logo"></a>
+            </h1>
+          </div>
+        </div>
+        <div id="block-user-header-bar" class="block block-ce-common block-ce-common-user-header-bar top-bar">    
+          <div class="user">
+            <a id="userLabel" data-target="#" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+              <span class="username">{{user.fullname}}</span>
+              <span class="dropdown-caret"></span>
+            </a>  
+            <ul class="dropdown-menu" aria-labelledby="userLabel">
+              <li class="menu-item menu-item--collapsed">
+                <a href="{{profile_url}}" class="menu-item menu-item--collapsed" data-drupal-link-system-path="user">Mon profil</a>
+              </li>
+              <li class="menu-item">
+                <a href="/sponsorship" class="menu-item" data-drupal-link-system-path="sponsorship">Parrainage</a>
+              </li>
+              <li class="menu-logout menu-item">
+                <a href="/Account/Login/LogOff?returnUrl=%2F" class="menu-logout menu-item" data-drupal-link-system-path="user/logout">Se déconnecter</a>
+              </li>
+            </ul>
+          </div>
+          <div class="bell">
+            <a id="bellLabel" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" style="pointer-events: none;"><i>Notifications</i></a>
+            <ul class="dropdown-menu notification-menu" aria-labelledby="bellLabel"></ul>
+          </div>
+          <div class="messages-notify">
+            <a href="/user/contact-rrc" role="button"><i>CONTACTEZ-NOUS</i></a>
+          </div>
+        </div>
+        <div id="block-user-navigation-menu" class="block block-system block-system-menu-blockuser-navigation-menu menu-bar">    
+          <span class="menu-bar-toggle"></span>
+          <div class="menu-bar-inner">
+            <div typeof="schema:Person" about="/user/750" class="contracts no-dropdown">
+              <!-- <a href="/contract/18280-990001-1">Mon contrat</a> -->
+              <a href="{{contract_url}}">Mon contrat</a>
+            </div>
+            <div class="menu-user-mobile">
+              <a href="#">
+                <span>
+                  <span class="username">Madame Sabrina Le Houerou et Monsieur Stéphane Bordage</span>
+                  <span class="dropdown-caret"></span>
+                </span>
+              </a>
+              <ul class="hidden">
+                <li class="menu-item menu-item--collapsed">
+                  <a href="{{profile_url}}" class="menu-item menu-item--collapsed" data-drupal-link-system-path="user">Mon profil</a>
+                </li>
+                <li class="menu-item">
+                  <a href="/sponsorship" class="menu-item" data-drupal-link-system-path="sponsorship">Parrainage</a>
+                </li>
+                <li class="menu-logout menu-item">
+                  <a href="/Account/Login/LogOff?returnUrl=%2F" class="menu-logout menu-item" data-drupal-link-system-path="user/logout">Se déconnecter</a>
+                </li>
+              </ul>
+            </div>
+            <div class="menu-bell-mobile">
+              <a href="undefined" style="pointer-events: none;"><span><i>Notifications</i></span></a>
+              <ul class="notification-menu hidden"></ul>
+            </div>
+            <div class="menu-contact-mobile">
+              <a href="/user/contact-rrc"><span><i>CONTACTEZ-NOUS</i></span></a>
+            </div>
+            <div class="contracts-mobile no-dropdown">
+              <a href="{{contract_url}}">Mon contrat</a>
+            </div>
+            <nav class="menu">
+              <ul>
+                <li class="menu-item menu-item--active-trail">
+                  <a href="/faq">FAQ</a>
+                </li>
+                <li class="menu-item">
+                  <a href="{{documents_url}}">Documents</a>
+                </li>
+                <li class="menu-item">
+                  <a href="/user/messages">Messages</a>
+                </li>
+                <li class="menu-item">
+                  <a href="/fiches-pratiques">Fiches pratiques</a>
+                </li>
+              </ul>
+            </nav>
+            <div class="consult consult-mobile">
+              <a href="#" class="btn btn-primary">Contacter mon conseiller</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+{% else %}
+  <header class="region region-header header-wrapper">
+    <div class="container">
+      <div class="header">
+        <div id="block-cogedim-branding" class="block block-system block-system-branding-block">
+          <div class="logo">
+            <h1 class="site-name">
+              <a href="{{home_url}}" title="Accueil" rel="home" class="site-logo"></a>
+            </h1>
+          </div>
+        </div>
+        <nav role="navigation" aria-labelledby="block-cogedim-main-menu-menu" id="block-cogedim-main-menu" class="block block-menu navigation menu-header menu--main">
+          <span class="menu-header-toggle"></span>
+          <h2 class="visually-hidden" id="block-cogedim-main-menu-menu">Main navigation</h2>
+          <ul class="menu">
+            <li class="menu-item menu-item-accueil">
+              <a href="{{home_url}}" data-drupal-link-system-path="<front>">Accueil</a>
+            </li>
+            <li class="menu-item menu-item-contact">
+              <a href="{{contactus_url}}" data-drupal-link-system-path="contact">Contact</a>
+            </li>
+            <li class="hidden-md hidden-lg menu-item-connexion">
+              <a href="{{connexion_url}}" class="connexion-menu-mobile">Connexion</a>
+            </li>
+          </ul>
+        </nav>
+        <div id="block-userlogin" role="form" class="block-connexion hide-content">
+          <div class="block-title">
+            <a href="{{connexion_url}}">Connexion</a>
+          </div>
+          <div class="content">
+            <div class="text-before">Connexion à votre compte</div>
+            <form class="form-connexion" data-drupal-selector="user-login-form" action="/home?destination=/home" method="post" id="user-login-form" accept-charset="UTF-8" novalidate="novalidate">
+              <div class="js-form-item form-identifiant form-item js-form-type-textfield form-type-textfield js-form-item-name form-item-name">
+                <label for="edit-name" class="js-form-required form-required">Nom d'utilisateur</label>
+                <input placeholder="Votre identifiant" class="form-control form-text required" data-drupal-selector="edit-name" id="edit-name" name="name" value="" size="15" maxlength="60" required="required" aria-required="true" type="text">
+              </div>
+              <div class="js-form-item form-mot-de-passe form-item js-form-type-password form-type-password js-form-item-pass form-item-pass">
+                <label for="edit-pass" class="js-form-required form-required">Mot de passe</label>
+                <input placeholder="Mot de passe" class="form-control form-pass form-text required" data-drupal-selector="edit-pass" id="edit-pass" name="pass" size="15" maxlength="128" required="required" aria-required="true" type="password">
+              </div>
+              <input data-drupal-selector="form-v3f-byemktedge42tk6k5faep4qbbu6jk-na3nevs1a" name="form_build_id" value="form-V3f-BYemKteDge42tK6K5faeP4qbbU6jk_nA3nEVS1A" type="hidden">
+              <input data-drupal-selector="edit-user-login-form" name="form_id" value="user_login_form" type="hidden">
+              <input data-drupal-selector="edit-honeypot-time" name="honeypot_time" value="1501601945|EovfT9PZDYUjy-OouZvd0hLDbtmAjks6PTaRhWN2OlU" type="hidden">
+              <div data-drupal-selector="edit-actions" class="form-actions js-form-wrapper form-wrapper" id="edit-actions">
+                <input data-drupal-selector="edit-submit" id="edit-submit" name="op" value="CONNEXION" class="button js-form-submit form-submit" type="submit">
+              </div>
+              <div class="email-textfield">
+                <div class="js-form-item form-item js-form-type-textfield form-type-textfield js-form-item-email form-item-email">
+                  <label for="edit-email">Leave this field blank</label>
+                  <input autocomplete="off" data-drupal-selector="edit-email" id="edit-email" name="email" value="" size="20" maxlength="128" class="form-text" type="text">
+                </div>
+              </div>
+              <div class="text-after">
+                <ul class="menu">
+                  <li class="menu-item">
+                    <a href="{{contactus_url}}" data-drupal-link-system-path="user/password">Mot de passe oublié?</a>
+                  </li>
+                  <li class="menu-item">
+                    <a href="{{contactus_url}}" data-drupal-link-system-path="node/33">Je n’ai pas reçu d’accès</a>
+                  </li>
+                </ul>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+{% endif %}
