@@ -1,0 +1,68 @@
+{% assign forums_sm = sitemarkers["Forums"] %}
+{% assign blogs_sm = sitemarkers['Blog Home'] %}
+{% assign ideas_sm = sitemarkers["Ideas"] %}
+
+<section class="page_section section-landing">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <h1 class="section-landing-heading">{% editable snippets 'Home/Title' default: 'Contoso' %}</h1>
+        <h2 class="section-landing-sub-heading">{% editable snippets 'Home/Subtitle' default: resx["Community_DefaultText"] %}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="layer_down">&nbsp;</div>
+</section>
+<section class="page_section section-knowledge">
+  <div class="layer_up">&nbsp;</div>
+  <div class="container">
+    <div class="col-md-8 content-home">
+      <h2>{% editable snippets "Home/MostPopularHeading" default: resx["Most_Popular"] %}</h2>
+      {% include 'Knowledge Management - Most Popular Articles' showdescription: true %}
+    </div>
+    <div class="col-md-4 sidebar-home">
+    {% if user %}
+      {% include 'My Forum Thread Subscriptions' subscription_count: 5 %}
+    {% else %}
+      <h3>{% editable snippets "Home/PopularTopicsHeading" default: resx["Popular_Topics"] %}</h3>
+      {% include 'Knowledge Management - Most Recent Articles' %}
+      {% include 'Knowledge Management - Top Rated Articles' %}
+    {% endif %}
+    </div>
+  </div>
+</section>
+<section class="page_section section-sub-landing color-inverse">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 text_center-mobile">
+        <h1>{{ forums_sm.adx_name | escape }}</h1>
+        {% editable snippets "Forum/HomeDescription" %}
+        <a href="{{ forums_sm.url | h }}" class="btn btn-info-home btn-lg-home" title="{{ snippets['Home/ViewMoreButton'] | default: resx['View_More'] | h }}">{{ snippets['Home/ViewMoreButton'] | default: resx['View_More'] | h }}</a>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="page_section section-diagonal-left color-inverse">
+  <div class="section-diagonal-left-content">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-4 col-md-offset-7 text-center-mobile">
+          <h1>{{ ideas_sm.adx_name | escape }}</h1>
+          {% editable snippets "Ideas/HomeDescription" %}
+          <a href="{{ ideas_sm.url | h }}" class="btn btn-info-home btn-lg-home" title="{{ snippets['Home/ViewMoreButton'] | default: resx['View_More'] | h }}">{{ snippets['Home/ViewMoreButton'] | default: resx['View_More'] | h }}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="page_section section-default color-inverse">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 text_center-mobile">
+        <h1>{{ blogs_sm.adx_name | escape }}</h1>
+        {% editable snippets "Blogs/HomeDescription" %}
+        <a href="{{ blogs_sm.url | h }}" class="btn btn-info-home btn-lg-home" title="{{ snippets['Home/ViewMoreButton'] | default: resx['View_More'] | h }}">{{ snippets['Home/ViewMoreButton'] | default: resx['View_More'] | h }}</a>
+      </div>
+    </div>
+  </div>
+</section>

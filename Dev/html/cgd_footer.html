@@ -79,7 +79,7 @@
   $(window).ready(function(){
 
     $('.menu-item a').removeClass('.is-active');
-
+    
     if(window.location.pathname == '{{home_url}}')
       $('.menu-item-accueil a').addClass('is-active');
     if(window.location.pathname == '{{contactus_url}}')
@@ -140,17 +140,22 @@
       var trancheName = $(this).attr('trancheName');
       var lots = $(this).attr('lots').split('|');
       var contractName = $(this).attr('contractName');
+      var contractId = $(this).attr('contractId');
+      var contractPath = "{{contract_url}}?id=" + contractId;
+      var homePath = "{{home_url}}?id=" + contractId;
       var program = new Object();
       program.name = $(this).attr('programName');
-      program.adress = $(this).attr('adress');
+      program.address = $(this).attr('address');
 
       //Mise à jour des données de la page
-      $('.title .field--name-name').val(program.programName);
-      $('.title .address-3').val(program.adress);
+      $('.title .field--name-name').html(program.name);
+      $('.contract-url').attr('href', contractPath);
+      $('.logo .site-name a').attr('href', homePath);
+      $('.title .address-3').html(program.address);
       $('.info .field__item').remove();
 
       for (var i = 0; i < lots.length - 1 ; i++) {
-        $('.lot-items').append('<li class="field__item"><a href="{{contract_url}}"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>')
+        $('.lot-items').append('<li class="field__item"><a href="' + contractPath + '"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>')
       }
     });
 

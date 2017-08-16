@@ -1,4 +1,5 @@
 {% assign contract_url = sitemarkers['Contract'].url %}
+{% assign home_url = sitemarkers['Home'].url %}
 
 {% fetchxml contracts %}
   <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
@@ -55,36 +56,33 @@
           {% assign contractLots = contractLots | append: lot.acq_idlot %}
         {% endif %}
 
-        {% if forloop.first and cpt == 1 %}
-            {% assign preSelectedProgramName =  programName %}
-            {% assign preSelectedProgramCity =  programCity %}
-            {% assign preSelectedProgramPostCode = programPostCode %}
-        {% endif %}
-
         {% assign cpt = cpt | plus: 1 %}
       {% endfor %}
 
       {% assign contractLots = contractLots | split: '|' %}
 
-      {% if(forloop.first) %}
+      {% if forloop.first or request.params['id'] == contract.acq_contratsid %}
         {% assign preSelectedContractLots = contractLots %}
+        {% assign preSelectedProgramName =  programName %}
+        {% assign preSelectedProgramCity =  programCity %}
+        {% assign preSelectedProgramPostCode = programPostCode %}
+        {% assign contractId = contract.acq_contratsid %}
+        <script type="text/javascript">
+          var contractId = "{{contractId}}";
+          var contractPath = "{{contract_url}}?id=" + contractId;
+          $('.contract-url').attr('href', contractPath);
+        </script>
       {% endif %}
 
       {% if contracts.results.entities.size > 1 %}
         {% if forloop.first %}
           <div class="contract-multi-selection row">
         {% endif%}
-        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 contract-item {% if forloop.first %}selected-contract{% endif %}" contractName="{{contractName}}" programName="{{programName}}" adress="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" rrc="{{RRCName}}">
-          <a href="#" title="<strong>Contrat: </strong>{{contractName}}" data-html="true" data-placement="bottom" data-toggle="popover" data-trigger="hover" data-content="<strong>Programme: </strong>{{programName}}<br><strong>Adresse: </strong>{{programPostCode | append: ' - ' | append: programCity}}<br><strong>Tranche: </strong>{{trancheName}}<hr><strong>Lot(s): </strong><br><ul>{% for lot in contractLots %}<li>{{lot}}</li>{% endfor %}</ul><hr><strong>Nom du RRC: </strong>{{RRCName}}">
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 contract-item {% if forloop.first %}{% unless request.params['id'] %}selected-contract{% endunless %}{% endif %}{% if request.params['id'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programName="{{programName}}" address="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" rrc="{{RRCName}}">
+          <a href="#" title="<strong>Contrat: </strong>{{contractName}}" data-html="true" data-placement="bottom" data-toggle="popover" data-trigger="hover" data-content="{{programName}}">
             <ul>
               <li>
-                <strong>Contrat: </strong>{{contractName}}
-              </li>
-              <li>
-                <strong>Programme: </strong>{{programName}}
-              </li>
-              <li>
-                <strong>Adresse: </strong>{{programPostCode | append: ' - ' | append: programCity}}
+                {{programName}}
               </li>
             </ul>
           </a>
@@ -121,7 +119,7 @@
                       <ul class="lot-items">
                         {% for lot in preSelectedContractLots %}
                           <li class="field__item">
-                            <a href="{{contract_url}}">
+                            <a href="{{contract_url | append: '?id=' | append: contractId}}">
                               <article role="article">
                                 <div class="content">
                                   {{lot}}
@@ -134,7 +132,7 @@
                       </ul>
                     </div>
                     <div class="action">
-                      <a href="{{contract_url}}" class="btn btn-white"> Voir Mon contrat</a>
+                      <a class="btn btn-white contract-url" href="{{contract_url | append: '?id=' | append: contractId}}" class="btn btn-white"> Voir Mon contrat</a>
                     </div>
                   </div>
                 </div>

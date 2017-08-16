@@ -1,3 +1,45 @@
+{% assign contract_url = sitemarkers['Contract'].url %}
+{% assign home_url = sitemarkers['Home'].url %}
+
+{% if request.params['id'] %}
+  
+  <script type="text/javascript">
+    var contractId = "{{request.params['id']}}";
+    var contractPath = "{{contract_url}}?id=" + contractId;
+    var homePath = "{{home_url}}?id=" + contractId;
+    $('.contract-url').attr('href', contractPath);
+    $('.logo .site-name a').attr('href', homePath);
+  </script>
+
+  {% assign contractId = request.params['id'] %}
+
+  {% fetchxml lots %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+      <entity name="acq_lot">
+        <all-attributes />
+        <filter>
+          <condition attribute="acq_lot" operator="eq" value="{{contractId}}" />
+        </filter>
+        <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche" >
+          <all-attributes/>
+          <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme" >
+            <all-attributes/>
+          </link-entity>
+        </link-entity>
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  {% assign cpt = 1 %}
+  {% assign contractLots = '' %}
+  {% assign trancheName =  lots.results.entities[0]['tranche.acq_name'] %}
+  {% assign RRCName = lots.results.entities[0]['programme.ownerid_owneridyominame'] %}
+  {% assign programName =  lots.results.entities[0]['programme.acq_name'] %}
+  {% assign programCity =  lots.results.entities[0]['programme.acq_ville'] %}
+  {% assign programPostCode = lots.results.entities[0]['programme.acq_codepostal'] %}
+
+{% endif %}
+
 <div class="contrat-slider-wrapper">
   <div class="container">
     <div class="block-contrat-slider">
@@ -55,12 +97,12 @@
       </div>
       <div class="info">
         <div class="info-col col-1">
-          <div class="title">Inspirations</div>
+          <div class="title">{{programName}}</div>
           <address class="address">
             Rue de la Tour d'Auvergne
             <br>
             
-            <span>44200 - Nantes</span>
+            <span>{{programPostCode | append: ' - ' | append: programCity}}</span>
           </address>
           <div class="action hidden-xs hidden-sm">
             <a href="/user/contact-rrc" class="btn btn-consult">Contactez-nous</a>
@@ -84,50 +126,63 @@
   </div>
 </div>
 
-<div class="contrat-lots-wrapper">
-  <div class="container">
-    <div class="block-contrat-lots">
-      <div class="contrat-lot expanded">
-        <h3 class="lot-title">
-          <span class="title">4 pièces</span>
-          <span class="num">(Lot 99001)</span>
-        </h3>
-        <div class="lot-info">
-          <div class="info">
-            <div class="info-col description">
-              <h4 class="title">Fiche d’identité</h4>
-              <div class="specification">
-                <ul>
-                  <li>
-                    <span class="spec-label"><b>Surface</b></span>
-                    <span class="spec-value">100.00 m<sup>2</sup></span>
-                  </li>
-                </ul>
-              </div>
-              <div class="additional">
-                <div class="item">Parking (Lot n° 99011)</div>
-              </div>
-            </div>
-            <div class="info-col plans">
-              <h4 class="title">Mes Plans</h4>
-              <div class="downloads">
-                <ul>
-                </ul>
-              </div>
-            </div>
-            <div class="info-col choix">
-              <h4 class="title">Mes Prestations</h4>
-              <div class="downloads">
-                <ul>
-                </ul>
+{% assign flag = false %}
+{% for lot in lots.results.entities %}
+  {% if lot.acq_typedelot.label == 'Maison' or lot.acq_typedelot.label == 'Appartement' %}
+    <div class="contrat-lots-wrapper">
+      <div class="container">
+        <div class="block-contrat-lots">
+          <div class="contrat-lot {% if forloop.first %}expanded{% endif %}">
+            <h3 class="lot-title">
+              <span class="title">{{lot.acq_typedelot.label}}</span>
+              <span class="num">{{lot.acq_idlot}}</span>
+            </h3>
+            <div class="lot-info">
+              <div class="info">
+                <div class="info-col description">
+                  <h4 class="title">Fiche d’identité</h4>
+                  <div class="specification">
+                    <ul>
+                      <li>
+                        <span class="spec-label"><b>Surface</b></span>
+                        <span class="spec-value">{{lot.acq_surface | round: 2 | string}} m<sup>2</sup></span>
+                      </li>
+                    </ul>
+                  </div>
+                  {% unless flag %}
+                    {% for lotbis in lots.results.entities %}
+                      {% if lotbis.acq_typedelot.label == 'Garage' or lotbis.acq_typedelot.label == 'Parking' %}
+                        <div class="additional">
+                          <div class="item">{{lotbis.acq_typedelot.label | append: ' (' | append: lotbis.acq_idlot | append: ')'}}</div>
+                        </div>
+                        {% assign flag = true %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endunless %}
+                </div>
+                <div class="info-col plans">
+                  <h4 class="title">Mes Plans</h4>
+                  <div class="downloads">
+                    <ul>
+                    </ul>
+                  </div>
+                </div>
+                <div class="info-col choix">
+                  <h4 class="title">Mes Prestations</h4>
+                  <div class="downloads">
+                    <ul>
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</div>
+  {% endif %}
+{% endfor %}
+
 <div class="contrat-info-wrapper">
   <div class="container">
     <div class="block-contrat-info">
