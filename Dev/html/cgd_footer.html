@@ -141,21 +141,18 @@
       var lots = $(this).attr('lots').split('|');
       var contractName = $(this).attr('contractName');
       var contractId = $(this).attr('contractId');
-      var contractPath = "{{contract_url}}?id=" + contractId;
-      var homePath = "{{home_url}}?id=" + contractId;
       var program = new Object();
       program.name = $(this).attr('programName');
       program.address = $(this).attr('address');
 
       //Mise à jour des données de la page
       $('.title .field--name-name').html(program.name);
-      $('.contract-url').attr('href', contractPath);
-      $('.logo .site-name a').attr('href', homePath);
       $('.title .address-3').html(program.address);
       $('.info .field__item').remove();
+      setCookie('contractId', contractId, 7);
 
       for (var i = 0; i < lots.length - 1 ; i++) {
-        $('.lot-items').append('<li class="field__item"><a href="' + contractPath + '"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>')
+        $('.lot-items').append('<li class="field__item"><a href="{{contract_url}}"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>')
       }
     });
 
@@ -171,6 +168,22 @@
       useTransform: true,
       infinite: true,
       variableWidth: false
+    });
+
+    $('.contract-slider').slick({
+      slidesToShow: 3,
+      slidesToScroll: 3,
+      infinite: true,
+      responsive: [
+        {
+          breakpoint: 991,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 2,
+            infinite: true
+          }
+        }
+      ]
     });
   });
 

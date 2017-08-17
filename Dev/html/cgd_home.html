@@ -61,7 +61,7 @@
 
       {% assign contractLots = contractLots | split: '|' %}
 
-      {% if forloop.first or request.params['id'] == contract.acq_contratsid %}
+      {% if forloop.first or request.params['contractId'] == contract.acq_contratsid%}
         {% assign preSelectedContractLots = contractLots %}
         {% assign preSelectedProgramName =  programName %}
         {% assign preSelectedProgramCity =  programCity %}
@@ -69,28 +69,27 @@
         {% assign contractId = contract.acq_contratsid %}
         <script type="text/javascript">
           var contractId = "{{contractId}}";
-          var contractPath = "{{contract_url}}?id=" + contractId;
-          $('.contract-url').attr('href', contractPath);
+          setCookie('contractId', contractId, 7);
         </script>
       {% endif %}
 
       {% if contracts.results.entities.size > 1 %}
         {% if forloop.first %}
           <div class="contract-multi-selection row">
+            <div class="contract-slider">
         {% endif%}
-        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12 contract-item {% if forloop.first %}{% unless request.params['id'] %}selected-contract{% endunless %}{% endif %}{% if request.params['id'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programName="{{programName}}" address="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" rrc="{{RRCName}}">
-          <a href="#" title="<strong>Contrat: </strong>{{contractName}}" data-html="true" data-placement="bottom" data-toggle="popover" data-trigger="hover" data-content="{{programName}}">
-            <ul>
-              <li>
-                {{programName}}
-              </li>
-            </ul>
-          </a>
+        
+        <div class="contract-item {% if forloop.first %}{% unless request.params['contractId'] %}selected-contract{% endunless %}{% endif %}{% if request.params['contractId'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programName="{{programName}}" address="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" rrc="{{RRCName}}">
+          <p class="contract-item-text">{{programName}}</p>
         </div>
+        
         {% if forloop.last %}
+            </div>
           </div>
         {% endif %}
+
       {% endif %}
+
     {% endfor %}
 
     <div id="block-views-block-user-user-contracts" class="block block-views block-views-blockuser-user-contracts block-contract-boxes">
@@ -132,7 +131,7 @@
                       </ul>
                     </div>
                     <div class="action">
-                      <a class="btn btn-white contract-url" href="{{contract_url | append: '?id=' | append: contractId}}" class="btn btn-white"> Voir Mon contrat</a>
+                      <a class="btn btn-white contract-url" href="{{contract_url}}" class="btn btn-white"> Voir Mon contrat</a>
                     </div>
                   </div>
                 </div>

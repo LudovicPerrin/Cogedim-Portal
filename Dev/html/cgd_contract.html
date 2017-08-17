@@ -1,17 +1,9 @@
 {% assign contract_url = sitemarkers['Contract'].url %}
 {% assign home_url = sitemarkers['Home'].url %}
 
-{% if request.params['id'] %}
-  
-  <script type="text/javascript">
-    var contractId = "{{request.params['id']}}";
-    var contractPath = "{{contract_url}}?id=" + contractId;
-    var homePath = "{{home_url}}?id=" + contractId;
-    $('.contract-url').attr('href', contractPath);
-    $('.logo .site-name a').attr('href', homePath);
-  </script>
+{% if request.params['contractId'] %}
 
-  {% assign contractId = request.params['id'] %}
+  {% assign contractId = request.params['contractId'] %}
 
   {% fetchxml lots %}
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
@@ -42,6 +34,7 @@
 
 <div class="contrat-slider-wrapper">
   <div class="container">
+    <h1>{{request.params['aze']}}</h1>
     <div class="block-contrat-slider">
       <div class="contrat-slider-panel">
         <div class="contrat-slide slick-slide" data-slick-index="-1" aria-hidden="true" style="width: 946px;" tabindex="-1">

@@ -31,6 +31,15 @@ footer .footer-top{
 	float: left;
 }
 
+.slick-track script{
+  display: none !important;
+}
+
+.contract-boxes-wrapper,
+.contrat-slider-wrapper{
+	margin-top: 159px !important;
+}
+
 .contract-item{
 	background: rgba(55,55,55,0.2);
 	text-align: center;
@@ -38,8 +47,28 @@ footer .footer-top{
 	border: solid 2px white;
 }
 
-.selected-contract{
-	border: solid 2px red;
+.contract-item-text{
+	text-align: left;
+	font-size: 24px;
+	font-weight: bold;
+	background: rgba(255, 255, 255, 0.8);
+	padding-left: 10px
+	color: #4d4d53;
+	-webkit-transition: background-color 0.7s ease-out;
+    -moz-transition: background-color 0.7s ease-out;
+    -o-transition: background-color 0.7s ease-out;
+    transition: background-color 0.7s ease-out;
+}
+
+.selected-contract .contract-item-text{
+	background: rgba(66, 20, 95, 0.7);
+	color: #FFFFFF;
+}
+
+.contract-multi-selection .contract-item{
+  background-size: 100% 100% !important;
+  background: url("http://www.cogedim-logement.com/sites/default/files/assets/images/18280_presentation_6.jpg");
+  height: 140px;
 }
 
 .logo a{
@@ -61,6 +90,7 @@ footer .footer-top{
 .contract-multi-selection{
 	margin-left: 0px !important;
 	margin-right: 0px !important;
+	margin-bottom: 35px !important;
 }
 
 .wrapper-main-footer .container:before{
@@ -255,7 +285,7 @@ footer .footer-top{
 	}
 
 	.page-header-wrapper {
-		padding: 83px 0 53px;
+		padding: 159px 0 53px;
 	}
 }
 
