@@ -136,6 +136,7 @@ footer .footer-top{
 .menu-expanded .menu-bar-toggle,
 .block-cogedim-about .about-box .more-link a,
 .block-contrat-info .downloads .download,
+.block-messages-content .info .response .expand,
 .menu-header .menu-header-toggle::before, 
 .menu-header.expanded .menu-header-toggle::before,
 .consult .btn::before, 
@@ -229,6 +230,14 @@ footer .footer-top{
 
 .block-contrat-info .downloads .download{
 	background-image: url("cgd_download.png");
+}
+
+.block-messages-content .message-row .info .response .expand{
+	background-image: url("cgd_row_not_expanded");
+}
+
+.block-messages-content .message-row.expanded .info .response .expand{
+	background-image: url("cgd_row_expanded");
 }
 
 .block-contrat-additional .additional-icon a.icon-faq::before, 

@@ -25,6 +25,7 @@
 
 <div class="contract-boxes-wrapper">
   <div class="container">
+    <h1>{{user.email_address}}</h1>
     <div id="block-userwelcome" class="block block-ce-common block-ce-common-user-welcome block-page-title">
       <h1 class="page-title">{{user.firstname | prepend: "Bienvenue " | append: ","}}</h1>
     </div>
@@ -55,6 +56,7 @@
       {% assign trancheName =  lots.results.entities[0]['tranche.acq_name'] %}
       {% assign RRCName = lots.results.entities[0]['programme.ownerid_owneridyominame'] %}
       {% assign programName =  lots.results.entities[0]['programme.acq_name'] %}
+      {% assign programAddress = lots.results.entities[0]['programme.acq_adresse1'] %}
       {% assign programCity =  lots.results.entities[0]['programme.acq_ville'] %}
       {% assign programPostCode = lots.results.entities[0]['programme.acq_codepostal'] %}
 
@@ -73,6 +75,7 @@
       {% if forloop.first or request.params['contractId'] == contract.acq_contratsid%}
         {% assign preSelectedContractLots = contractLots %}
         {% assign preSelectedProgramName =  programName %}
+        {% assign preSelectedProgramAddress = programAddress %}
         {% assign preSelectedProgramCity =  programCity %}
         {% assign preSelectedProgramPostCode = programPostCode %}
         {% assign contractId = contract.acq_contratsid %}
@@ -88,7 +91,7 @@
             <div class="contract-slider">
         {% endif%}
         
-        <div class="contract-item {% if forloop.first %}{% unless request.params['contractId'] %}selected-contract{% endunless %}{% endif %}{% if request.params['contractId'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programName="{{programName}}" address="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" rrc="{{RRCName}}">
+        <div class="contract-item {% if forloop.first %}{% unless request.params['contractId'] %}selected-contract{% endunless %}{% endif %}{% if request.params['contractId'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programName="{{programName}}" address1="{{programAddress}}" address2="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" rrc="{{RRCName}}">
           <p class="contract-item-text">{{contractName}}</p>
         </div>
         
@@ -119,7 +122,7 @@
                     <h3>
                       <div class="field field--name-name field--type-string field--label-hidden field__item">{{preSelectedProgramName}}</div>
                     </h3>
-                    <div class="address-1">Rue de la Tour d'Auvergne</div>
+                    <div class="address-1">{{preSelectedProgramAddress}}</div>
                     <div class="address-3">{{preSelectedProgramPostCode | append: ' - ' | append: preSelectedProgramCity}}</div>
                   </div>
                   <div class="info">

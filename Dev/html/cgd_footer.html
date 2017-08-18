@@ -144,17 +144,26 @@
       var contractId = $(this).attr('contractId');
       var program = new Object();
       program.name = $(this).attr('programName');
-      program.address = $(this).attr('address');
+      program.address1 = $(this).attr('address1');
+      program.address2 = $(this).attr('address2');
 
       //Mise à jour des données de la page
       $('.title .field--name-name').html(program.name);
-      $('.title .address-3').html(program.address);
+      $('.title .address-1').html(program.address1);
+      $('.title .address-3').html(program.address2);
       $('.info .field__item').remove();
       setCookie('contractId', contractId, 7);
 
       for (var i = 0; i < lots.length - 1 ; i++) {
         $('.lot-items').append('<li class="field__item"><a href="{{contract_url}}"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>')
       }
+    });
+
+    $('.block-messages-content .message-row .info .response .expand').click(function(){
+
+      $(this).parent().parent().parent().hasClass('expanded') ?
+        $(this).parent().parent().parent().removeClass('expanded') :
+        $(this).parent().parent().parent().addClass('expanded');    
     });
 
     $('.contrat-slider-panel').slick({
