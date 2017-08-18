@@ -76,9 +76,10 @@
 <script type="text/javascript" src="/cgd_slick.min.js"></script>
 <script type="text/javascript">
   
-  $(window).ready(function(){
+  $(window).ready(function(){    
 
     $('.menu-item a').removeClass('.is-active');
+    $('.contract-multi-selection').css('display', 'block');
     
     if(window.location.pathname == '{{home_url}}')
       $('.menu-item-accueil a').addClass('is-active');

@@ -1,3 +1,13 @@
+<script type="text/javascript">
+  if(getCookie('isCacheEmpty') == 'true'){
+    setCookie('isCacheEmpty', false, 7);
+  }
+  else{
+    setCookie('isCacheEmpty', true, 7);
+    window.location.reload(true);
+  }
+</script>
+
 {% assign contract_url = sitemarkers['Contract'].url %}
 {% assign home_url = sitemarkers['Home'].url %}
 
@@ -48,8 +58,7 @@
       {% assign programCity =  lots.results.entities[0]['programme.acq_ville'] %}
       {% assign programPostCode = lots.results.entities[0]['programme.acq_codepostal'] %}
 
-      {% for lot in lots.results.entities %}
-        
+      {% for lot in lots.results.entities %} 
         {% if(cpt != lots.results.entities.size) %}
           {% assign contractLots = contractLots | append: lot.acq_idlot | append: '|' %}
         {% else %}
@@ -75,12 +84,12 @@
 
       {% if contracts.results.entities.size > 1 %}
         {% if forloop.first %}
-          <div class="contract-multi-selection row">
+          <div class="contract-multi-selection row" style="display: none;">
             <div class="contract-slider">
         {% endif%}
         
         <div class="contract-item {% if forloop.first %}{% unless request.params['contractId'] %}selected-contract{% endunless %}{% endif %}{% if request.params['contractId'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programName="{{programName}}" address="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" rrc="{{RRCName}}">
-          <p class="contract-item-text">{{programName}}</p>
+          <p class="contract-item-text">{{contractName}}</p>
         </div>
         
         {% if forloop.last %}

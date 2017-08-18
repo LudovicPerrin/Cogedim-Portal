@@ -1,3 +1,13 @@
+<script type="text/javascript">
+  if(getCookie('isCacheEmpty') == 'true'){
+    setCookie('isCacheEmpty', false, 7);
+  }
+  else{
+    setCookie('isCacheEmpty', true, 7);
+    window.location.reload(true);
+  }
+</script>
+
 {% assign contract_url = sitemarkers['Contract'].url %}
 {% assign home_url = sitemarkers['Home'].url %}
 
@@ -34,7 +44,6 @@
 
 <div class="contrat-slider-wrapper">
   <div class="container">
-    <h1>{{request.params['aze']}}</h1>
     <div class="block-contrat-slider">
       <div class="contrat-slider-panel">
         <div class="contrat-slide slick-slide" data-slick-index="-1" aria-hidden="true" style="width: 946px;" tabindex="-1">
@@ -119,9 +128,11 @@
   </div>
 </div>
 
-{% assign flag = false %}
 {% for lot in lots.results.entities %}
-  {% if lot.acq_typedelot.label == 'Maison' or lot.acq_typedelot.label == 'Appartement' %}
+  {% assign actualLot = lot.acq_idlot | string %}
+  {% assign parentalLot = lot.acq_lotparent.name | string %}
+  
+  {% if parentalLot == '' %}
     <div class="contrat-lots-wrapper">
       <div class="container">
         <div class="block-contrat-lots">
@@ -142,16 +153,14 @@
                       </li>
                     </ul>
                   </div>
-                  {% unless flag %}
-                    {% for lotbis in lots.results.entities %}
-                      {% if lotbis.acq_typedelot.label == 'Garage' or lotbis.acq_typedelot.label == 'Parking' %}
-                        <div class="additional">
-                          <div class="item">{{lotbis.acq_typedelot.label | append: ' (' | append: lotbis.acq_idlot | append: ')'}}</div>
-                        </div>
-                        {% assign flag = true %}
-                      {% endif %}
-                    {% endfor %}
-                  {% endunless %}
+                  {% for lotbis in lots.results.entities %}
+                    {% assign parentalLot = lotbis.acq_lotparent.name | string %}
+                    {% unless parentalLot == '' %}
+                      <div class="additional">
+                        <div class="item">{{lotbis.acq_typedelot.label | append: ' (' | append: lotbis.acq_idlot | append: ')'}}</div>
+                      </div>
+                    {% endunless %}
+                  {% endfor %}
                 </div>
                 <div class="info-col plans">
                   <h4 class="title">Mes Plans</h4>

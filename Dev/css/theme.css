@@ -23,6 +23,20 @@ footer .footer-top{
 	border-radius: 37px;
 }
 
+.slick-prev, .slick-next{
+	width: 30px !important;
+	height: 40px !important;
+	background: rgba(255, 255, 255, 0.7) !important;
+}
+
+.slick-prev{
+	left: 0 !important;
+}
+
+.slick-next{
+	right: 0 !important;
+}
+
 .footer-bottom{
 	padding: 0px;
 }
@@ -88,9 +102,7 @@ footer .footer-top{
 }
 
 .contract-multi-selection{
-	margin-left: 0px !important;
-	margin-right: 0px !important;
-	margin-bottom: 35px !important;
+	margin: 35px 0px !important;
 }
 
 .wrapper-main-footer .container:before{
