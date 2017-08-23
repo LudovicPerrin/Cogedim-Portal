@@ -26,13 +26,13 @@
       <nav class="menu-footer">
         <ul class="menu">
           <li class="menu-item">
-            <a href="http://www.cogedim.com" data-drupal-link-system-path="node/25">CGU</a>
+            <a href="https://www.mon-cogedim.com/conditions-generales-dutilisation-des-services" data-drupal-link-system-path="node/25">CGU</a>
           </li>
           <li class="menu-item">
-            <a href="http://www.cogedim.com" data-drupal-link-system-path="node/26">Mentions légales</a>
+            <a href="https://www.mon-cogedim.com/mentions-legales" data-drupal-link-system-path="node/26">Mentions légales</a>
           </li>
           <li class="menu-item">
-            <a href="http://www.cogedim.com" class="0" target="_blank">
+            <a href="http://www.cogedim-logement.com/" class="0" target="_blank">
               Cogedim
               <span class="0">
                 <span class="element-invisible"> </span>
@@ -80,11 +80,17 @@
 
     $('.menu-item a').removeClass('.is-active');
     $('.contract-multi-selection').css('display', 'block');
-    
+  
     if(window.location.pathname == '{{home_url}}')
       $('.menu-item-accueil a').addClass('is-active');
-    if(window.location.pathname == '{{contactus_url}}')
+    if(window.location.pathname == '{{contactus_url}}'){
       $('.menu-item-contact a').addClass('is-active');
+      $('#description').addClass('form-textarea resize-vertical');
+      $('#description').attr('placeholder', 'Saisissez votre message…');
+      $('#subject').addClass('form-control form-select chosen-disable');
+      $('#subject').attr('placeholder', 'Écrivez un sujet');
+      $('#InsertButton').addClass('button js-form-submit form-submit');
+    }
     if(window.location.pathname == '{{connexion_url}}')
       $('.menu-item-connexion, #block-userlogin').remove();
 

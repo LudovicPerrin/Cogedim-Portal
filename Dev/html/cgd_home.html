@@ -11,10 +11,25 @@
 {% assign contract_url = sitemarkers['Contract'].url %}
 {% assign home_url = sitemarkers['Home'].url %}
 
-{% fetchxml contracts %}
+{% fetchxml society %}
   <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+    <entity name="contact" >
+      <filter>
+        <condition attribute="contactid" operator="eq" value="{{user.id}}" />
+      </filter>
+      <link-entity name="account" from="accountid" to="parentcustomerid" alias="account">
+        <attribute name="accountid" />
+      </link-entity>
+    </entity>
+  </fetch>
+{% endfetchxml %}
+
+{% assign society_id = society.results.entities[0]['account.accountid'] %}
+
+{% fetchxml gesionnaireContracts %}
+  <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
     <entity name="acq_contrats">
-      <all-attributes />
+      <attribute name="acq_contratsid" />
       <filter>
         <condition attribute="acq_gestionnairedubien" operator="eq" value="{{user.id}}" />
       </filter>
@@ -23,9 +38,75 @@
   </fetch>
 {% endfetchxml %}
 
+{% fetchxml societyContracts %}
+  <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+    <entity name="acq_contrats" >
+      <attribute name="acq_contratsid" />
+      <filter type="or" >
+        <condition entityname="acq_acq_contrats_account" attribute="accountid" operator="eq" value="{{society_id}}" />
+        <condition entityname="account" attribute="primarycontactid" operator="eq" value="{{user.id}}" />
+      </filter>
+      <order attribute="createdon" descending="true" />
+      <link-entity name="acq_acq_contrats_account" from="acq_contratsid" to="acq_contratsid" intersect="true" >
+        <link-entity name="account" from="accountid" to="accountid" />
+      </link-entity>
+    </entity>
+  </fetch>
+{% endfetchxml %}
+
+{% fetchxml contactContracts %}
+  <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+    <entity name="acq_contrats" >
+      <attribute name="acq_contratsid" />
+      <filter>
+        <condition entityname="acq_acq_contrats_contact" attribute="contactid" operator="eq" value="{{user.id}}" />
+      </filter>
+      <link-entity name="acq_acq_contrats_contact" from="acq_contratsid" to="acq_contratsid" intersect="true" />
+    </entity>
+  </fetch>
+{% endfetchxml %}
+
+{% assign allContracts = '' %}
+
+{% for contract in gesionnaireContracts.results.entities %}
+  {% assign allContracts = allContracts | append: contract.acq_contratsid | append: ',' %} 
+{% endfor %}
+
+{% for contract in societyContracts.results.entities %}
+  {% assign allContracts = allContracts | append: contract.acq_contratsid | append: ',' %} 
+{% endfor %}
+
+{% for contract in contactContracts.results.entities %}
+    {% assign allContracts = allContracts | append: contract.acq_contratsid | append: ',' %}
+{% endfor %}
+
+{% assign array = allContracts | split: ',' %}
+{% assign tags = array[1] %}
+
+{% for item in array %}
+  {% unless tags contains item %}
+    {% capture tags %}{{tags}}|{{item}}{% endcapture %}
+  {% endunless %}
+{% endfor %}
+
+{% assign allContracts = tags | split: '|' %}
+
+{% fetchxml contracts %}
+  <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+    <entity name="acq_contrats">
+      <all-attributes />
+      <filter type="or">
+        {% for contract in allContracts %}
+          <condition attribute="acq_contratsid" operator="eq" value="{{contract}}" />
+        {% endfor %}
+      </filter>
+      <order attribute="createdon" descending="true" />
+    </entity>
+  </fetch>
+{% endfetchxml %}
+
 <div class="contract-boxes-wrapper">
   <div class="container">
-    <h1>{{user.email_address}}</h1>
     <div id="block-userwelcome" class="block block-ce-common block-ce-common-user-welcome block-page-title">
       <h1 class="page-title">{{user.firstname | prepend: "Bienvenue " | append: ","}}</h1>
     </div>
@@ -72,17 +153,19 @@
 
       {% assign contractLots = contractLots | split: '|' %}
 
-      {% if forloop.first or request.params['contractId'] == contract.acq_contratsid%}
+      {% if forloop.first or request.params['contractId'] == contract.acq_contratsid %}
         {% assign preSelectedContractLots = contractLots %}
         {% assign preSelectedProgramName =  programName %}
         {% assign preSelectedProgramAddress = programAddress %}
         {% assign preSelectedProgramCity =  programCity %}
         {% assign preSelectedProgramPostCode = programPostCode %}
         {% assign contractId = contract.acq_contratsid %}
+
+        <!-- 
         <script type="text/javascript">
           var contractId = "{{contractId}}";
           setCookie('contractId', contractId, 7);
-        </script>
+        </script> -->
       {% endif %}
 
       {% if contracts.results.entities.size > 1 %}
@@ -92,7 +175,7 @@
         {% endif%}
         
         <div class="contract-item {% if forloop.first %}{% unless request.params['contractId'] %}selected-contract{% endunless %}{% endif %}{% if request.params['contractId'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programName="{{programName}}" address1="{{programAddress}}" address2="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" rrc="{{RRCName}}">
-          <p class="contract-item-text">{{contractName}}</p>
+          <p class="contract-item-text">{{programName}}</p>
         </div>
         
         {% if forloop.last %}

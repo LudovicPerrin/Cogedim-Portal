@@ -122,6 +122,11 @@ footer .footer-top{
 	padding-bottom: 10px;
 }
 
+
+.contact-us .crmEntityFormView .tab-column{
+	width: 100% !important;
+}
+
 .error{
 	margin-bottom: 0px !important;
 }
