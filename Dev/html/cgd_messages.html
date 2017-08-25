@@ -1,25 +1,21 @@
-{% fetchxml query %}
+{% assign contactus_url = sitemarkers['Contact Us'].url %} 
+
+{% fetchxml orgiginMessages %}
   <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
-    <entity name="contact" >
-      <attribute name="emailaddress1" />
+    <entity name="acq_message">
+      <attribute name="description" />
+      <attribute name="createdon" />
+      <attribute name="subject" />
+      <attribute name="activityid" />
+      <attribute name="acq_webuser" />
+      <attribute name="acq_direction" />
+      <attribute name="acq_messageorigine" />
+      <attribute name="acq_messageprecedent" />
       <filter>
-        <condition attribute="contactid" operator="eq" value="{{user.id}}" />
+        <condition attribute="acq_webuser" operator="eq" value="{{user.id}}" />
+        <condition attribute="acq_messageoriginename" operator="null" />
       </filter>
-    </entity>
-  </fetch>
-{% endfetchxml %}
-
-{% assign userEmailAddress = query.results.entities[0]['emailaddress1'] %}
-
-
-{% fetchxml emails %}
-  <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
-    <entity name="email">
-      <all-attributes />
-      <filter type="or">
-        <condition attribute="torecipients" operator="like" value="%{{userEmailAddress}}%" />
-        <condition attribute="sender" operator="like" value="%{{userEmailAddress}}%" />
-      </filter>
+      <order attribute="createdon" />
     </entity>
   </fetch>
 {% endfetchxml %}
@@ -45,241 +41,67 @@
                   <div class="response">RÉPONSE</div>
                 </div>
               </div>
-              <div class="message-row">
-                <div role="article" about="/rattacher-ses-contrats-5" class="node node--type-message node--view-mode-message clearfix info" data-message-id="201" id="message-201">
-                  <div class="date">03-04-2017</div>
-                  <div class="subject"><span class="field field--name-title field--type-string field--label-hidden">Rattacher ses contrats</span>
-                  </div>
-                  <div class="response nothing-new">
-                    <span class="open-text">Lire</span>
-                    <span class="close-text">Fermer</span>
-                    <span class="expand"></span>
-                  </div>
-                </div>
-                <div class="message-data">
-                  <div class="item">
-                    <div class="content">
-                      <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">Je souhaite rattacher mes autres contrats à ce compte</div>
+              {% for message in orgiginMessages.results.entities %}
+                <div class="message-row" id="{{message.activityid}}" subject="{{message.subject}}">
+                  <div role="article" about="/rattacher-ses-contrats-5" class="node node--type-message node--view-mode-message clearfix info" data-message-id="201" id="message-201">
+                    <div class="date">{{message.createdon | string | truncate: 10, ""}}</div>
+                    <div class="subject"><span class="field field--name-title field--type-string field--label-hidden">{{message.subject}}</span>
+                    </div>
+                    <div class="response nothing-new">
+                      <span class="open-text">Lire</span>
+                      <span class="close-text">Fermer</span>
+                      <span class="expand"></span>
                     </div>
                   </div>
-                  <div class="message-form">
-                    <form class="comment-message-comments-form-201 comment-form form-message" data-drupal-selector="comment-form-5" action="/user/messages#message-201" method="post" id="comment-form--5" accept-charset="UTF-8" novalidate="novalidate">
-                      <input data-drupal-selector="form-btub59h2ej-6czzqez79ivd-y4-srhig-5fie5-9log" name="form_build_id" value="form-btUb59H2Ej-6czzQeZ79Ivd_Y4-sRhIG-5fie5-9LOg" type="hidden">
-                      <input data-drupal-selector="edit-comment-message-comments-form-201-form-token" name="form_token" value="zPV3UZp7OTzTn_dg3cRFtiYGqS85mCOPSWh2vrUlFjE" type="hidden">
-                      <input data-drupal-selector="edit-comment-message-comments-form-201" name="form_id" value="comment_message_comments_form_201" type="hidden">
-                      <div class="field--type-string-long field--name-field-message field--widget-string-textarea js-form-wrapper form-wrapper" data-drupal-selector="edit-field-message-wrapper" id="edit-field-message-wrapper--5">
-                        <div class="js-form-item form-item js-form-type-textarea form-type-textarea js-form-item-field-message-0-value form-item-field-message-0-value">
-                          <div class="form-textarea-wrapper">
-                            <textarea class="js-text-full text-full form-control form-textarea required resize-vertical" data-drupal-selector="edit-field-message-0-value" id="edit-field-message-0-value--5" name="field_message[0][value]" rows="5" cols="60" placeholder="Saisissez votre réponse…" required="required" aria-required="true"></textarea>
-                          </div>
+                  <div class="message-data">
+                    <div class="item">
+                      <div class="content">
+                        <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">{{message.description}}</div>
+                      </div>
+                    </div>
+
+                    {% fetchxml linkedMessages %}
+                      <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+                        <entity name="acq_message">
+                          <attribute name="description" />
+                          <attribute name="createdon" />
+                          <attribute name="subject" />
+                          <attribute name="activityid" />
+                          <attribute name="acq_webuser" />
+                          <attribute name="acq_direction" />
+                          <attribute name="acq_messageorigine" />
+                          <attribute name="acq_messageprecedent" />
+                          <filter>
+                            <condition attribute="acq_webuser" operator="eq" value="{{user.id}}" />
+                            <condition attribute="acq_messageorigine" operator="eq" value="{{message.activityid}}" />
+                          </filter>
+                          <order attribute="createdon" />
+                        </entity>
+                      </fetch>
+                    {% endfetchxml %}
+
+                    {% for linkedMessage in linkedMessages.results.entities %}
+                      <a id="linkedMessages.activityid"></a>
+                      <div data-comment-user-id="173" class="js-comment item {% unless linkedMessage.acq_direction %}response{% endunless %}">
+                        <mark class="hidden" data-comment-timestamp="1481816137"></mark>
+
+                        {% unless linkedMessage.acq_direction %}
+                          <div class="item-label">Geoffrey Raimbault a répondu</div>
+                        {% endunless %}
+
+                        <div class="content">
+                          <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">{{linkedMessage.description}}</div>
                         </div>
                       </div>
-                      <div data-drupal-selector="edit-actions" class="form-actions js-form-wrapper form-wrapper" id="edit-actions--5">
-                        <input data-drupal-selector="edit-submit" id="edit-submit--5" name="op" value="ENVOYER" class="button button--primary js-form-submit form-submit" type="submit">
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-              <div class="message-row">
-                <div role="article" about="/prendre-un-rendez-vous-4" class="node node--type-message node--view-mode-message clearfix info" data-message-id="199" id="message-199">
-                  <div class="date">03-04-2017</div>
-                  <div class="subject"><span class="field field--name-title field--type-string field--label-hidden">Prendre un rendez-vous</span>
-                  </div>
-                  <div class="response nothing-new">
-                    <span class="open-text">Lire</span>
-                    <span class="close-text">Fermer</span>
-                    <span class="expand"></span>
-                  </div>
-                </div>
-                <div class="message-data">
-                  <div class="item">
-                    <div class="content">
-                      <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">TEST MESSAGE n°2</div>
+                    {% endfor %}
+                    
+                    <div class="message-form">
+                      <!-- <iframe src="/cgd_messages_iframe" class="messages-iframe"></iframe> -->
+                      {% entityform name: 'cgd_send_message' %}
                     </div>
                   </div>
-                  <div class="message-form">
-                    <form class="comment-message-comments-form-199 comment-form form-message" data-drupal-selector="comment-form-4" action="/user/messages#message-199" method="post" id="comment-form--4" accept-charset="UTF-8" novalidate="novalidate">
-                      <input data-drupal-selector="form-8vhags79plhl2dv4yzct9onnyjzzlf9rxh1ng9frna4" name="form_build_id" value="form-8vHAGs79PLhl2DV4yZct9OnnYJzzlf9RxH1nG9frna4" type="hidden">
-                      <input data-drupal-selector="edit-comment-message-comments-form-199-form-token" name="form_token" value="SrztSlHjpZgSnD5S67w8W7RbRaZEnCaEpTfF1N6Z6dI" type="hidden">
-                      <input data-drupal-selector="edit-comment-message-comments-form-199" name="form_id" value="comment_message_comments_form_199" type="hidden">
-                      <div class="field--type-string-long field--name-field-message field--widget-string-textarea js-form-wrapper form-wrapper" data-drupal-selector="edit-field-message-wrapper" id="edit-field-message-wrapper--4">
-                        <div class="js-form-item form-item js-form-type-textarea form-type-textarea js-form-item-field-message-0-value form-item-field-message-0-value">
-                          <div class="form-textarea-wrapper">
-                            <textarea class="js-text-full text-full form-control form-textarea required resize-vertical" data-drupal-selector="edit-field-message-0-value" id="edit-field-message-0-value--4" name="field_message[0][value]" rows="5" cols="60" placeholder="Saisissez votre réponse…" required="required" aria-required="true"></textarea>
-                          </div>
-                        </div>
-                      </div>
-                      <div data-drupal-selector="edit-actions" class="form-actions js-form-wrapper form-wrapper" id="edit-actions--4">
-                        <input data-drupal-selector="edit-submit" id="edit-submit--4" name="op" value="ENVOYER" class="button button--primary js-form-submit form-submit" type="submit">
-                      </div>
-                    </form>
-                  </div>
                 </div>
-              </div>
-              <div class="message-row">
-                <div role="article" about="/prendre-un-rendez-vous-3" class="node node--type-message node--view-mode-message clearfix info" data-message-id="198" id="message-198">
-                  <div class="date">03-04-2017</div>
-                  <div class="subject">
-                    <span class="field field--name-title field--type-string field--label-hidden">Prendre un rendez-vous</span>
-                  </div>
-                  <div class="response nothing-new">
-                    <span class="open-text">Lire</span>
-                    <span class="close-text">Fermer</span>
-                    <span class="expand"></span>
-                  </div>
-                </div>
-                <div class="message-data">
-                  <div class="item">
-                    <div class="content">
-                      <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">TEST MESSAGE </div>
-                    </div>
-                  </div>
-                  <a id="comment-102"></a>
-                  <div data-comment-user-id="173" class="js-comment item response">
-                    <mark class="hidden" data-comment-timestamp="1491206282"></mark>
-                    <div class="item-label">Geoffrey Raimbault a répondu</div>
-                    <div class="content">
-                      <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">     Bonjour Sabrina,
-                        <br>
-                        <br> Message Reçu!
-                        <br>
-                        <br> Bonne journée,
-                        <br>
-                        <br> Bien à toi,</div>
-                    </div>
-                  </div>
-                  <div class="message-form">
-                    <form class="comment-message-comments-form-198 comment-form form-message" data-drupal-selector="comment-form-3" action="/user/messages#message-198" method="post" id="comment-form--3" accept-charset="UTF-8" novalidate="novalidate">
-                      <input data-drupal-selector="form-y09ozkkhbq8qerzln5ee2qz7gclx5-zlhqhkddiqiq" name="form_build_id" value="form-_y09OZkkhbQ8qerZln5eE2qZ7GCLX5-zlhqhKDDiQIQ" type="hidden">
-                      <input data-drupal-selector="edit-comment-message-comments-form-198-form-token" name="form_token" value="5F-FkC9m9uKYSi7nsX2atLpoLFA9pLcOh5EZcwD7lFg" type="hidden">
-                      <input data-drupal-selector="edit-comment-message-comments-form-198" name="form_id" value="comment_message_comments_form_198" type="hidden">
-                      <div class="field--type-string-long field--name-field-message field--widget-string-textarea js-form-wrapper form-wrapper" data-drupal-selector="edit-field-message-wrapper" id="edit-field-message-wrapper--3">
-                        <div class="js-form-item form-item js-form-type-textarea form-type-textarea js-form-item-field-message-0-value form-item-field-message-0-value">
-                          <div class="form-textarea-wrapper">
-                            <textarea class="js-text-full text-full form-control form-textarea required resize-vertical" data-drupal-selector="edit-field-message-0-value" id="edit-field-message-0-value--3" name="field_message[0][value]" rows="5" cols="60" placeholder="Saisissez votre réponse…" required="required" aria-required="true"></textarea>
-                          </div>
-                        </div>
-                      </div>
-                      <div data-drupal-selector="edit-actions" class="form-actions js-form-wrapper form-wrapper" id="edit-actions--3">
-                        <input data-drupal-selector="edit-submit" id="edit-submit--3" name="op" value="ENVOYER" class="button button--primary js-form-submit form-submit" type="submit">
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-              <div class="message-row">
-                <div role="article" about="/autres-0" class="node node--type-message node--view-mode-message clearfix info" data-message-id="145" id="message-145">
-                  <div class="date">15-12-2016</div>
-                  <div class="subject"><span class="field field--name-title field--type-string field--label-hidden">Autres</span>
-                  </div>
-                  <div class="response nothing-new">
-                    <span class="open-text">Lire</span>
-                    <span class="close-text">Fermer</span>
-                    <span class="expand"></span>
-                  </div>
-                </div>
-                <div class="message-data">
-                  <div class="item">
-                    <div class="content">
-                      <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">Hello Geoffrey,
-                        <br> Peux-tu répondre @ mon messages {de test} avec des "caractères spéciaux" %$£=+&amp;#
-                        <br> par un autre message avec des caractères spéciaux.
-                        <br> Merci
-                        <br> Sabrina
-                      </div>
-                    </div>
-                  </div>
-                  <a id="comment-45"></a>
-                  <div data-comment-user-id="173" class="js-comment item response">
-                    <mark class="hidden" data-comment-timestamp="1481816137"></mark>
-                    <div class="item-label">Geoffrey Raimbault a répondu</div>
-                    <div class="content">
-                      <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">Salut Sabrina, les one time login ont tous été envoyés!!!!=£££$$$$$65((+===~~~~~~~-++-*//--
-                        <br>
-                        <br> A pluche
-                        <br>
-                        <br> Geoffrey
-                      </div>
-                    </div>
-                  </div>
-                  <a id="comment-46"></a>
-                  <div data-comment-user-id="0" class="js-comment item">
-                    <mark class="hidden" data-comment-timestamp="1483616080"></mark>
-                    <div class="content">
-                      <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">Merci :-)))))))))))))))))
-                        <br>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="message-form">
-                    <form class="comment-message-comments-form-145 comment-form form-message" data-drupal-selector="comment-form-2" action="/user/messages#message-145" method="post" id="comment-form--2" accept-charset="UTF-8" novalidate="novalidate">
-                      <input data-drupal-selector="form-hetnvvjj-da8sdbx78qaq95bsgt-b4fkqc-dvxw6vm8" name="form_build_id" value="form-HEtNVVJj_da8SDBx78qaQ95BSgT_b4FKqC-dvxw6Vm8" type="hidden">
-                      <input data-drupal-selector="edit-comment-message-comments-form-145-form-token" name="form_token" value="nxAXlAkMoHoXF2BUgU9C2eaYHD7nbj6YFWydvs8ocQ0" type="hidden">
-                      <input data-drupal-selector="edit-comment-message-comments-form-145" name="form_id" value="comment_message_comments_form_145" type="hidden">
-                      <div class="field--type-string-long field--name-field-message field--widget-string-textarea js-form-wrapper form-wrapper" data-drupal-selector="edit-field-message-wrapper" id="edit-field-message-wrapper--2">
-                        <div class="js-form-item form-item js-form-type-textarea form-type-textarea js-form-item-field-message-0-value form-item-field-message-0-value">
-                          <div class="form-textarea-wrapper">
-                            <textarea class="js-text-full text-full form-control form-textarea required resize-vertical" data-drupal-selector="edit-field-message-0-value" id="edit-field-message-0-value--2" name="field_message[0][value]" rows="5" cols="60" placeholder="Saisissez votre réponse…" required="required" aria-required="true"></textarea>
-                          </div>
-                        </div>
-                      </div>
-                      <div data-drupal-selector="edit-actions" class="form-actions js-form-wrapper form-wrapper" id="edit-actions--2">
-                        <input data-drupal-selector="edit-submit" id="edit-submit--2" name="op" value="ENVOYER" class="button button--primary js-form-submit form-submit" type="submit">
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-              <div class="message-row">
-                <div role="article" about="/prendre-un-rendez-vous" class="node node--type-message node--view-mode-message clearfix info" data-message-id="143" id="message-143">
-                  <div class="date">12-12-2016</div>
-                  <div class="subject"><span class="field field--name-title field--type-string field--label-hidden">Prendre un rendez-vous</span>
-                  </div>
-                  <div class="response nothing-new">
-                    <span class="open-text">Lire</span>
-                    <span class="close-text">Fermer</span>
-                    <span class="expand"></span>
-                  </div>
-                </div>
-                <div class="message-data">
-                  <div class="item">
-                    <div class="content">
-                      <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">Test Sabrina () toto@titi.com</div>
-                    </div>
-                  </div>
-                  <a id="comment-43"></a>
-                  <div data-comment-user-id="173" class="js-comment item response">
-                    <mark class="hidden" data-comment-timestamp="1481549520"></mark>
-                    <div class="item-label">Geoffrey Raimbault a répondu</div>
-                    <div class="content">
-                      <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">Bonjour Sabrina!
-                        <br>
-                        <br> J'accuse réception de votre mail
-                        <br>
-                        <br> ;-)
-                      </div>
-                    </div>
-                  </div>
-                  <div class="message-form">
-                    <form class="comment-message-comments-form-143 comment-form form-message" data-drupal-selector="comment-form" action="/user/messages#message-143" method="post" id="comment-form" accept-charset="UTF-8" novalidate="novalidate">
-                      <input data-drupal-selector="form-wbxw6dxmozq9xtzhtdaolztkjp5fpifvhsjvgbiisq0" name="form_build_id" value="form-wBxW6DXmoZq9xtZHTDaoLZtkJP5fPiFVHSjVgbiisQ0" type="hidden">
-                      <input data-drupal-selector="edit-comment-message-comments-form-143-form-token" name="form_token" value="FjOvKA0es3hTa2X9ceAFgxP9Ey55SCrULG6WHMJejCY" type="hidden">
-                      <input data-drupal-selector="edit-comment-message-comments-form-143" name="form_id" value="comment_message_comments_form_143" type="hidden">
-                      <div class="field--type-string-long field--name-field-message field--widget-string-textarea js-form-wrapper form-wrapper" data-drupal-selector="edit-field-message-wrapper" id="edit-field-message-wrapper">
-                        <div class="js-form-item form-item js-form-type-textarea form-type-textarea js-form-item-field-message-0-value form-item-field-message-0-value">
-                          <div class="form-textarea-wrapper">
-                            <textarea class="js-text-full text-full form-control form-textarea required resize-vertical" data-drupal-selector="edit-field-message-0-value" id="edit-field-message-0-value" name="field_message[0][value]" rows="5" cols="60" placeholder="Saisissez votre réponse…" required="required" aria-required="true"></textarea>
-                          </div>
-                        </div>
-                      </div>
-                      <div data-drupal-selector="edit-actions" class="form-actions js-form-wrapper form-wrapper" id="edit-actions">
-                        <input data-drupal-selector="edit-submit" id="edit-submit" name="op" value="ENVOYER" class="button button--primary js-form-submit form-submit" type="submit">
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
+              {% endfor %}
             </div>
           </div>
         </div>
@@ -307,7 +129,7 @@
               </div>
               <div class="faq-actions">
                 <div class="item">
-                  <a href="/user/contact-rrc" class="btn btn-consult-2">CONTACTEZ-NOUS</a>
+                  <a href="{{contactus_url}}" class="btn btn-consult-2">CONTACTEZ-NOUS</a>
                 </div>
               </div>
             </div>

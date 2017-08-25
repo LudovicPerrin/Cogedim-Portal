@@ -9,7 +9,11 @@ footer .footer-top{
 	background-color: white;
 }
 
-#info-test{
+iframe{
+	width: 100%;
+}
+
+#info-test, #InsertButton{
 	width: 100%;
 	height: 54px;
 	background: #a31a7e;
@@ -21,6 +25,18 @@ footer .footer-top{
 	font-weight: bold;
 	border: none;
 	border-radius: 37px;
+}
+
+#InsertButton{
+	width: auto !important;
+	padding: 12px 40px !important;
+	text-transform: uppercase !important;
+	margin-top: 10px !important;
+}
+
+#acq_webuser_name{
+	border-bottom-right-radius: 24px !important;
+	border-top-right-radius: 24px !important;
 }
 
 .slick-prev, .slick-next{
@@ -37,7 +53,7 @@ footer .footer-top{
 	right: 0 !important;
 }
 
-.footer-bottom{
+.footer-bottom, .crmEntityFormView .actions{
 	padding: 0px;
 }
 
@@ -45,7 +61,8 @@ footer .footer-top{
 	float: left;
 }
 
-.slick-track script{
+.slick-track script,
+.crmEntityFormView .tab-column .info{
   display: none !important;
 }
 
@@ -123,8 +140,16 @@ footer .footer-top{
 }
 
 
-.contact-us .crmEntityFormView .tab-column{
+.crmEntityFormView .tab-column{
 	width: 100% !important;
+}
+
+.crmEntityFormView fieldset, .crmEntityFormView .tab, .crmEntityFormView .actions{
+	margin: 0px;
+}
+
+.crmEntityFormView .actions{
+	border-top: none;
 }
 
 .error{
@@ -158,6 +183,7 @@ footer .footer-top{
 .block-contrat-additional .additional-icon span.icon-documents::before,
 .block-contrat-additional .additional-icon a.icon-parrainage::before,
 .block-contrat-additional .additional-icon span.icon-parrainage::before,
+.block-contact-content .form-radios input#edit-field-type-of-contact-message + label::before,
 .btn.btn-consult::before,
 .btn.btn-consult-2::before,
 .slick-prev::before,
@@ -169,6 +195,8 @@ footer .footer-top{
 	background-position: 0px !important;
 	background-size: cover !important;
 }
+
+
 
 .menu-header .menu-header-toggle::before, .menu-bar .menu-bar-toggle{
 	background-image: url("cgd_open_mobile_menu.png");
@@ -259,6 +287,10 @@ footer .footer-top{
 .block-contrat-additional .additional-icon a.icon-parrainage::before, 
 .block-contrat-additional .additional-icon span.icon-parrainage::before{
 	background-image: url("cgd_parrain.png");
+}
+
+.block-contact-content .form-radios input#edit-field-type-of-contact-message + label::before{
+	background-image: url("cgd_message.png") !important;
 }
 
 .block-contrat-lots .lot-title::after{

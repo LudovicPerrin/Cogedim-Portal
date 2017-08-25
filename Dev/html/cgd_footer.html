@@ -1,6 +1,7 @@
 {% assign contactus_url = sitemarkers['Contact Us'].url %}
 {% assign connexion_url = sitemarkers['Connexion'].url %}
 {% assign contract_url = sitemarkers['Contract'].url %}
+{% assign messages_url = sitemarkers['Messages'].url %}
 {% assign home_url = sitemarkers['Home'].url %}
 
 <footer class="region wrapper-main-footer region-footer">
@@ -80,16 +81,31 @@
 
     $('.menu-item a').removeClass('.is-active');
     $('.contract-multi-selection').css('display', 'block');
-  
+
     if(window.location.pathname == '{{home_url}}')
       $('.menu-item-accueil a').addClass('is-active');
-    if(window.location.pathname == '{{contactus_url}}'){
-      $('.menu-item-contact a').addClass('is-active');
+    if(window.location.pathname == '{{contactus_url}}' || window.location.pathname == '{{messages_url}}'){
+
+      //Add classes to add good styles
+      if(window.location.pathname == '{{contactus_url}}')
+        $('.menu-item-contact a').addClass('is-active');
+
       $('#description').addClass('form-textarea resize-vertical');
-      $('#description').attr('placeholder', 'Saisissez votre message…');
-      $('#subject').addClass('form-control form-select chosen-disable');
-      $('#subject').attr('placeholder', 'Écrivez un sujet');
+      $('#subject').addClass('form-control form-text chosen-disable');
       $('#InsertButton').addClass('button js-form-submit form-submit');
+
+      //Add place holder in the correct fiels
+      $('#subject').attr('placeholder', 'Écrivez un sujet');
+      $('#description').attr('placeholder', 'Saisissez votre message…');
+      
+      //Hide some fields
+      $('#subject').parents('tr:first').css('display', 'none');
+      $('#acq_webuser_name').parents('tr:first').css('display', 'none');
+      $('#acq_direction_label').parents('tr:first').css('display', 'none');
+      $('#acq_messageorigine_name').parents('tr:first').css('display', 'none');
+      $('#acq_messageprecedent_name').parents('tr:first').css('display', 'none');
+      $('td.form-control-cell.datetime').parents('tr:first').css('display', 'none');
+      $('#acq_messageprecedent_name').parents('tr:first').next().css('display', 'none');
     }
     if(window.location.pathname == '{{connexion_url}}')
       $('.menu-item-connexion, #block-userlogin').remove();
@@ -167,9 +183,14 @@
 
     $('.block-messages-content .message-row .info .response .expand').click(function(){
 
-      $(this).parent().parent().parent().hasClass('expanded') ?
-        $(this).parent().parent().parent().removeClass('expanded') :
-        $(this).parent().parent().parent().addClass('expanded');    
+      var subject = $(this).parents('.message-row').attr('subject');
+
+      //Auto populate fields
+      $('#subject').val(subject);
+
+      $(this).parents('.message-row').hasClass('expanded') ?
+        $(this).parents('.message-row').removeClass('expanded') :
+        $(this).parents('.message-row').addClass('expanded');  
     });
 
     $('.contrat-slider-panel').slick({

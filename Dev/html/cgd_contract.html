@@ -8,8 +8,8 @@
   }
 </script>
 
+{% assign contactus_url = sitemarkers['Contact Us'].url %}
 {% assign documents_url = sitemarkers['Documents'].url %}
-{% assign contract_url = sitemarkers['Contract'].url %}
 {% assign home_url = sitemarkers['Home'].url %}
 
 {% if request.params['contractId'] %}
@@ -107,7 +107,7 @@
             <span>{{programPostCode | append: ' - ' | append: programCity}}</span>
           </address>
           <div class="action hidden-xs hidden-sm">
-            <a href="/user/contact-rrc" class="btn btn-consult">Contactez-nous</a>
+            <a href="{{contactus_url}}" class="btn btn-consult">Contactez-nous</a>
           </div>
         </div>
         <div class="info-col col-2">
@@ -120,7 +120,7 @@
             </li>
           </ul>
           <div class="action hidden-md hidden-lg">
-            <a href="/user/contact-rrc" class="btn btn-consult">Contactez-nous</a>
+            <a href="{{contactus_url}}" class="btn btn-consult">Contactez-nous</a>
           </div>
         </div>
       </div>
@@ -256,7 +256,7 @@
             <a href="https://www.mon-cogedim.com/faq" class="icon-faq">Consulter la FAQ</a>
           </div>
           <div class="actions">
-            <a href="/user/contact-rrc?contract=58671-000116-1" class="btn btn-primary">Contactez-nous</a>
+            <a href="{{contactus_url}}" class="btn btn-primary">Contactez-nous</a>
           </div>
         </div>
         <div class="additional-box">
