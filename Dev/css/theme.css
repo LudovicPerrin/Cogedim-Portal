@@ -5,16 +5,24 @@ body {
 	color: #4d4d53 !important;
 }
 
+footer .container{
+	padding-top: 50px !important;
+}
+
 footer .footer-top{
 	background-color: white;
 }
 
-iframe{
+.messages-iframe{
 	width: 100%;
 	height: 271px;
 }
 
-#info-test, #InsertButton, #submit-signin-local{
+#info-test, 
+#InsertButton, 
+#submit-signin-local, 
+#submit-forgot-password,
+#ContentContainer_MainContent_MainContent_ContentBottom_SubmitButton{
 	width: 100%;
 	height: 54px;
 	background: #a31a7e;
@@ -28,16 +36,27 @@ iframe{
 	border-radius: 37px;
 }
 
-#InsertButton, #submit-signin-local{
+#InsertButton, 
+#submit-signin-local, 
+#submit-forgot-password,
+#ContentContainer_MainContent_MainContent_ContentBottom_SubmitButton{
 	width: auto !important;
 	padding: 12px 40px !important;
 	text-transform: uppercase !important;
 	margin-top: 10px !important;
 }
 
+#ContentContainer_MainContent_MainContent_ContentBottom_SubmitButton{
+	margin-bottom: 100px !important;
+}
+
 #submit-signin-local{
 	width: 100% !important;
 	margin-bottom: 38px !important;
+}
+
+#submit-forgot-password{
+	width: 100% !important;
 }
 
 #acq_webuser_name{
@@ -49,6 +68,16 @@ iframe{
 	max-width: 385px;
 	position: relative;
 	margin-bottom: 110px;
+}
+
+#content_form .item-label {
+	margin-bottom: 5px;
+	margin-left: 15px;
+	color: #a31a7e;
+	font-size: 12px;
+	line-height: 18px;
+	font-weight: bold;
+	text-transform: uppercase;
 }
 
 .slick-prev, .slick-next{
@@ -155,6 +184,12 @@ iframe{
 	padding-bottom: 10px;
 }
 
+.preface-bottom{
+	position: absolute;
+	width: 100%;
+	left: 0;
+}
+
 
 .crmEntityFormView .tab-column{
 	width: 100% !important;
@@ -166,6 +201,10 @@ iframe{
 
 .crmEntityFormView .actions{
 	border-top: none;
+}
+
+.container{
+	padding: 0px 15px !important;
 }
 
 .error{
@@ -262,12 +301,14 @@ iframe{
 }
 
 .block-contract-boxes .contract-box::after,
-.block-contrat-slider .contrat-slider-panel::after{
+.block-contrat-slider .contrat-slider-panel::after,
+.preface-bottom::after{
 	background-image: url("cgd_bg_preface.png");
 }
 
 .block-contract-boxes .contract-box::before,
-.block-contrat-slider .contrat-slider-panel::before{
+.block-contrat-slider .contrat-slider-panel::before,
+.preface-bottom{
 	background-image: url("cgd_bg_preface_before.png");
 }
 
@@ -315,6 +356,14 @@ iframe{
 	background-image: url("cgd_arrow_down.png") !important;
 }
 
+.wrapper-home-articles::before{
+	background-image: url("cgd_article.jpg") !important;
+}
+
+.wrapper-home-banner{
+	background-image: url("cgd_logements.jpg") !important;
+}
+
 .block-contrat-lots .expanded .lot-title::after{
 	background-image: url("cgd_arrow_up.png") !important;
 }
@@ -329,6 +378,16 @@ iframe{
 
 .error-message::before {
 	background-image: url("cgd_danger.png");
+}
+
+.video-player img, .video-player iframe {
+	height: 180px;
+}
+
+@media (min-width: 768px){
+	.youtube-field-player{
+		height: 445px !important;
+	}
 }
 
 @media (min-width: 610px) and (max-width: 991px) {
@@ -379,7 +438,11 @@ iframe{
 	}
 
 	.page-header-wrapper {
-		padding: 0px 0px 28px;
+		padding: 85px 0px 65px;
+	}
+
+	.form-horizontal{
+		padding: 0px 15px;
 	}
 
 	#user-login-form{

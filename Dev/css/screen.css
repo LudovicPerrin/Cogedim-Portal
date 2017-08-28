@@ -6430,7 +6430,7 @@ a,
     background-color: rgba(65, 20, 95, 0.2);
     position: absolute;
     left: 0;
-    top: 0; }
+    /*top: 0;*/ }
   .video-player .play-button {
     background-image: url(../images/spritesheet.png);
     background-position: 0px 0px;

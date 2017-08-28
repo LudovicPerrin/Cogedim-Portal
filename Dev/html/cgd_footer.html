@@ -146,6 +146,63 @@
       $('#Password').attr('placeholder', 'Mot de passe');
       $('#Username').attr('placeholder', 'Votre identifiant');      
     }
+    if(window.location.pathname == '/Account/Login/ForgotPassword'){
+
+      //Remove all don't wanted HTML Elements
+      $('#Email').parents('.form-group').find('p, label').remove();
+      $('#content fieldset legend').remove();
+
+      //Create some HTML elements
+      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Mot de passe oublié?</h1></div></div></div>';
+      $('#content fieldset').prepend(html);
+      html = '<div class="container"><div class="text-content"><p>Merci d\'entrer votre identifiant pour recevoir un mail qui vous permettra de réinitialiser votre mot de passe.</p></div></div>';
+      $(html).insertAfter('#content .page-header-wrapper');
+      $('<div class="preface-bottom"></div>').insertAfter('#content');
+
+      //Add classes to add styles
+      $('#Email').addClass('form-control form-text required');
+      $('#Email').parents('.form-group').css('margin-top', '76px');
+
+      //Add style
+      $('#content').find('.col-sm-offset-2.col-sm-10').attr('class', 'col-sm-12');
+      $('#content').find('.col-sm-10').attr('class', 'col-sm-12');
+
+      //Add place holder in the correct fields
+      $('#Email').attr('placeholder', 'Votre identifiant');
+
+      //Add other HTML elements next to the form
+      $('<div class="wrapper-home-video"><div class="container"><div id="block-homepage-video" class="block block-block-content block-block-content82a11756-728a-4171-8d00-e26a166b909e"><div class="field field--name-field-node field--type-entity-reference field--label-hidden field__items"><div class="field__item"><div class="block-title"><span class="field field--name-title field--type-string field--label-hidden">Découvrez l\'Espace Client COGEDIM</span></div><div class="video-player"><figure class="youtube-container"><iframe src="https://www.youtube.com/embed/hPRi1jnjqIA?rel=0&amp;enablejsapi=1&amp;origin=https%3A//www.mon-cogedim.com&amp;wmode=opaque" id="youtube-video-88" class="youtube-field-player" title="Embedded video for Découvrez l\'Espace Client COGEDIM" allowfullscreen="" <a href="https://www.youtube.com/embed/hPRi1jnjqIA?rel=0&amp;enablejsapi=1&amp;origin=https%3A//www.mon-cogedim.com&amp;wmode=opaque">Embedded video for Découvrez l&#039;Espace Client COGEDIM</a></iframe></figure><div class="overlay"><span class="play-button"></span></div></div></div></div></div></div></div><div class="wrapper-home-articles"><div class="container"><div class="views-element-container block block-views block-views-blockautopromos-block-autopromos block-home-articles" id="block-views-block-autopromos-block-autopromos"><div class="view view-autopromos view-id-autopromos view-display-id-block_autopromos js-view-dom-id-0a4ff5e71ccba00b20956f281f3e61491f450bcca1448effb5c3081a735e7f76"><div class="view-header"><article role="article" about="/cogedim-facilite-votre-achat-dans-le-neuf" class="node node--type-custom-page node--view-mode-teaser" lang="en"><div class="block-title"><span class="field field--name-title field--type-string field--label-hidden">Cogedim facilite votre achat dans le neuf</span></div><div class="content"><div class="description field field--name-body field--type-text-with-summary field--label-hidden field__item"><p>Chez Cogedim, vous êtes accompagné personnellement, de A à Z. Aide pour le financement, personnalisation de votre logement, suivi des travaux…votre interlocuteur attitré répond à toutes vos questions. Mieux informé et mieux guidé, vous achetez avec sérénité.</p></div></div></article></div><div class="view-content"><div class="articles-list"><div class="articles-content"><div class="views-row article"><article role="article" about="/votre-responsable-relation-client-vous-accompagne" class="node node--type-autopromo node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">A votre écoute</div></a></div><div class="title"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><span class="field field--name-title field--type-string field--label-hidden">Votre Responsable Relation Client vous accompagne</span></a></div></article></div><div class="views-row article"><article role="article" about="/de-la-reservation-a-la-remise-de-vos-cles" class="node node--type-autopromo node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /les-grandes-etapes-de-votre-achat-chez-cogedim"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">Les étapes clés</div></a></div><div class="title"><a href="  /les-grandes-etapes-de-votre-achat-chez-cogedim"><span class="field field--name-title field--type-string field--label-hidden">De la réservation à la remise de vos clés</span></a></div></article></div><div class="views-row article"><article role="article" about="/les-avantages-dacheter-chez-cogedim-0" class="node node--type-autopromo node--promoted node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /les-avantages-dacheter-chez-cogedim"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /les-avantages-dacheter-chez-cogedim"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">Les + COGEDIM</div></a></div><div class="title"><a href="  /les-avantages-dacheter-chez-cogedim"><span class="field field--name-title field--type-string field--label-hidden">Les avantages d\'acheter chez Cogedim </span></a></div></article></div></div></div></div></div></div></div></div><div class="region region-bottom"><div id="block-prehomebanner" class="block block-ce-footer block-ce-prehome-banner"><div class="wrapper-home-banner"><div class="container"><div class="block-home-banner"><div class="block-title">Découvrez tous nos programmes près de chez vous</div><div class="block-title-mobile">Découvrez tous nos programmes près de chez vous</div><div class="content"><div class="banner-link"><a href="http://www.cogedim-logement.com/" class="btn btn-white 0" target="_blank">COGEDIM.COM<span class="0"><span class="element-invisible"> </span></span></a></div></div></div></div></div></div></div>').insertAfter('#content-container');
+    }
+    if(window.location.pathname == '/profile/'){
+
+      //Remove all don't wanted HTML Elements
+      $('#content_form').find('.row .col-md-8 .xrm-editable-html').remove();
+      $('#content_form').find('.row .weblinks-depth-1').remove();
+      $('#content_form').find('.page-heading').remove();
+
+      //Create some HTML elements
+      $('<div class="item-label">PRÉNOM</div>').insertBefore('#firstname');
+      $('<div class="item-label">NOM</div>').insertBefore('#lastname');
+      $('<div class="item-label">EMAIL</div>').insertBefore('#emailaddress1');
+      $('<div class="item-label">TELEPHONE</div>').insertBefore('#telephone1');
+      $('<div class="item-label">ENTREPRISE</div>').insertBefore('#adx_organizationname');
+      $('<div class="item-label">POSTE</div>').insertBefore('#jobtitle');
+      $('<div class="item-label">PSEUDO</div>').insertBefore('#nickname');
+      $('<div class="item-label">SITE WEB</div>').insertBefore('#websiteurl');
+      $('<div class="item-label">DESCRIPTION</div>').insertBefore('#adx_publicprofilecopy');
+
+      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Mon Profil</h1></div></div></div>';
+      $('#content_form').prepend(html);
+
+      //Add classes to add styles
+      $('#firstname, #lastname, #emailaddress1, #telephone1, #adx_organizationname, #jobtitle, #nickname, #websiteurl, #adx_publicprofilecopy').addClass('form-control form-text');
+
+
+      //Add style
+      
+
+      //Add place holder in the correct fields
+    }
 
     $(window).scroll(function(){
 
