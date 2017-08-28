@@ -4,7 +4,30 @@
   <link rel="stylesheet" type="text/css" href="/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="/cgd_screen.css">
   <link rel="stylesheet" type="text/css" href="/theme_perso.css">
+  <style type="text/css">
+
+    body{
+      background: #fcf9fc;
+    }
+
+    textarea{
+      background: white;
+    }
+
+    .tab-column table{
+      width: 100%;
+    }
+
+  </style>
 </head>
+
+{% if request.params['subject'] %}
+  {% assign subject = request.params['subject'] %}
+  {% assign origine_id = request.params['origine_id'] %}
+  {% assign origine_name = request.params['origine_name'] %}
+  {% assign precedent_id = request.params['precedent_id'] %}
+  {% assign precedent_name = request.params['precedent_name'] %}
+{% endif %}
 
 <div class="msg-form">
   {% entityform name: 'cgd_send_message' %}
@@ -12,44 +35,40 @@
 
 <script type="text/javascript">
 
-  window.onload = function(){
+  $(document).ready(function(){
 
-    var frame = $('.messages-iframe', window.parent.document);
-    var height = $(this).height();
-    frame.height(height + 1);
-  };
+    {% if subject %}
 
-  /*$(document).load(function(){
+      $('#description').addClass('form-textarea resize-vertical');
+      $('#subject').addClass('form-control form-text chosen-disable');
+      $('#InsertButton').addClass('button js-form-submit form-submit');
 
-    /*$('#description').addClass('form-textarea resize-vertical');
-    $('#subject').addClass('form-control form-text chosen-disable');
-    $('#InsertButton').addClass('button js-form-submit form-submit');
+      //Add place holder in the correct fiels
+      $('#subject').attr('placeholder', 'Écrivez un sujet');
+      $('#description').attr('placeholder', 'Saisissez votre message…');
+      
+      //Auto populate fields
+      $('#subject').val('{{subject}}');
+      $('#acq_messageorigine_name').attr('value', '{{origine_name}}');
+      $('#acq_messageorigine').attr('value', '{{origine_id}}');
+      $('#acq_messageprecedent_name').attr('value', '{{precedent_name}}');
+      $('#acq_messageprecedent').attr('value', '{{precedent_id}}');
+      $('#acq_messageprecedent_entityname, #acq_messageorigine_entityname').attr('value', 'acq_message');
 
-    //Add place holder in the correct fiels
-    $('#subject').attr('placeholder', 'Écrivez un sujet');
-    $('#description').attr('placeholder', 'Saisissez votre message…');
-    
-    //Hide some fields
-    $('#acq_webuser_name').parents('tr:first').css('display', 'none');
-    $('#acq_direction_label').parents('tr:first').css('display', 'none');
-    $('#acq_messageorigine_name').parents('tr:first').css('display', 'none');
-    $('#acq_messageprecedent_name').parents('tr:first').css('display', 'none');
-    $('td.form-control-cell.datetime').parents('tr:first').css('display', 'none');
-    $('#acq_messageprecedent_name').parents('tr:first').next().css('display', 'none');
+      //Change settings of radio buttons
+      $('#acq_direction_0').removeAttr('checked');
+      $('#acq_direction_1').prop("checked", true);
 
-    var frame = $('.messages-iframe', window.parent.document);
-    var height = $(this).height();
-    frame.height(height + 1);
+      //Hide some fields
+      $('#subject').parents('tr:first').css('display', 'none');
+      $('#acq_webuser_name').parents('tr:first').css('display', 'none');
+      $('#acq_direction_label').parents('tr:first').css('display', 'none');
+      $('#acq_messageorigine_name').parents('tr:first').css('display', 'none');
+      $('#acq_messageprecedent_name').parents('tr:first').css('display', 'none');
+      $('td.form-control-cell.datetime').parents('tr:first').css('display', 'none');
+      $('#acq_messageprecedent_name').parents('tr:first').next().css('display', 'none');
 
-    var messagesIFrames = document.getElementsByClassName('msg-form');
-
-    //Set la bonne taille pour les IFrame message (Entity Forms)
-    if(messagesIFrames.length > 0){
-
-      for(i = 0; i < messagesIFrames.length; i++)
-        messagesIFrames[i].style.height = messagesIFrames[i].contentWindow.document.body.scrollHeight;
-    }
-
-  });*/
+    {% endif %}
+  });
 
 </script>

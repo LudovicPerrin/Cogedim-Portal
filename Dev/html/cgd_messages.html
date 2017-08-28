@@ -42,7 +42,7 @@
                 </div>
               </div>
               {% for message in orgiginMessages.results.entities %}
-                <div class="message-row" id="{{message.activityid}}" subject="{{message.subject}}">
+                <div class="message-row">
                   <div role="article" about="/rattacher-ses-contrats-5" class="node node--type-message node--view-mode-message clearfix info" data-message-id="201" id="message-201">
                     <div class="date">{{message.createdon | string | truncate: 10, ""}}</div>
                     <div class="subject"><span class="field field--name-title field--type-string field--label-hidden">{{message.subject}}</span>
@@ -54,7 +54,7 @@
                     </div>
                   </div>
                   <div class="message-data">
-                    <div class="item">
+                    <div class="item" id="{{message.activityid}}" subject="{{message.subject}}">
                       <div class="content">
                         <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">{{message.description}}</div>
                       </div>
@@ -81,8 +81,8 @@
                     {% endfetchxml %}
 
                     {% for linkedMessage in linkedMessages.results.entities %}
-                      <a id="linkedMessages.activityid"></a>
-                      <div data-comment-user-id="173" class="js-comment item {% unless linkedMessage.acq_direction %}response{% endunless %}">
+                      <!-- <a id="linkedMessages.activityid"></a> -->
+                      <div id="{{linkedMessage.activityid}}" subject="{{linkedMessage.subject}}" data-comment-user-id="173" class="js-comment item {% unless linkedMessage.acq_direction %}response{% endunless %}">
                         <mark class="hidden" data-comment-timestamp="1481816137"></mark>
 
                         {% unless linkedMessage.acq_direction %}
@@ -96,8 +96,8 @@
                     {% endfor %}
                     
                     <div class="message-form">
-                      <!-- <iframe src="/cgd_messages_iframe" class="messages-iframe"></iframe> -->
-                      {% entityform name: 'cgd_send_message' %}
+                      <iframe src="" class="messages-iframe"></iframe>
+                      {% comment %} {% entityform name: 'cgd_send_message' %} {% endcomment %}
                     </div>
                   </div>
                 </div>

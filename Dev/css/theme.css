@@ -11,9 +11,10 @@ footer .footer-top{
 
 iframe{
 	width: 100%;
+	height: 271px;
 }
 
-#info-test, #InsertButton{
+#info-test, #InsertButton, #submit-signin-local{
 	width: 100%;
 	height: 54px;
 	background: #a31a7e;
@@ -27,16 +28,27 @@ iframe{
 	border-radius: 37px;
 }
 
-#InsertButton{
+#InsertButton, #submit-signin-local{
 	width: auto !important;
 	padding: 12px 40px !important;
 	text-transform: uppercase !important;
 	margin-top: 10px !important;
 }
 
+#submit-signin-local{
+	width: 100% !important;
+	margin-bottom: 38px !important;
+}
+
 #acq_webuser_name{
 	border-bottom-right-radius: 24px !important;
 	border-top-right-radius: 24px !important;
+}
+
+#content .form-horizontal{
+	max-width: 385px;
+	position: relative;
+	margin-bottom: 110px;
 }
 
 .slick-prev, .slick-next{
@@ -59,6 +71,10 @@ iframe{
 
 .footer-logo{
 	float: left;
+}
+
+.block-messages-content .message-form {
+	padding: 20px 20px 0px !important;
 }
 
 .slick-track script,
@@ -191,6 +207,7 @@ iframe{
 .form-connexion .form-identifiant::after, 
 .form-connexion .form-mot-de-passe::after,
 .block-contrat-lots .lot-title::after,
+#Username::after,
 .top-bar .bell > a::before{
 	background-position: 0px !important;
 	background-size: cover !important;
@@ -219,7 +236,8 @@ iframe{
 	background-image: url("cgd_locker.png");
 }
 
-.form-connexion .form-identifiant::after{
+.form-connexion .form-identifiant::after, 
+#Username::after{
 	background-image: url("cgd_user.png");
 }
 

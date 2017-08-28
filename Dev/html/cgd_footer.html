@@ -90,16 +90,22 @@
       if(window.location.pathname == '{{contactus_url}}')
         $('.menu-item-contact a').addClass('is-active');
 
-      $('#description').addClass('form-textarea resize-vertical');
+      $('#description').addClass('form-textarea resize-vertical'); 
       $('#subject').addClass('form-control form-text chosen-disable');
       $('#InsertButton').addClass('button js-form-submit form-submit');
 
-      //Add place holder in the correct fiels
+      //Add place holder in the correct fields
       $('#subject').attr('placeholder', 'Écrivez un sujet');
       $('#description').attr('placeholder', 'Saisissez votre message…');
       
+      //Change settings of radio buttons
+      $('#acq_direction_0').removeAttr('checked');
+      $('#acq_direction_1').prop("checked", true);
+
       //Hide some fields
-      $('#subject').parents('tr:first').css('display', 'none');
+      if(window.location.pathname == '{{messages_url}}')
+        $('#subject').parents('tr:first').css('display', 'none');
+
       $('#acq_webuser_name').parents('tr:first').css('display', 'none');
       $('#acq_direction_label').parents('tr:first').css('display', 'none');
       $('#acq_messageorigine_name').parents('tr:first').css('display', 'none');
@@ -109,6 +115,37 @@
     }
     if(window.location.pathname == '{{connexion_url}}')
       $('.menu-item-connexion, #block-userlogin').remove();
+    if(window.location.pathname == '/SignIn'){
+
+      //Remove all don't wanted HTML Elements
+      $('#content').children().first().remove();
+      $('#content').children().children('.row').children().last().remove();
+      $('#RememberMe').parents('.form-group').remove();
+      $('#Username').parent().prev().remove();
+      $('#Password').parent().prev().remove();
+      $('#content fieldset legend').remove();
+
+      //Create some HTML elements
+      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">CONNEXION</h1></div></div></div>';
+      $('#content fieldset').prepend(html);
+
+      //Add classes to add styles
+      $('#Username').addClass("form-control form-text required");
+      $('#Password').addClass("form-control form-pass form-text required");
+      $('#content').find('.col-md-6').attr('class', 'col-md-12');
+      $('#content').find('.col-sm-8').attr('class', 'col-sm-12');
+      $('#submit-signin-local')[0].innerText = 'connexion';
+      $('#submit-signin-local').next().attr('class', '');
+
+      //Add style
+      $('#submit-signin-local').parent().css('text-align', 'center');
+      $('#Username').parents('.form-group').css('margin-bottom', '25px');
+      $('#Password').parents('.form-group').css('margin-bottom', '48px');
+
+      //Add place holder in the correct fields
+      $('#Password').attr('placeholder', 'Mot de passe');
+      $('#Username').attr('placeholder', 'Votre identifiant');      
+    }
 
     $(window).scroll(function(){
 
@@ -183,10 +220,25 @@
 
     $('.block-messages-content .message-row .info .response .expand').click(function(){
 
-      var subject = $(this).parents('.message-row').attr('subject');
+      var message = new Object();
+      var subject = $(this).parents('.node--view-mode-message').next().children().first().attr('subject');
+      var iframe = $(this).parents('.node--view-mode-message').next().find('iframe');
 
-      //Auto populate fields
-      $('#subject').val(subject);
+      message.origine_id = $(this).parents('.node--view-mode-message').next().children().first().attr('id');
+      message.origine_name = subject;
+      message.precedent_id = $(this).parents('.node--view-mode-message').next().find('.item').last().attr('id');
+      message.precedent_name = $(this).parents('.node--view-mode-message').next().find('.item').last().attr('subject');
+
+      //Create the good URL to let the Entity Form add the data at the good place
+      var newUrl = "/cgd_messages_iframe/?" + 
+        "subject=" + subject + 
+        "&origine_id=" + message.origine_id + 
+        "&origine_name=" + message.origine_name +
+        "&precedent_id=" + message.precedent_id + 
+        "&precedent_name=" + message.precedent_name;
+
+      if(iframe.attr('src') == "")
+        iframe.attr('src', newUrl);
 
       $(this).parents('.message-row').hasClass('expanded') ?
         $(this).parents('.message-row').removeClass('expanded') :
