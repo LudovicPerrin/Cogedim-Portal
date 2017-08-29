@@ -80,7 +80,8 @@ footer .footer-top{
 	text-transform: uppercase;
 }
 
-.slick-prev, .slick-next{
+.slick-prev, 
+.slick-next{
 	width: 30px !important;
 	height: 40px !important;
 	background: rgba(255, 255, 255, 0.7) !important;
@@ -94,12 +95,54 @@ footer .footer-top{
 	right: 0 !important;
 }
 
-.footer-bottom, .crmEntityFormView .actions{
+.footer-bottom, 
+.crmEntityFormView .actions{
 	padding: 0px;
 }
 
 .footer-logo{
 	float: left;
+}
+
+.panel-heading{
+	background-color: rgba(163, 26, 126, 0.75) !important;
+	border-bottom-color: #42145f !important; 
+}
+
+.well{
+	background: rgba(66, 20, 95, 0.75);
+    color: white;
+    font-weight: bold;
+}
+
+.list-group .list-group-item{
+	background: rgba(66, 20, 95, 0.75);
+	border-color: #42145f;
+}
+
+.alert .xrm-editable-text, 
+.panel-heading .xrm-attribute-value-encoded,
+.list-group .list-group-item .xrm-attribute-value-encoded{
+	color: white;
+    font-weight: bold;
+}
+
+.panel-heading .fa-lock,
+.fa-exclamation-circle{
+	color: white;
+}
+
+.alert .pull-right .btn-info,
+.list-group .list-group-item:hover,
+.list-group .list-group-item:focus{
+	background: #42145f;
+	border-color: #42145f;
+	font-weight: bold;
+}
+
+.alert{
+	background: rgba(66, 20, 95, 0.75);
+	border-color: rgba(66, 20, 95, 0.75);
 }
 
 .block-messages-content .message-form {

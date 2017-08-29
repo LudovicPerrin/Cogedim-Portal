@@ -179,6 +179,7 @@
       $('#content_form').find('.row .col-md-8 .xrm-editable-html').remove();
       $('#content_form').find('.row .weblinks-depth-1').remove();
       $('#content_form').find('.page-heading').remove();
+      $('.xrm-editable-adx_weblinkset').remove();
 
       //Create some HTML elements
       $('<div class="item-label">PRÉNOM</div>').insertBefore('#firstname');
@@ -199,9 +200,10 @@
 
 
       //Add style
-      
 
-      //Add place holder in the correct fields
+    }
+    if(window.location.pathname.includes('Account/Manage/ChangePassword')){
+      
     }
 
     $(window).scroll(function(){
