@@ -200,30 +200,45 @@
       //Add classes to add styles
       $('#firstname, #lastname, #emailaddress1, #telephone1, #adx_organizationname, #jobtitle, #nickname, #websiteurl, #adx_publicprofilecopy').addClass('form-control form-text');     
     }
-    if(window.location.pathname.includes('Account/Manage/ChangePassword')){
+    if(window.location.pathname.includes('Account/Manage/ChangePassword') || window.location.pathname.includes('Account/Manage/ChangeEmail')){
 
       //Remove all don't wanted HTML Elements
-      $('.page-heading').remove();
+      $('.page-heading').remove(); 
       $('.xrm-editable-html').remove();
       $('.row .weblinks-depth-1').remove();
       $('.xrm-editable-adx_weblinkset').remove();
       $('.form-horizontal .form-group label').remove();
 
-      //Create some HTML elements
-      $('<div class="item-label">NOM D\'UTILISATEUR</div>').insertBefore('#Username');
-      $('<div class="item-label">ANCIEN MOT DE PASSE</div>').insertBefore('#OldPassword');
-      $('<div class="item-label">NOUVEAU MOT DE PASSE</div>').insertBefore('#NewPassword');
-      $('#Username, #OldPassword, #NewPassword, #ConfirmPassword').addClass('form-control form-text');
-      $('<div class="item-label">CONFIRMATION DU MOT DE PASSE</div>').insertBefore('#ConfirmPassword');
+      if(window.location.pathname.includes('Account/Manage/ChangePassword')){
 
-      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer le mot de passe</h1></div></div></div>';
-      $(html).insertBefore($('body .container').get(1));
+        //Create some HTML elements
+        $('<div class="item-label">NOM D\'UTILISATEUR</div>').insertBefore('#Username');
+        $('<div class="item-label">ANCIEN MOT DE PASSE</div>').insertBefore('#OldPassword');
+        $('<div class="item-label">NOUVEAU MOT DE PASSE</div>').insertBefore('#NewPassword');
+        $('#Username, #OldPassword, #NewPassword, #ConfirmPassword').addClass('form-control form-text');
+        $('<div class="item-label">CONFIRMATION DU MOT DE PASSE</div>').insertBefore('#ConfirmPassword');
 
-      //Add classes to add styles
-      $('.form-horizontal .form-group .col-sm-8').attr('class', 'col-sm-12');
-      $('.form-horizontal').addClass('change-password');
+        var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer le mot de passe</h1></div></div></div>';
+        $(html).insertBefore($('body .container').get(1));
 
-      //Add style
+        //Add classes to add styles
+        $('.form-horizontal .form-group .col-sm-8').attr('class', 'col-sm-12');
+        $('.form-horizontal').addClass('change-password');
+      }
+      else{
+
+        //Create some HTML elements
+        $('#Email').addClass('form-control form-text');
+        var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer l\'adresse de messagerie</h1></div></div></div>';
+        $(html).insertBefore($('body .container').get(1));
+
+        //Add classes to add styles
+        $('.form-horizontal .form-group .col-sm-10, .form-horizontal .form-group .col-sm-offset-2.col-sm-10').attr('class', 'col-sm-12');
+        $('.form-horizontal').addClass('change-email');
+
+        //Add style
+        $($('body .container').get(2)).css('margin-bottom', '100px');
+      }
     }
 
     $(window).scroll(function(){

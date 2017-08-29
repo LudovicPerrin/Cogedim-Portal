@@ -19,7 +19,8 @@ footer .footer-top{
 }
 
 #info-test, 
-#InsertButton, 
+#InsertButton,
+.change-email .btn, 
 #submit-signin-local,
 .change-password .btn,
 #submit-forgot-password,
@@ -37,7 +38,8 @@ footer .footer-top{
 	border-radius: 37px;
 }
 
-#InsertButton, 
+#InsertButton,
+.change-email .btn, 
 #submit-signin-local, 
 .change-password .btn,
 #submit-forgot-password,
@@ -48,6 +50,7 @@ footer .footer-top{
 	margin-top: 10px !important;
 }
 
+.change-email .btn, 
 .change-password .btn,
 #ContentContainer_MainContent_MainContent_ContentBottom_SubmitButton{
 	margin-bottom: 100px !important;
