@@ -20,7 +20,8 @@ footer .footer-top{
 
 #info-test, 
 #InsertButton, 
-#submit-signin-local, 
+#submit-signin-local,
+.change-password .btn,
 #submit-forgot-password,
 #ContentContainer_MainContent_MainContent_ContentBottom_SubmitButton{
 	width: 100%;
@@ -38,6 +39,7 @@ footer .footer-top{
 
 #InsertButton, 
 #submit-signin-local, 
+.change-password .btn,
 #submit-forgot-password,
 #ContentContainer_MainContent_MainContent_ContentBottom_SubmitButton{
 	width: auto !important;
@@ -46,6 +48,7 @@ footer .footer-top{
 	margin-top: 10px !important;
 }
 
+.change-password .btn,
 #ContentContainer_MainContent_MainContent_ContentBottom_SubmitButton{
 	margin-bottom: 100px !important;
 }
@@ -70,7 +73,8 @@ footer .footer-top{
 	margin-bottom: 110px;
 }
 
-#content_form .item-label {
+#content_form .item-label,
+.form-horizontal .item-label {
 	margin-bottom: 5px;
 	margin-left: 15px;
 	color: #a31a7e;
@@ -120,7 +124,7 @@ footer .footer-top{
 	border-color: #42145f;
 }
 
-.alert .xrm-editable-text, 
+.alert-info .xrm-editable-text, 
 .panel-heading .xrm-attribute-value-encoded,
 .list-group .list-group-item .xrm-attribute-value-encoded{
 	color: white;
@@ -132,7 +136,7 @@ footer .footer-top{
 	color: white;
 }
 
-.alert .pull-right .btn-info,
+.alert-info .pull-right .btn-info,
 .list-group .list-group-item:hover,
 .list-group .list-group-item:focus{
 	background: #42145f;
@@ -140,7 +144,7 @@ footer .footer-top{
 	font-weight: bold;
 }
 
-.alert{
+.alert-info{
 	background: rgba(66, 20, 95, 0.75);
 	border-color: rgba(66, 20, 95, 0.75);
 }
@@ -295,7 +299,11 @@ footer .footer-top{
 	background-size: cover !important;
 }
 
-
+.item-label::after{
+	content: '* ';
+  color: red;
+  white-space: nowrap;
+}
 
 .menu-header .menu-header-toggle::before, .menu-bar .menu-bar-toggle{
 	background-image: url("cgd_open_mobile_menu.png");

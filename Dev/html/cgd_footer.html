@@ -176,19 +176,21 @@
     if(window.location.pathname == '/profile/'){
 
       //Remove all don't wanted HTML Elements
-      $('#content_form').find('.row .col-md-8 .xrm-editable-html').remove();
-      $('#content_form').find('.row .weblinks-depth-1').remove();
-      $('#content_form').find('.page-heading').remove();
       $('.xrm-editable-adx_weblinkset').remove();
+      $('#content_form').find('.page-heading').remove();
+      $('#content_form').find('.row .weblinks-depth-1').remove();
+      $('#content_form').find('.row .col-md-8 .xrm-editable-html').remove();
 
       //Create some HTML elements
-      $('<div class="item-label">PRÉNOM</div>').insertBefore('#firstname');
       $('<div class="item-label">NOM</div>').insertBefore('#lastname');
+      $('<div class="item-label">POSTE</div>').insertBefore('#jobtitle');
+      $('<div class="item-label">PSEUDO</div>').insertBefore('#nickname');
+      $('<div class="item-label">PRÉNOM</div>').insertBefore('#firstname');
       $('<div class="item-label">EMAIL</div>').insertBefore('#emailaddress1');
       $('<div class="item-label">TELEPHONE</div>').insertBefore('#telephone1');
       $('<div class="item-label">ENTREPRISE</div>').insertBefore('#adx_organizationname');
-      $('<div class="item-label">POSTE</div>').insertBefore('#jobtitle');
-      $('<div class="item-label">PSEUDO</div>').insertBefore('#nickname');
+      
+      
       $('<div class="item-label">SITE WEB</div>').insertBefore('#websiteurl');
       $('<div class="item-label">DESCRIPTION</div>').insertBefore('#adx_publicprofilecopy');
 
@@ -196,14 +198,32 @@
       $('#content_form').prepend(html);
 
       //Add classes to add styles
-      $('#firstname, #lastname, #emailaddress1, #telephone1, #adx_organizationname, #jobtitle, #nickname, #websiteurl, #adx_publicprofilecopy').addClass('form-control form-text');
-
-
-      //Add style
-
+      $('#firstname, #lastname, #emailaddress1, #telephone1, #adx_organizationname, #jobtitle, #nickname, #websiteurl, #adx_publicprofilecopy').addClass('form-control form-text');     
     }
     if(window.location.pathname.includes('Account/Manage/ChangePassword')){
-      
+
+      //Remove all don't wanted HTML Elements
+      $('.page-heading').remove();
+      $('.xrm-editable-html').remove();
+      $('.row .weblinks-depth-1').remove();
+      $('.xrm-editable-adx_weblinkset').remove();
+      $('.form-horizontal .form-group label').remove();
+
+      //Create some HTML elements
+      $('<div class="item-label">NOM D\'UTILISATEUR</div>').insertBefore('#Username');
+      $('<div class="item-label">ANCIEN MOT DE PASSE</div>').insertBefore('#OldPassword');
+      $('<div class="item-label">NOUVEAU MOT DE PASSE</div>').insertBefore('#NewPassword');
+      $('#Username, #OldPassword, #NewPassword, #ConfirmPassword').addClass('form-control form-text');
+      $('<div class="item-label">CONFIRMATION DU MOT DE PASSE</div>').insertBefore('#ConfirmPassword');
+
+      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer le mot de passe</h1></div></div></div>';
+      $(html).insertBefore($('body .container').get(1));
+
+      //Add classes to add styles
+      $('.form-horizontal .form-group .col-sm-8').attr('class', 'col-sm-12');
+      $('.form-horizontal').addClass('change-password');
+
+      //Add style
     }
 
     $(window).scroll(function(){
