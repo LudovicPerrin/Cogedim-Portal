@@ -82,8 +82,11 @@
     $('.menu-item a').removeClass('.is-active');
     $('.contract-multi-selection').css('display', 'block');
 
+    //Utilisateur sur la page d'accueil
     if(window.location.pathname == '{{home_url}}')
       $('.menu-item-accueil a').addClass('is-active');
+
+    //Utilisateur sur la page "contactez nous" ou "Message"
     if(window.location.pathname == '{{contactus_url}}' || window.location.pathname == '{{messages_url}}'){
 
       //Add classes to add good styles
@@ -113,8 +116,8 @@
       $('td.form-control-cell.datetime').parents('tr:first').css('display', 'none');
       $('#acq_messageprecedent_name').parents('tr:first').next().css('display', 'none');
     }
-    if(window.location.pathname == '{{connexion_url}}')
-      $('.menu-item-connexion, #block-userlogin').remove();
+
+    //Utilisateur sur la page de connexion
     if(window.location.pathname == '/SignIn'){
 
       //Remove all don't wanted HTML Elements
@@ -146,6 +149,8 @@
       $('#Password').attr('placeholder', 'Mot de passe');
       $('#Username').attr('placeholder', 'Votre identifiant');      
     }
+
+    //Utilisateur sur la page "Mot de passe oublié"
     if(window.location.pathname == '/Account/Login/ForgotPassword'){
 
       //Remove all don't wanted HTML Elements
@@ -173,6 +178,8 @@
       //Add other HTML elements next to the form
       $('<div class="wrapper-home-video"><div class="container"><div id="block-homepage-video" class="block block-block-content block-block-content82a11756-728a-4171-8d00-e26a166b909e"><div class="field field--name-field-node field--type-entity-reference field--label-hidden field__items"><div class="field__item"><div class="block-title"><span class="field field--name-title field--type-string field--label-hidden">Découvrez l\'Espace Client COGEDIM</span></div><div class="video-player"><figure class="youtube-container"><iframe src="https://www.youtube.com/embed/hPRi1jnjqIA?rel=0&amp;enablejsapi=1&amp;origin=https%3A//www.mon-cogedim.com&amp;wmode=opaque" id="youtube-video-88" class="youtube-field-player" title="Embedded video for Découvrez l\'Espace Client COGEDIM" allowfullscreen="" <a href="https://www.youtube.com/embed/hPRi1jnjqIA?rel=0&amp;enablejsapi=1&amp;origin=https%3A//www.mon-cogedim.com&amp;wmode=opaque">Embedded video for Découvrez l&#039;Espace Client COGEDIM</a></iframe></figure><div class="overlay"><span class="play-button"></span></div></div></div></div></div></div></div><div class="wrapper-home-articles"><div class="container"><div class="views-element-container block block-views block-views-blockautopromos-block-autopromos block-home-articles" id="block-views-block-autopromos-block-autopromos"><div class="view view-autopromos view-id-autopromos view-display-id-block_autopromos js-view-dom-id-0a4ff5e71ccba00b20956f281f3e61491f450bcca1448effb5c3081a735e7f76"><div class="view-header"><article role="article" about="/cogedim-facilite-votre-achat-dans-le-neuf" class="node node--type-custom-page node--view-mode-teaser" lang="en"><div class="block-title"><span class="field field--name-title field--type-string field--label-hidden">Cogedim facilite votre achat dans le neuf</span></div><div class="content"><div class="description field field--name-body field--type-text-with-summary field--label-hidden field__item"><p>Chez Cogedim, vous êtes accompagné personnellement, de A à Z. Aide pour le financement, personnalisation de votre logement, suivi des travaux…votre interlocuteur attitré répond à toutes vos questions. Mieux informé et mieux guidé, vous achetez avec sérénité.</p></div></div></article></div><div class="view-content"><div class="articles-list"><div class="articles-content"><div class="views-row article"><article role="article" about="/votre-responsable-relation-client-vous-accompagne" class="node node--type-autopromo node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">A votre écoute</div></a></div><div class="title"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><span class="field field--name-title field--type-string field--label-hidden">Votre Responsable Relation Client vous accompagne</span></a></div></article></div><div class="views-row article"><article role="article" about="/de-la-reservation-a-la-remise-de-vos-cles" class="node node--type-autopromo node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /les-grandes-etapes-de-votre-achat-chez-cogedim"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">Les étapes clés</div></a></div><div class="title"><a href="  /les-grandes-etapes-de-votre-achat-chez-cogedim"><span class="field field--name-title field--type-string field--label-hidden">De la réservation à la remise de vos clés</span></a></div></article></div><div class="views-row article"><article role="article" about="/les-avantages-dacheter-chez-cogedim-0" class="node node--type-autopromo node--promoted node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /les-avantages-dacheter-chez-cogedim"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /les-avantages-dacheter-chez-cogedim"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">Les + COGEDIM</div></a></div><div class="title"><a href="  /les-avantages-dacheter-chez-cogedim"><span class="field field--name-title field--type-string field--label-hidden">Les avantages d\'acheter chez Cogedim </span></a></div></article></div></div></div></div></div></div></div></div><div class="region region-bottom"><div id="block-prehomebanner" class="block block-ce-footer block-ce-prehome-banner"><div class="wrapper-home-banner"><div class="container"><div class="block-home-banner"><div class="block-title">Découvrez tous nos programmes près de chez vous</div><div class="block-title-mobile">Découvrez tous nos programmes près de chez vous</div><div class="content"><div class="banner-link"><a href="http://www.cogedim-logement.com/" class="btn btn-white 0" target="_blank">COGEDIM.COM<span class="0"><span class="element-invisible"> </span></span></a></div></div></div></div></div></div></div>').insertAfter('#content-container');
     }
+
+    //Utilisateur sur la page de son profil
     if(window.location.pathname == '/profile/'){
 
       //Remove all don't wanted HTML Elements
@@ -198,9 +205,11 @@
       $('#content_form').prepend(html);
 
       //Add classes to add styles
-      $('#firstname, #lastname, #emailaddress1, #telephone1, #adx_organizationname, #jobtitle, #nickname, #websiteurl, #adx_publicprofilecopy').addClass('form-control form-text');     
+      $('#firstname, #lastname, #emailaddress1, #telephone1, #adx_organizationname, #jobtitle, #nickname, #websiteurl, #adx_publicprofilecopy').addClass('form-control form-text');
     }
-    if(window.location.pathname.includes('Account/Manage/ChangePassword') || window.location.pathname.includes('Account/Manage/ChangeEmail')){
+
+    //Utilisateur sur la page "changer mon mot de passe" ou "Changer d'adresse email" ou "Changer de login" ou "confirmation du changement de l'adresse email"
+    if(window.location.pathname.includes('Account/Manage/ChangePassword') || window.location.pathname.includes('Account/Manage/ChangeEmail') || window.location.pathname.includes('Account/Manage/ChangeLogin') || window.location.pathname.includes('Account/Manage/ConfirmEmailRequest')){
 
       //Remove all don't wanted HTML Elements
       $('.page-heading').remove(); 
@@ -209,25 +218,29 @@
       $('.xrm-editable-adx_weblinkset').remove();
       $('.form-horizontal .form-group label').remove();
 
+      //Utilisateur sur la page "Changer mon mot de passe"
       if(window.location.pathname.includes('Account/Manage/ChangePassword')){
 
         //Create some HTML elements
         $('<div class="item-label">NOM D\'UTILISATEUR</div>').insertBefore('#Username');
         $('<div class="item-label">ANCIEN MOT DE PASSE</div>').insertBefore('#OldPassword');
         $('<div class="item-label">NOUVEAU MOT DE PASSE</div>').insertBefore('#NewPassword');
-        $('#Username, #OldPassword, #NewPassword, #ConfirmPassword').addClass('form-control form-text');
         $('<div class="item-label">CONFIRMATION DU MOT DE PASSE</div>').insertBefore('#ConfirmPassword');
 
         var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer le mot de passe</h1></div></div></div>';
         $(html).insertBefore($('body .container').get(1));
 
         //Add classes to add styles
-        $('.form-horizontal .form-group .col-sm-8').attr('class', 'col-sm-12');
         $('.form-horizontal').addClass('change-password');
+        $('.form-horizontal .form-group .col-sm-8').attr('class', 'col-sm-12');
+        $('#Username, #OldPassword, #NewPassword, #ConfirmPassword').addClass('form-control form-text');
       }
-      else{
+
+      //Utilisateur sur la page "changer mon adresse email"
+      else if(window.location.pathname.includes('Account/Manage/ChangeEmail')){
 
         //Create some HTML elements
+        $('<div class="item-label">ADRESSE MAIL</div>').insertBefore('#Email');
         $('#Email').addClass('form-control form-text');
         var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer l\'adresse de messagerie</h1></div></div></div>';
         $(html).insertBefore($('body .container').get(1));
@@ -235,6 +248,35 @@
         //Add classes to add styles
         $('.form-horizontal .form-group .col-sm-10, .form-horizontal .form-group .col-sm-offset-2.col-sm-10').attr('class', 'col-sm-12');
         $('.form-horizontal').addClass('change-email');
+
+        //Add style
+        $($('body .container').get(2)).css('margin-bottom', '100px');
+      }
+
+      //Utilisateur sur la page "changer mon login"
+      else if(window.location.pathname.includes('Account/Manage/ChangeLogin')){
+
+        //Create some HTML elements
+        var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Gérer les authentifications externes</h1></div></div></div>';
+        $(html).insertBefore($('body .container').get(1));
+
+        //Add classes to add styles
+        $('.form-horizontal').addClass('change-login');
+
+        //Add style
+        $($('body .container').get(2)).css('margin-bottom', '100px');
+      }
+
+      //Utilisateur sur la page "confirmation du changement d'adresse email"
+      else if(window.location.pathname.includes('Account/Manage/ConfirmEmailRequest')){
+
+        //Create some HTML elements
+        $('<div class="item-label">ADRESSE MAIL</div>').insertBefore('#Email');
+        var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer l\'adresse de messagerie</h1></div></div></div>';
+        $(html).insertBefore($('body .container').get(1));
+
+        //Add classes to add style
+        $('#Email').addClass('form-control form-text');
 
         //Add style
         $($('body .container').get(2)).css('margin-bottom', '100px');
@@ -368,6 +410,17 @@
         }
       ]
     });
+
+    $('.form-horizontal').css('display', 'block');
+    $('#content_form').css('display', 'block');
+
+    //Utilisateur sur la page "error 404"
+    if($('#content_form .page-header .xrm-attribute-value').length > 0 && $('#content_form .page-header .xrm-attribute-value')[0].innerText == 'Page introuvable'){
+      
+      $('.page-heading').remove();
+      $($('.container').get(1)).empty();
+      $($('.container').get(1)).append('<div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title"></h1></div><div class="block-404-content"><h1 class="block-title">Page introuvable</h1><div class="content"><p>Il semblerait que la page recherchée n’existe pas</p><div class="button-return"><a href="/" class="btn btn-consult-3">RETOUR À L’ACCUEIL</a></div></div></div>');
+    }
   });
 
 </script>

@@ -4,6 +4,10 @@
   }
   else{
     setCookie('isCacheEmpty', true, 7);
+    var url=document.location.protocol+'//'+document.location.host+(document.location.host.indexOf("demo.adxstudio.com")!=-1?document.location.pathname.split("/").slice(0, 3).join("/"):"")+'/Cache.axd?Message=InvalidateAll&d='+(new Date()).valueOf();
+    var req = new XMLHttpRequest();
+    req.open('GET',url,false);
+    req.send(null);
     window.location.reload(true);
   }
 </script>
@@ -107,6 +111,7 @@
 
 <div class="contract-boxes-wrapper">
   <div class="container">
+    <h1>{{request.params['contractId']}}</h1>
     <div id="block-userwelcome" class="block block-ce-common block-ce-common-user-welcome block-page-title">
       <h1 class="page-title">{{user.firstname | prepend: "Bienvenue " | append: ","}}</h1>
     </div>

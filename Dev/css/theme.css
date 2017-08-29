@@ -5,6 +5,14 @@ body {
 	color: #4d4d53 !important;
 }
 
+body[data-sitemap-state="/page-not-found/:/"] #block-pagetitle{
+	margin-top: 65px;
+}
+
+textarea{
+	background: white !important;
+}
+
 footer .container{
 	padding-top: 50px !important;
 }
@@ -76,6 +84,11 @@ footer .footer-top{
 	margin-bottom: 110px;
 }
 
+#content_form,
+.form-horizontal{
+	display: none;
+}
+
 #content_form .item-label,
 .form-horizontal .item-label {
 	margin-bottom: 5px;
@@ -127,6 +140,7 @@ footer .footer-top{
 	border-color: #42145f;
 }
 
+.list-group .list-group-item,
 .alert-info .xrm-editable-text, 
 .panel-heading .xrm-attribute-value-encoded,
 .list-group .list-group-item .xrm-attribute-value-encoded{
@@ -135,6 +149,7 @@ footer .footer-top{
 }
 
 .panel-heading .fa-lock,
+.alert-info .fa,
 .fa-exclamation-circle{
 	color: white;
 }
@@ -151,6 +166,16 @@ footer .footer-top{
 	background: rgba(66, 20, 95, 0.75);
 	border-color: rgba(66, 20, 95, 0.75);
 }
+
+.change-login .list-group-item button{
+	border-radius: 20px;
+	background: rgba(163, 26, 126, 1) !important;
+	color: white;
+	font-weight: bold;
+	border-color: rgba(163, 26, 126, 1) !important;
+}
+
+
 
 .block-messages-content .message-form {
 	padding: 20px 20px 0px !important;
@@ -302,10 +327,10 @@ footer .footer-top{
 	background-size: cover !important;
 }
 
-.item-label::after{
+.change-password .item-label::after{
 	content: '* ';
-  color: red;
-  white-space: nowrap;
+  	color: red;
+  	white-space: nowrap;
 }
 
 .menu-header .menu-header-toggle::before, .menu-bar .menu-bar-toggle{
@@ -473,8 +498,16 @@ footer .footer-top{
 		background-image: url("cgd_more_links.png");
 	}
 
+	.block-404-content{
+		background: url("cgd_error_404.png") 206px 145px no-repeat;
+	}
+
 	.page-header-wrapper {
 		padding: 159px 0 53px;
+	}
+
+	body[data-sitemap-state="/page-not-found/:/"] #block-pagetitle{
+		padding: 83px 0 53px;
 	}
 }
 
@@ -491,6 +524,10 @@ footer .footer-top{
 		background-repeat: no-repeat;
 	}
 
+	.block-404-content{
+		background: url("cgd_error_404_mobile.png") center 70px no-repeat;
+	}
+
 	.page-header-wrapper {
 		padding: 85px 0px 65px;
 	}
@@ -501,5 +538,9 @@ footer .footer-top{
 
 	#user-login-form{
 		margin-left: 15px;
+	}
+
+	body[data-sitemap-state="/page-not-found/:/"] #block-pagetitle{
+		padding: 28px 0px;
 	}
 }
