@@ -1,20 +1,10 @@
-<script type="text/javascript">
-  if(getCookie('isCacheEmpty') == 'true'){
-    setCookie('isCacheEmpty', false, 7);
-  }
-  else{
-    setCookie('isCacheEmpty', true, 7);
-    window.location.reload(true);
-  }
-</script>
-
 {% assign contactus_url = sitemarkers['Contact Us'].url %}
 {% assign documents_url = sitemarkers['Documents'].url %}
 {% assign home_url = sitemarkers['Home'].url %}
 
-{% if request.params['contractId'] %}
+{% if request.params['id'] %}
 
-  {% assign contractId = request.params['contractId'] %}
+  {% assign contractId = request.params['id'] %}
 
   {% fetchxml lots %}
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
@@ -46,7 +36,6 @@
 
 <div class="contrat-slider-wrapper">
   <div class="container">
-    <h1>{{contractId}}</h1>
     <div class="block-contrat-slider">
       <div class="contrat-slider-panel">
         <div class="contrat-slide slick-slide" data-slick-index="-1" aria-hidden="true" style="width: 946px;" tabindex="-1">
@@ -67,7 +56,7 @@
         <div class="contrat-slide slick-slide" data-slick-index="2" aria-hidden="true" style="width: 946px;" tabindex="-1" role="option" aria-describedby="slick-slide02">
           <div class="image">
             <img src="http://www.cogedim-logement.com/sites/default/files/assets/images/18280_presentation_22.jpg" alt="" typeof="foaf:Image">
-          </div>      
+          </div>
         </div>
         <div class="contrat-slide slick-slide" data-slick-index="3" aria-hidden="true" style="width: 946px;" tabindex="-1" role="option" aria-describedby="slick-slide03">
           <div class="image">
@@ -193,16 +182,7 @@
         <div class="info-box documents">
           <h4 class="title h4-min">Mes Documents D’achat</h4>
           <div class="downloads">
-            <ul>
-              <li>
-                <a href="/document/download/18280-990001-1_ATV_NA_161221" target="_blank"><span>Attestation d’acte de vente</span></a>
-                <a href="/document/download/18280-990001-1_ATV_NA_161221" class="download" target="_blank">Télécharger</a>
-              </li>
-              <li>
-                <a href="/document/download/18280-990001-1_ATV_NA_161222" target="_blank"><span>Attestation d’acte de vente</span></a>
-                <a href="/document/download/18280-990001-1_ATV_NA_161222" class="download" target="_blank">Télécharger</a>
-              </li>
-            </ul>
+            <ul class="contract-documents"></ul>
           </div>
           <div class="actions">
             <a href="{{documents_url}}" class="btn btn-primary">Tous mes documents</a>
