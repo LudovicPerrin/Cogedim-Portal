@@ -7,16 +7,17 @@
   {% assign contractId = request.params['id'] %}
 
   {% fetchxml lots %}
-    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
       <entity name="acq_lot">
         <all-attributes />
         <filter>
           <condition attribute="acq_lot" operator="eq" value="{{contractId}}" />
         </filter>
-        <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche" >
-          <all-attributes/>
-          <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme" >
-            <all-attributes/>
+        <order attribute="acq_lotparent" />
+        <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche">
+          <all-attributes />
+          <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme">
+            <all-attributes />
           </link-entity>
         </link-entity>
       </entity>
@@ -105,9 +106,6 @@
             <li>
               <a href="http://altarea-cogedim.live.evimmo.fr/services/cogedim/iframe?p=42651" class="0" target="_blank">La résidence en 3D<span class="0"><span class="element-invisible"> </span></span></a>
             </li>
-            <li>
-              <a href="/document/download/18280____BRO__160630" target="_blank">Télécharger la brochure</a>
-            </li>
           </ul>
           <div class="action hidden-md hidden-lg">
             <a href="{{contactus_url}}" class="btn btn-consult">Contactez-nous</a>
@@ -119,10 +117,8 @@
 </div>
 
 {% for lot in lots.results.entities %}
-  {% assign actualLot = lot.acq_idlot | string %}
-  {% assign parentalLot = lot.acq_lotparent.name | string %}
   
-  {% if parentalLot == '' %}
+  {% if lot.acq_typedelot.label == 'Maison' or lot.acq_typedelot.label == 'Appartement' %}
     <div class="contrat-lots-wrapper">
       <div class="container">
         <div class="block-contrat-lots">
@@ -135,35 +131,67 @@
               <div class="info">
                 <div class="info-col description">
                   <h4 class="title">Fiche d’identité</h4>
-                  <div class="specification">
+                  <div class="specification {% unless forloop.first %}second{% endunless %}">
                     <ul>
                       <li>
                         <span class="spec-label"><b>Surface</b></span>
                         <span class="spec-value">{{lot.acq_surface | round: 2 | string}} m<sup>2</sup></span>
                       </li>
+                      {% if lot.acq_etage %}
+                        <li>
+                          <span class="spec-label"><b>Étage</b></span>
+                          <span class="spec-value">{{lot.acq_etage}}<sup>ème</sup></span>
+                        </li>
+                      {% endif %}
+                      {% if lot.acq_orientation %}
+                        <li>
+                          <span class="spec-label"><b>Orientation</b></span>
+                          <span class="spec-value">{{lot.acq_orientation}}</span>
+                        </li>
+                      {% endif %}
+                      <li>
+                        <span class="spec-label"><b>Jardin</b></span>
+                        <span class="spec-value">{% if lot.acq_surfacedujardin %}{{lot.acq_surfacedujardin | round: 2 | string}} m<sup>2</sup>{% else %}Non{% endif%}</span>
+                      </li>                    
+                      <li>
+                        <span class="spec-label"><b>Balcon</b></span>
+                        <span class="spec-value">{% if lot.acq_surfacebalcon %}{{lot.acq_surfacebalcon | round: 2 | string}} m<sup>2</sup>{% else %}Non{% endif%}</span>
+                      </li>    
+                      <li>
+                        <span class="spec-label"><b>Loggia</b></span>
+                        <span class="spec-value">{% if lot.acq_loggia %}{{lot.acq_loggia | round: 2 | string}} m<sup>2</sup>{% else %}Non{% endif%}</span>
+                      </li>
+                      <li>
+                        <span class="spec-label"><b>Terrasse</b></span>
+                        <span class="spec-value">{% if lot.acq_surfaceterrasse %}{{lot.acq_surfaceterrasse | round: 2 | string}} m<sup>2</sup>{% else %}Non{% endif%}</span>
+                      </li>
+                      <li>
+                        <span class="spec-label"><b>Terrain</b></span>
+                        <span class="spec-value">{% if lot.acq_surfaceterrain %}{{lot.acq_surfaceterrain | round: 2 | string}} m<sup>2</sup>{% else %}Non{% endif%}</span>
+                      </li>
                     </ul>
                   </div>
-                  {% for lotbis in lots.results.entities %}
-                    {% assign parentalLot = lotbis.acq_lotparent.name | string %}
-                    {% unless parentalLot == '' %}
-                      <div class="additional">
-                        <div class="item">{{lotbis.acq_typedelot.label | append: ' (' | append: lotbis.acq_idlot | append: ')'}}</div>
-                      </div>
-                    {% endunless %}
-                  {% endfor %}
+                  {% if forloop.first %}
+                    {% for lotbis in lots.results.entities %}
+                      {% if lotbis.acq_typedelot.label == 'Cave' or lotbis.acq_typedelot.label == 'Garage' %}
+                        <div class="additional">
+                          <div class="item">{{lotbis.acq_typedelot.label | append: ' (' | append: lotbis.acq_idlot | append: ')'}}</div>
+                        </div>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
                 </div>
                 <div class="info-col plans">
                   <h4 class="title">Mes Plans</h4>
                   <div class="downloads">
-                    <ul>
-                    </ul>
+                    <ul class="contract-documents-plans"></ul>
+                     <div class="loader"></div> 
                   </div>
                 </div>
                 <div class="info-col choix">
                   <h4 class="title">Mes Prestations</h4>
                   <div class="downloads">
-                    <ul>
-                    </ul>
+                    <ul class="contract-documents-presta"></ul>
                   </div>
                 </div>
               </div>

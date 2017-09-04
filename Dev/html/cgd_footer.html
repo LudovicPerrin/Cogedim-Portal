@@ -1,5 +1,6 @@
 {% assign contactus_url = sitemarkers['Contact Us'].url %}
 {% assign connexion_url = sitemarkers['Connexion'].url %}
+{% assign documents_url = sitemarkers['Documents'].url %}
 {% assign contract_url = sitemarkers['Contract'].url %}
 {% assign messages_url = sitemarkers['Messages'].url %}
 {% assign home_url = sitemarkers['Home'].url %}
@@ -83,10 +84,11 @@
     $('.contract-multi-selection').css('display', 'block');
 
     //Initialise les liens pour tomber sur le bon contrat
-    $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
-    $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
     $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId'));
-
+    $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
+    $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId'));
+    $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
+    
     //Utilisateur sur la page d'accueil
     if(window.location.pathname == '{{home_url}}')
       $('.menu-item-accueil a').addClass('is-active');
@@ -195,22 +197,22 @@
 
       //Create some HTML elements
       $('<div class="item-label">NOM</div>').insertBefore('#lastname');
-      $('<div class="item-label">POSTE</div>').insertBefore('#jobtitle');
-      $('<div class="item-label">PSEUDO</div>').insertBefore('#nickname');
       $('<div class="item-label">PRÉNOM</div>').insertBefore('#firstname');
       $('<div class="item-label">EMAIL</div>').insertBefore('#emailaddress1');
-      $('<div class="item-label">TELEPHONE</div>').insertBefore('#telephone1');
-      $('<div class="item-label">ENTREPRISE</div>').insertBefore('#adx_organizationname');
-      
-      
-      $('<div class="item-label">SITE WEB</div>').insertBefore('#websiteurl');
-      $('<div class="item-label">DESCRIPTION</div>').insertBefore('#adx_publicprofilecopy');
+      $('<div class="item-label">CIVILITÉ</div>').insertBefore('#acq_civilite');
+      $('<div class="item-label">ADRESSE</div>').insertBefore('#address1_line1');
+      $('<div class="item-label">CODE POSTAL</div>').insertBefore('#address1_postalcode');
+      $('<div class="item-label">VILLE</div>').insertBefore('#address1_city');
+      $('<div class="item-label">TEL. PORTABLE</div>').insertBefore('#mobilephone');
+      $('<div class="item-label">TEL.DOMICILE</div>').insertBefore('#telephone2');
+      $('<div class="item-label">TEL.PROFESSIONNEL</div>').insertBefore('#telephone1');
 
       var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Mon Profil</h1></div></div></div>';
       $('#content_form').prepend(html);
 
       //Add classes to add styles
-      $('#firstname, #lastname, #emailaddress1, #telephone1, #adx_organizationname, #jobtitle, #nickname, #websiteurl, #adx_publicprofilecopy').addClass('form-control form-text');
+      $('#firstname, #lastname, #emailaddress1, #telephone1, #acq_civilite, #address1_line1, #address1_postalcode, #address1_city, #mobilephone, #telephone2').addClass('form-control form-text');
+
     }
 
     //Utilisateur sur la page "changer mon mot de passe" ou "Changer d'adresse email" ou "Changer de login" ou "confirmation du changement de l'adresse email"
@@ -312,7 +314,7 @@
         $('.main-header-wrapper').addClass('menu-expanded');
     });
 
-    $('.menu-bar-inner .menu-user-mobile a').click(function(){
+    $('.menu-bar-inner .menu-user-mobile a, .menu-bar-inner .contracts-mobile a').click(function(){
 
       if($(this).hasClass('expanded')){
         $(this).removeClass('expanded');
@@ -358,13 +360,14 @@
         $('.lot-items').append('<li class="field__item"><a href="{{contract_url}}?id=' + getCookie('contractId') + '"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>');
       }
 
-      //Initialise les bon liens vers le bon contrat
-      $('.info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
-      $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
+      //Initialise les bon liens vers le bon contrat     
       $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId'));
+      $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
+      $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId'));
+      $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
     });
 
-    $('.block-messages-content .message-row .info .response .expand').click(function(){
+    $('.block-messages-content .message-row .info .response .expand, .block-messages-content .message-row .info .response .open-text, .block-messages-content .message-row .info .response .close-text').click(function(){
 
       var message = new Object();
       var subject = $(this).parents('.node--view-mode-message').next().children().first().attr('subject');
@@ -422,21 +425,25 @@
     });
 
     //Recherche des documents lorsque l'utilisateur est sur la page "mon contrat" ou "mes documents"
-    if(window.location.pathname == '{{contract_url}}'){
+    if(window.location.pathname == '{{contract_url}}' || window.location.pathname == '{{documents_url}}'){
 
       var _obj = new Object();
-      _obj = {"FolderId":"d7d7727b-9f7d-e711-80de-3863bb349778", "LibraryName":"contact"};
+      _obj = {"FolderId": "{{request.params['id']}}", "LibraryName":"contact"};
 
       //Call Web Service
       $.ajax({
         type: "POST",
         url: 'https://localhost/SharePointService/Service.svc/ListFilesByFolderId?FolderId=' + _obj.FolderId + "&LibraryName=" +_obj.LibraryName,
         dataType: "json",
-        async: false,
         success: function(data){
 
+          if(data.length == 0){
+            $('.loader').css('display', 'none');
+            return;
+          }
+
           for (var i = 0; i < data.length; i++)
-            GetFileMetaInfo(data[i]);
+            GetFileMetaInfo(data[i], i, data.length);
         },
         error: function(xhr, textStatus, errorThrown){
           console.log(textStatus + " " + errorThrown + " - " + xhr);
@@ -444,9 +451,7 @@
       });
     }
 
-    $('.form-horizontal').css('display', 'block');
-    $('#content_form').css('display', 'block');
-    $('html').css('display', 'block');
+    $('.form-horizontal, .contact-us-form, #content_form').css('display', 'block');    
 
     //Utilisateur sur la page "error 404"
     if($('#content_form .page-header .xrm-attribute-value').length > 0 && $('#content_form .page-header .xrm-attribute-value')[0].innerText == 'Page introuvable'){
@@ -457,7 +462,7 @@
     }
   });
 
-  function GetFileMetaInfo(pathName){
+  function GetFileMetaInfo(pathName, index, maxIndex){
 
     var path = pathName;
 
@@ -466,19 +471,44 @@
       type: "GET",
       url: 'https://localhost/SharePointService/Service.svc/GetFileMetaInfo?fileURl=' + pathName,
       dataType: "json",
-      async: true,
       success: function(data){
 
         var type = data[20].Value;
         var path = this.url.substr(this.url.indexOf('/sites'), this.url.length);
         var file = 'https://localhost/SharePointService/Service.svc/GetFileByUrl?fileURl=' + path;
+        var selector = '';
+        var fileName = data[2].Value.substr(0, data[2].Value.indexOf('.'));
 
         switch(type){
 
-          case 'Att_acte_vente':
-            $('.contract-documents').append('<li><a href="' + file + '"><span>Attestation d’acte de vente</span></a><a href="' + file + '" class="download" target="_blank">Télécharger</a></li>');
+          case 'ADV':
+          case 'ATV':
+          case 'RES':
+            $('.contract-documents').append('<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>');
+            break;
+          case 'PSS':
+          case 'PMA':
+          case 'LOG':
+          case 'ELE':
+          case 'CUI':
+          case 'EXC':
+            if(window.location.pathname == '{{contract_url}}')
+              $('.contract-documents-plans').append('<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>');
+            else
+              $('.documents-box-plan .documents-list').append('<div class="item"><a href="' + file + '">' + fileName + '</a></div>');
+            break;
+          case 'CHG':
+          case 'CHO':
+            $('.contract-documents-presta').append('<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>');
+            break;
+          case 'BRO':
+            $('.links').append('<li><a href="' + file + '">Télécharger la brochure</a></li>');
             break;
         }
+
+        //Fin de chargement du fichier, on enlève les spinners
+        if(index + 1 == maxIndex)
+          $('.loader').css('display', 'none');       
       },
       error: function(xhr, textStatus, errorThrown){
         console.log(textStatus + " " + errorThrown + " - " + xhr);

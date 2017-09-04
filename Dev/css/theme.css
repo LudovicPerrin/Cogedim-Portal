@@ -1,7 +1,3 @@
-/*html{
-	display: none;
-}*/
-
 body {
 	font-family: "Open Sans","Helvetica Neue",Helvetica,Arial,sans-serif !important;
 	font-size: 12px !important;
@@ -89,7 +85,8 @@ footer .footer-top{
 }
 
 #content_form,
-.form-horizontal{
+.form-horizontal,
+.contact-us-form{
 	display: none;
 }
 
@@ -246,6 +243,10 @@ footer .footer-top{
 	margin: 35px 0px !important;
 }
 
+.contracts-mobile a span:hover{
+	color: #a31a7e;
+}
+
 .wrapper-main-footer .container:before{
   	display: block;
   	width: 200px;
@@ -257,6 +258,17 @@ footer .footer-top{
   	top: -50px;
   	z-index: 200;
   	pointer-events: none; 
+}
+
+.menu-bar-inner .contracts .dropdown-caret{
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin-left: 16px;
+	border-style: solid;
+	border-width: 3px 3px 0 3px;
+	border-color: transparent transparent transparent #a31a7e;
+	vertical-align: middle;
 }
 
 .error-message{
@@ -272,6 +284,11 @@ footer .footer-top{
 
 .crmEntityFormView .tab-column{
 	width: 100% !important;
+}
+
+.block-messages-content .message-row .info .response .open-text:hover,
+.block-messages-content .message-row .info .response .close-text:hover{
+	cursor: pointer;
 }
 
 .crmEntityFormView fieldset, .crmEntityFormView .tab, .crmEntityFormView .actions{
@@ -296,10 +313,25 @@ footer .footer-top{
 	padding-bottom: 40px;
 }
 
+.block-contrat-lots .specification:not(.second)::after {
+    display: block;
+    content: "---";
+    font-weight: normal;
+    margin-bottom: 8px;
+	font-size: 15px
+}
+
+.block-contrat-lots .additional::before {
+    content: "" !important;
+}
+
 .menu-bar .menu-bar-toggle,
 .menu-expanded .menu-bar-toggle,
 .block-cogedim-about .about-box .more-link a,
 .block-contrat-info .downloads .download,
+.info-col.plans .downloads .download,
+.documents-list-plans .download,
+.contract-documents-presta .download,
 .block-messages-content .info .response .expand,
 .menu-header .menu-header-toggle::before, 
 .menu-header.expanded .menu-header-toggle::before,
@@ -403,8 +435,14 @@ footer .footer-top{
 	background-image: url("cgd_time.png");
 }
 
-.block-contrat-info .downloads .download{
+.block-contrat-info .downloads .download,
+.documents-list-plans .download{
 	background-image: url("cgd_download.png");
+}
+
+.info-col.plans .downloads .download,
+.contract-documents-presta .download{
+	background-image: url("cgd_download_white.png") !important; 
 }
 
 .block-messages-content .message-row .info .response .expand{
@@ -465,6 +503,22 @@ footer .footer-top{
 
 .video-player img, .video-player iframe {
 	height: 180px;
+}
+
+.loader {
+    border: 12px solid #f3f3f3; /* Light grey */
+    border-top: 12px solid #a31a7e; /* Blue */
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    animation: spin 2s linear infinite;
+    display: table;
+	margin: auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
 @media (min-width: 768px){

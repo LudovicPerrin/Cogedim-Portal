@@ -1,3 +1,27 @@
+{% if request.params['id'] %}
+
+  {% assign contractId = request.params['id'] %}
+
+  {% fetchxml lots %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+      <entity name="acq_lot">
+        <all-attributes />
+        <filter>
+          <condition attribute="acq_lot" operator="eq" value="{{contractId}}" />
+        </filter>
+        <order attribute="acq_lotparent" />
+        <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche">
+          <all-attributes />
+          <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme">
+            <all-attributes />
+          </link-entity>
+        </link-entity>
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+{% endif %}
+
 <div class="page-header-wrapper">
   <div class="container">
     <div id="block-pagetitle" class="block block-core block-page-title-block block-page-title">
@@ -38,27 +62,31 @@
                 </div>
               </div>
             </div>
-            <h3>Documents du <span>lot 99001</span></h3>
-            <div class="documents-row">
-              <div class="documents-box">
-                <h4 class="documents-label">PLANS</h4>
-                <div class="documents-list">
-                  Vous n’avez pas encore de document disponible
+            {% for lot in lots.results.entities %}  
+              {% if lot.acq_typedelot.label == 'Maison' or lot.acq_typedelot.label == 'Appartement' %}
+                <h3>Documents du <span>{{lot.acq_idlot}}</span></h3>
+                <div class="documents-row">
+                  <div class="documents-box documents-box-plan">
+                    <h4 class="documents-label">PLANS</h4>
+                    <div class="documents-list">
+                      
+                    </div>
+                  </div>
+                  <div class="documents-box">
+                    <h4 class="documents-label">MES CHOIX</h4>
+                    <div class="documents-list">
+                      Vous n’avez pas encore de document disponible
+                    </div>
+                  </div>
+                  <div class="documents-box">
+                    <h4 class="documents-label">MES TMAS</h4>
+                    <div class="documents-list">
+                      Vous n’avez pas encore de document disponible
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div class="documents-box">
-                <h4 class="documents-label">MES CHOIX</h4>
-                <div class="documents-list">
-                  Vous n’avez pas encore de document disponible
-                </div>
-              </div>
-              <div class="documents-box">
-                <h4 class="documents-label">MES TMAS</h4>
-                <div class="documents-list">
-                  Vous n’avez pas encore de document disponible
-                </div>
-              </div>
-            </div>
+              {% endif %}
+            {% endfor %}  
           </div>
         </div>
         <div class="sidebar-col">
