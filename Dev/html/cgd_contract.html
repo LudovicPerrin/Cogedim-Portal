@@ -5,19 +5,20 @@
 {% if request.params['id'] %}
 
   {% assign contractId = request.params['id'] %}
+  {% assign parentalLot = request.params['parent'] %}
 
   {% fetchxml lots %}
-    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
       <entity name="acq_lot">
         <all-attributes />
-        <filter>
+        <filter type="or" >
           <condition attribute="acq_lot" operator="eq" value="{{contractId}}" />
+          <condition attribute="acq_lotparent" operator="eq" value="{{parentalLot}}" />
         </filter>
-        <order attribute="acq_lotparent" />
-        <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche">
-          <all-attributes />
-          <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme">
-            <all-attributes />
+        <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche" >
+          <all-attributes/>
+          <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme" >
+            <all-attributes/>
           </link-entity>
         </link-entity>
       </entity>
@@ -119,13 +120,20 @@
 {% for lot in lots.results.entities %}
   
   {% if lot.acq_typedelot.label == 'Maison' or lot.acq_typedelot.label == 'Appartement' %}
+
+    <script type="text/javascript">
+      
+      GetFilePaths("{{lot.acq_lotid}}", 2, window.location.pathname);
+
+    </script>
+
     <div class="contrat-lots-wrapper">
       <div class="container">
         <div class="block-contrat-lots">
-          <div class="contrat-lot {% if forloop.first %}expanded{% endif %}">
+          <div class="contrat-lot {% if forloop.first %}expanded{% endif %}" data-lot-id="{{lot.acq_lotid}}">
             <h3 class="lot-title">
-              <span class="title">{{lot.acq_typedelot.label}}</span>
-              <span class="num">{{lot.acq_idlot}}</span>
+              <span class="title">{{lot.acq_typologie}}</span>
+              <span class="num">(LOT N°{{lot.acq_numero}})</span>
             </h3>
             <div class="lot-info">
               <div class="info">
@@ -175,7 +183,7 @@
                     {% for lotbis in lots.results.entities %}
                       {% if lotbis.acq_typedelot.label == 'Cave' or lotbis.acq_typedelot.label == 'Garage' %}
                         <div class="additional">
-                          <div class="item">{{lotbis.acq_typedelot.label | append: ' (' | append: lotbis.acq_idlot | append: ')'}}</div>
+                          <div class="item">{{lotbis.acq_typologie | append: ' (LOT N°' | append: lotbis.acq_numero | append: ')'}}</div>
                         </div>
                       {% endif %}
                     {% endfor %}
@@ -185,13 +193,14 @@
                   <h4 class="title">Mes Plans</h4>
                   <div class="downloads">
                     <ul class="contract-documents-plans"></ul>
-                     <div class="loader"></div> 
+                    <div class="loader"></div> 
                   </div>
                 </div>
                 <div class="info-col choix">
                   <h4 class="title">Mes Prestations</h4>
                   <div class="downloads">
                     <ul class="contract-documents-presta"></ul>
+                    <div class="loader"></div> 
                   </div>
                 </div>
               </div>
@@ -211,6 +220,7 @@
           <h4 class="title h4-min">Mes Documents D’achat</h4>
           <div class="downloads">
             <ul class="contract-documents"></ul>
+            <div class="loader"></div> 
           </div>
           <div class="actions">
             <a href="{{documents_url}}" class="btn btn-primary">Tous mes documents</a>
@@ -241,10 +251,8 @@
         <div class="info-box modifications">
           <h4 class="title h4-min">Mes Personnalisations</h4>
           <div class="downloads">
-            <ul>
-                <div class="empty">Vous n'avez pas encore de personnalisation</div>
-
-            </ul>
+            <ul><!-- <div class="empty">Vous n'avez pas encore de personnalisation</div> --></ul>
+            <div class="loader"></div> 
           </div>
           <div class="actions">
             <a href="{{documents_url}}" class="btn btn-primary">Tous mes documents</a>

@@ -109,8 +109,9 @@
         <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
           <entity name="acq_lot">
             <all-attributes />
-            <filter>
+            <filter type="or" >
               <condition attribute="acq_lot" operator="eq" value="{{contract.acq_contratsid}}" />
+              <condition attribute="acq_lotparent" operator="eq" value="{{contract.acq_lotprincipal.id}}" />
             </filter>
             <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche" >
               <all-attributes/>
@@ -133,9 +134,9 @@
 
       {% for lot in lots.results.entities %} 
         {% if(cpt != lots.results.entities.size) %}
-          {% assign contractLots = contractLots | append: lot.acq_idlot | append: '|' %}
+          {% assign contractLots = contractLots | append: lot.acq_typologie | append: ' (LOT N°' | append: lot.acq_numero | append: ')' | append: '|' %}
         {% else %}
-          {% assign contractLots = contractLots | append: lot.acq_idlot %}
+          {% assign contractLots = contractLots | append: lot.acq_typologie | append: ' (LOT N°' | append: lot.acq_numero | append: ')' %}
         {% endif %}
 
         {% assign cpt = cpt | plus: 1 %}
@@ -158,7 +159,7 @@
             <div class="contract-slider">
         {% endif%}
         
-        <div class="contract-item {% if forloop.first %}{% unless request.params['contractId'] %}selected-contract{% endunless %}{% endif %}{% if request.params['contractId'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programName="{{programName}}" address1="{{programAddress}}" address2="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" rrc="{{RRCName}}">
+        <div class="contract-item {% if forloop.first %}{% unless request.params['contractId'] %}selected-contract{% endunless %}{% endif %}{% if request.params['contractId'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programName="{{programName}}" address1="{{programAddress}}" address2="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" parentalLot="{{contract.acq_lotprincipal.id}}" rrc="{{RRCName}}">
           <p class="contract-item-text">{{programName}}</p>
         </div>
         
@@ -222,7 +223,7 @@
     </div>
   </div>
 </div>
-<div class="account-contracts-wrapper">
+<!-- <div class="account-contracts-wrapper">
   <div class="container">
     <div id="block-views-block-frontpage-block-home" class="block-account-contracts">  
       <div class="view view-frontpage view-id-frontpage view-display-id-block_home js-view-dom-id-7a8cc1c27a164e5b7911ca40d60a3fa515ecce5251f34363ebfa0dfa8d2a39fb">
@@ -246,7 +247,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 <div class="cogedim-about-wrapper">
   <div id="block-views-block-autopromos-homepage-li-autopromos" class="block block-views block-views-blockautopromos-homepage-li-autopromos block-cogedim-about">
     <div class="view view-autopromos view-id-autopromos view-display-id-homepage_li_autopromos js-view-dom-id-f3e368c975463cf3356d58711b475bb87ced790346a1029e7cdcd2931ad86ae8">

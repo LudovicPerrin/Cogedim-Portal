@@ -158,7 +158,7 @@
             <!-- <div typeof="schema:Person" about="/user/750" class="contracts no-dropdown">
               <a class="contract-url" href="{{contract_url}}">Mon contrat</a>
             </div> -->
-            {% unless contracts.results.entities.size > 0 %}
+            {% unless contracts.results.entities.size > 1 %}
               <div typeof="schema:Person" about="/user/750" class="contracts no-dropdown">
                 <a class="contract-url" href="{{contract_url}}">Mon contrat</a>
               </div>
@@ -171,7 +171,7 @@
                 <ul class="dropdown-menu" aria-labelledby="contractLabel">
                   {% for contract in contracts.results.entities %}
                     <li class="menu-item {% if forloop.first %}menu-item--collapsed{% endif %}">
-                      <a href="{{contract_url | append: '?id=' | append: contract.acq_contratsid}}" {% if forloop.first %}menu-item--collapsed{% endif %}>Contrat - {{contract.acq_contratsid}}</a>
+                      <a href="{{contract_url | append: '?id=' | append: contract.acq_contratsid | append: '&parent=' | append: contract.acq_lotprincipal.id}}" {% if forloop.first %}menu-item--collapsed{% endif %}>Contrat - {{contract.acq_contratsid}}</a>
                     </li>
                   {% endfor %}
                 </ul>
@@ -206,7 +206,7 @@
             <!-- <div class="contracts-mobile no-dropdown">
               <a class="contract-url" href="{{contract_url}}">Mon contrat</a>
             </div> -->
-            {% unless contracts.results.entities.size > 0 %}
+            {% unless contracts.results.entities.size > 1 %}
               <div class="contracts-mobile no-dropdown">
                 <a class="contract-url" href="{{contract_url}}">Mon contrat</a>
               </div>
@@ -219,7 +219,7 @@
                 <ul class="hidden">
                   {% for contract in contracts.results.entities %}
                     <li class="menu-item {% if forloop.first %}menu-item--collapsed{% endif %}">
-                      <a href="{{contract_url | append: '?id=' | append: contract.acq_contratsid}}" {% if forloop.first %}menu-item--collapsed{% endif %}>Contrat - {{contract.acq_contratsid}}</a>
+                      <a href="{{contract_url | append: '?id=' | append: contract.acq_contratsid | append: '&parent=' | append: contract.acq_lotprincipal.id}}" {% if forloop.first %}menu-item--collapsed{% endif %}>Contrat - {{contract.acq_contratsid}}</a>
                     </li>
                   {% endfor %}
                 </ul>
@@ -343,6 +343,210 @@
           }
       }
       return "";
+  }
+
+  function GetFilePaths(id, linkType, actualPage){
+
+    var _obj = new Object();
+    _obj = {"FolderId": id, "LibraryName":"contact"};
+
+    //Call Web service
+    $.ajax({
+      type: "POST",
+      url: 'https://localhost/SharePointService/Service.svc/ListFilesByFolderId?FolderId=' + _obj.FolderId + "&LibraryName=" +_obj.LibraryName,
+      dataType: "json",
+      success: function(data){
+
+        if(data.length == 0){
+          $('.loader').css('display', 'none');
+          return;
+        }
+
+        for (var i = 0; i < data.length; i++)
+          GetFileMetaInfo(data[i], i, data.length, linkType, actualPage, id);
+      },
+      error: function(xhr, textStatus, errorThrown){
+        console.log(textStatus + " " + errorThrown + " - " + xhr);
+      }
+    });
+  }
+
+  function GetFileMetaInfo(pathName, index, maxIndex, linkType, actualPage, elementID){
+
+    var path = pathName;
+
+    //Call Web Service
+    $.ajax({
+      type: "GET",
+      url: 'https://localhost/SharePointService/Service.svc/GetFileMetaInfo?fileURl=' + pathName,
+      dataType: "json",
+      success: function(data){
+
+        var docType = data[20].Value;
+        var path = this.url.substr(this.url.indexOf('/sites'), this.url.length);
+        var file = 'https://localhost/SharePointService/Service.svc/GetFileByUrl?fileURl=' + path;
+        var selector = '';
+        var fileName = data[2].Value.substr(0, data[2].Value.indexOf('.'));
+        //var _obj = GetGoodDocClass(docType, linkType, actualPage, file, fileName, elementID);
+
+        //Add good document link into good "a" node
+        //$(_obj.class).append(_obj.selector);
+
+        var _obj = new Object();
+
+        switch(docType){
+
+          case 'ADV':
+          case 'ATV':
+          case 'RES':
+
+            if(linkType == 1){
+
+              _obj.class = '.contract-documents';
+              _obj.selector = '<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+            }
+
+            break;
+
+          case 'PSS':
+          case 'PMA':
+          case 'LOG':
+          case 'ELE':
+          case 'CUI':
+          case 'EXC':
+
+            if(linkType == 2 && actualPage == '/cgd_contract/'){
+
+              _obj.class = '[data-lot-id=' + elementID + '] .contract-documents-plans';
+              _obj.selector = '<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+            }
+            else if(linkType == 2 && actualPage == '/cgd_documents/'){
+
+              _obj.class = '.documents-box-plan .documents-list';
+              _obj.selector = '<div class="item"><a href="' + file + '">' + fileName + '</a></div>';
+            }
+
+            break;
+
+          case 'CHG':
+          case 'CHO':
+
+            if(linkType == 3){
+
+              _obj.class = '[data-lot-id=' + elementID + '] .contract-documents-presta';
+              _obj.selector = '<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+            }
+
+            break;
+
+          case 'BRO':
+
+            _obj.class = '.links';
+            _obj.selector = '<li><a href="' + file + '">Télécharger la brochure</a></li>';
+
+            break;
+        }
+
+        $(_obj.class).append(_obj.selector);
+
+        //Fin de chargement du fichier, on enlève les spinners
+        if(index + 1 == maxIndex)
+          $('.loader').css('display', 'none');       
+      },
+      error: function(xhr, textStatus, errorThrown){
+        console.log(textStatus + " " + errorThrown + " - " + xhr);
+      }
+    });
+  }
+
+  function GetFileContent(pathName){
+
+    //Call Web Service
+    $.ajax({
+      type: "GET",
+      url: 'https://localhost/SharePointService/Service.svc/GetFileMetaInfo?fileURl=' + pathName,
+      dataType: "json",
+      async: true,
+      success: function(data){
+        return data;
+      },
+      error: function(xhr, textStatus, errorThrown){
+        console.log(textStatus + " " + errorThrown + " - " + xhr);
+      }
+    });
+  }
+
+  /*******************************************
+  
+  - docType: PortalTag Meta Info in SharePoint
+  - actualPage: Name of actual web page
+  - file: actual tested file
+  - fileName: name of actual tested file
+  - elementID: id of actual element
+  - linkType: 1 --> Doc linked to contract
+              2 --> Doc linked to lot
+              3 --> Doc linked to slice
+              4 --> Doc linked to program
+
+  *******************************************/
+  function GetGoodDocClass(docType, linkType, actualPage, file, fileName, elementID){
+
+    _returnObj = new Object();
+
+    switch(docType){
+
+      case 'ADV':
+      case 'ATV':
+      case 'RES':
+
+        if(linkType == 1){
+
+          _returnObj.class = '.contract-documents';
+          _returnObj.selector = '<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+        }
+
+        break;
+
+      case 'PSS':
+      case 'PMA':
+      case 'LOG':
+      case 'ELE':
+      case 'CUI':
+      case 'EXC':
+
+        if(docType == 2 && actualPage == '/cgd_contract/'){
+
+          _returnObj.class = '[data-lot-id=' + elementID + '] .contract-documents-plans';
+          _returnObj.selector = '<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+        }
+        else if(docType == 2 && actualPage == '/cgd_documents/'){
+
+          _returnObj.class = '.documents-box-plan .documents-list';
+          _returnObj.selector = '<div class="item"><a href="' + file + '">' + fileName + '</a></div>';
+        }
+
+        break;
+
+      case 'CHG':
+      case 'CHO':
+
+        if(linkType == 3){
+
+          _returnObj.class = '[data-lot-id=' + elementID + '] .contract-documents-presta';
+          _returnObj.selector = '<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+        }
+
+        break;
+
+      case 'BRO':
+
+        _returnObj.class = '.links';
+        _returnObj.selector = '<li><a href="' + file + '">Télécharger la brochure</a></li>';
+
+        break;
+    }
+
+    return _returnObj;
   }
 
 </script>

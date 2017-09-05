@@ -1,19 +1,20 @@
 {% if request.params['id'] %}
 
   {% assign contractId = request.params['id'] %}
-
+  {% assign parentalLot = request.params['parent'] %}
+  
   {% fetchxml lots %}
-    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
       <entity name="acq_lot">
         <all-attributes />
-        <filter>
+        <filter type="or" >
           <condition attribute="acq_lot" operator="eq" value="{{contractId}}" />
+          <condition attribute="acq_lotparent" operator="eq" value="{{parentalLot}}" />
         </filter>
-        <order attribute="acq_lotparent" />
-        <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche">
-          <all-attributes />
-          <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme">
-            <all-attributes />
+        <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche" >
+          <all-attributes/>
+          <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme" >
+            <all-attributes/>
           </link-entity>
         </link-entity>
       </entity>

@@ -84,10 +84,10 @@
     $('.contract-multi-selection').css('display', 'block');
 
     //Initialise les liens pour tomber sur le bon contrat
-    $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId'));
-    $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
-    $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId'));
-    $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
+    $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+    $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+    $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+    $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
     
     //Utilisateur sur la page d'accueil
     if(window.location.pathname == '{{home_url}}')
@@ -200,7 +200,9 @@
       $('<div class="item-label">PRÉNOM</div>').insertBefore('#firstname');
       $('<div class="item-label">EMAIL</div>').insertBefore('#emailaddress1');
       $('<div class="item-label">CIVILITÉ</div>').insertBefore('#acq_civilite');
-      $('<div class="item-label">ADRESSE</div>').insertBefore('#address1_line1');
+      $('<div class="item-label">ADRESSE LIGNE 1</div>').insertBefore('#address1_line1');
+      $('<div class="item-label">ADRESSE LIGNE 2</div>').insertBefore('#address1_line2');
+      $('<div class="item-label">ADRESSE LIGNE 3</div>').insertBefore('#address1_line3');
       $('<div class="item-label">CODE POSTAL</div>').insertBefore('#address1_postalcode');
       $('<div class="item-label">VILLE</div>').insertBefore('#address1_city');
       $('<div class="item-label">TEL. PORTABLE</div>').insertBefore('#mobilephone');
@@ -210,8 +212,12 @@
       var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Mon Profil</h1></div></div></div>';
       $('#content_form').prepend(html);
 
+
+      //Separateurs entre les différentes sections du profil
+      $('<tr><td class="clearfix cell text form-control-cell" colspan="2" rowspan="1"><hr></td></tr>').insertAfter($('#firstname, #address1_city, #emailaddress1').parents('tr'));
+
       //Add classes to add styles
-      $('#firstname, #lastname, #emailaddress1, #telephone1, #acq_civilite, #address1_line1, #address1_postalcode, #address1_city, #mobilephone, #telephone2').addClass('form-control form-text');
+      $('#firstname, #lastname, #emailaddress1, #telephone1, #acq_civilite, #address1_line1, #address1_line2, #address1_line3, #address1_postalcode, #address1_city, #mobilephone, #telephone2').addClass('form-control form-text');
 
     }
 
@@ -344,6 +350,7 @@
       var lots = $(this).attr('lots').split('|');
       var contractName = $(this).attr('contractName');
       var contractId = $(this).attr('contractId');
+      var parentalLot = $(this).attr('parentalLot');
       var program = new Object();
       program.name = $(this).attr('programName');
       program.address1 = $(this).attr('address1');
@@ -355,16 +362,17 @@
       $('.title .address-3').html(program.address2);
       $('.info .field__item').remove();
       setCookie('contractId', contractId, 7);
+      setCookie('parentalLot', parentalLot, 7);
 
       for (var i = 0; i < lots.length - 1 ; i++) {
-        $('.lot-items').append('<li class="field__item"><a href="{{contract_url}}?id=' + getCookie('contractId') + '"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>');
+        $('.lot-items').append('<li class="field__item"><a href="{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot') + '"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>');
       }
 
       //Initialise les bon liens vers le bon contrat     
-      $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId'));
-      $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
-      $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId'));
-      $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId'));
+      $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+      $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+      $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+      $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
     });
 
     $('.block-messages-content .message-row .info .response .expand, .block-messages-content .message-row .info .response .open-text, .block-messages-content .message-row .info .response .close-text').click(function(){
@@ -425,31 +433,8 @@
     });
 
     //Recherche des documents lorsque l'utilisateur est sur la page "mon contrat" ou "mes documents"
-    if(window.location.pathname == '{{contract_url}}' || window.location.pathname == '{{documents_url}}'){
-
-      var _obj = new Object();
-      _obj = {"FolderId": "{{request.params['id']}}", "LibraryName":"contact"};
-
-      //Call Web Service
-      $.ajax({
-        type: "POST",
-        url: 'https://localhost/SharePointService/Service.svc/ListFilesByFolderId?FolderId=' + _obj.FolderId + "&LibraryName=" +_obj.LibraryName,
-        dataType: "json",
-        success: function(data){
-
-          if(data.length == 0){
-            $('.loader').css('display', 'none');
-            return;
-          }
-
-          for (var i = 0; i < data.length; i++)
-            GetFileMetaInfo(data[i], i, data.length);
-        },
-        error: function(xhr, textStatus, errorThrown){
-          console.log(textStatus + " " + errorThrown + " - " + xhr);
-        }
-      });
-    }
+    if(window.location.pathname == '{{contract_url}}' || window.location.pathname == '{{documents_url}}')
+      GetFilePaths("{{request.params['id']}}", 1, window.location.pathname);
 
     $('.form-horizontal, .contact-us-form, #content_form').css('display', 'block');    
 
@@ -460,78 +445,6 @@
       $($('.container').get(1)).empty();
       $($('.container').get(1)).append('<div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title"></h1></div><div class="block-404-content"><h1 class="block-title">Page introuvable</h1><div class="content"><p>Il semblerait que la page recherchée n’existe pas</p><div class="button-return"><a href="/" class="btn btn-consult-3">RETOUR À L’ACCUEIL</a></div></div></div>');
     }
-  });
-
-  function GetFileMetaInfo(pathName, index, maxIndex){
-
-    var path = pathName;
-
-    //Call Web Service
-    $.ajax({
-      type: "GET",
-      url: 'https://localhost/SharePointService/Service.svc/GetFileMetaInfo?fileURl=' + pathName,
-      dataType: "json",
-      success: function(data){
-
-        var type = data[20].Value;
-        var path = this.url.substr(this.url.indexOf('/sites'), this.url.length);
-        var file = 'https://localhost/SharePointService/Service.svc/GetFileByUrl?fileURl=' + path;
-        var selector = '';
-        var fileName = data[2].Value.substr(0, data[2].Value.indexOf('.'));
-
-        switch(type){
-
-          case 'ADV':
-          case 'ATV':
-          case 'RES':
-            $('.contract-documents').append('<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>');
-            break;
-          case 'PSS':
-          case 'PMA':
-          case 'LOG':
-          case 'ELE':
-          case 'CUI':
-          case 'EXC':
-            if(window.location.pathname == '{{contract_url}}')
-              $('.contract-documents-plans').append('<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>');
-            else
-              $('.documents-box-plan .documents-list').append('<div class="item"><a href="' + file + '">' + fileName + '</a></div>');
-            break;
-          case 'CHG':
-          case 'CHO':
-            $('.contract-documents-presta').append('<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>');
-            break;
-          case 'BRO':
-            $('.links').append('<li><a href="' + file + '">Télécharger la brochure</a></li>');
-            break;
-        }
-
-        //Fin de chargement du fichier, on enlève les spinners
-        if(index + 1 == maxIndex)
-          $('.loader').css('display', 'none');       
-      },
-      error: function(xhr, textStatus, errorThrown){
-        console.log(textStatus + " " + errorThrown + " - " + xhr);
-      }
-    });
-  }
-
-  function GetFileContent(pathName){
-
-    //Call Web Service
-    $.ajax({
-      type: "GET",
-      url: 'https://localhost/SharePointService/Service.svc/GetFileMetaInfo?fileURl=' + pathName,
-      dataType: "json",
-      async: true,
-      success: function(data){
-        return data;
-      },
-      error: function(xhr, textStatus, errorThrown){
-        console.log(textStatus + " " + errorThrown + " - " + xhr);
-      }
-    });
-  }
-  
+  }); 
 
 </script>
