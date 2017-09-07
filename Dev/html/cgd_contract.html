@@ -7,6 +7,18 @@
   {% assign contractId = request.params['id'] %}
   {% assign parentalLot = request.params['parent'] %}
 
+  {% fetchxml contract %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+      <entity name="acq_contrats">
+        <all-attributes />
+        <filter>
+          <condition attribute="acq_contratsid" operator="eq" value="{{contractId}}" />
+        </filter>
+        <order attribute="createdon" descending="true" />
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
   {% fetchxml lots %}
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
       <entity name="acq_lot">
@@ -27,6 +39,9 @@
 
   {% assign cpt = 1 %}
   {% assign contractLots = '' %}
+  {% assign contractMontantTotal = contract.results.entities[0]['acq_montanttotal'] %}
+  {% assign contractTotalEcaisse = contract.results.entities[0]['acq_totalencaisse'] %}
+  {% assign contractAppelFondEmis = contract.results.entities[0]['acq_appelsdefondstravauxemis'] %}
   {% assign trancheName =  lots.results.entities[0]['tranche.acq_name'] %}
   {% assign RRCName = lots.results.entities[0]['programme.ownerid_owneridyominame'] %}
   {% assign programName =  lots.results.entities[0]['programme.acq_name'] %}
@@ -121,16 +136,10 @@
   
   {% if lot.acq_typedelot.label == 'Maison' or lot.acq_typedelot.label == 'Appartement' %}
 
-    <script type="text/javascript">
-      
-      GetFilePaths("{{lot.acq_lotid}}", 2, window.location.pathname);
-
-    </script>
-
     <div class="contrat-lots-wrapper">
       <div class="container">
         <div class="block-contrat-lots">
-          <div class="contrat-lot {% if forloop.first %}expanded{% endif %}" data-lot-id="{{lot.acq_lotid}}">
+          <div class="contrat-lot {% if forloop.first %}expanded first{% endif %}" data-lot-id="{{lot.acq_lotid}}">
             <h3 class="lot-title">
               <span class="title">{{lot.acq_typologie}}</span>
               <span class="num">(LOT N°{{lot.acq_numero}})</span>
@@ -193,14 +202,14 @@
                   <h4 class="title">Mes Plans</h4>
                   <div class="downloads">
                     <ul class="contract-documents-plans"></ul>
-                    <div class="loader"></div> 
+                    {% if forloop.first %}<div class="loader"></div>{% endif %}
                   </div>
                 </div>
                 <div class="info-col choix">
                   <h4 class="title">Mes Prestations</h4>
                   <div class="downloads">
                     <ul class="contract-documents-presta"></ul>
-                    <div class="loader"></div> 
+                    {% if forloop.first %}<div class="loader"></div>{% endif %}
                   </div>
                 </div>
               </div>
@@ -231,16 +240,26 @@
           <div class="specification">
             <ul>
               <li>
+                {% assign contractMontantTotal = contractMontantTotal | string | split: ',' %}
+                {% assign contractMontantTotal = contractMontantTotal[0] %}
+
                 <span class="spec-label">Total contrat</span>
-                <span class="spec-value">450 000 €</span>
+                <span class="spec-value">{{contractMontantTotal}} €</span>
               </li>
               <li>
+                {% assign contractAppelFondEmis = contractAppelFondEmis | string | split: ',' %}
+                {% assign contractAppelFondEmis = contractAppelFondEmis[0] %}
+
                 <span class="spec-label">Cumul appels de fonds émis</span>
-                <span class="spec-value">0 €</span>
+                <span class="spec-value">{{contractAppelFondEmis}} €</span>
               </li>
               <li>
+                {% assign contractTotalEcaisse = contractTotalEcaisse | string | split: ',' %}
+                {% assign contractTotalEcaisse = contractTotalEcaisse[0] %}
+                
+
                 <span class="spec-label">Total déjà versé</span>
-                <span class="spec-value">0 €</span>
+                <span class="spec-value">{{contractTotalEcaisse}} €</span>
               </li>
             </ul>
           </div>

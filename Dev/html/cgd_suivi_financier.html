@@ -1,0 +1,162 @@
+{% if request.params['id'] %}
+
+  {% assign contractId = request.params['id'] %}
+
+  {% fetchxml contract %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+      <entity name="acq_contrats">
+        <all-attributes />
+        <filter>
+          <condition attribute="acq_contratsid" operator="eq" value="{{contractId}}" />
+        </filter>
+        <order attribute="createdon" descending="true" />
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  {% assign totalContrat = contract.results.entities[0]['acq_montanttotal'] | string | split: ',' %}
+  {% assign totalContrat = totalContrat[0] %}
+
+  {% assign appelsFondsEmis = contract.results.entities[0]['acq_appelsdefondstravauxemis'] | string | split: ',' %}
+  {% assign appelsFondsEmis = totappelsFondsEmisalContrat[0] %}
+
+  {% assign appelsFondsEncaisse = contract.results.entities[0]['acq_appelsdefondstravauxencaisses'] | string | split: ',' %}
+  {% assign appelsFondsEncaisse = appelsFondsEncaisse[0] %}
+
+  {% assign TMAEmis = contract.results.entities[0]['acq_tmaemises'] | string | split: ',' %}
+  {% assign TMAEmis = TMAEmis[0] %}
+
+  {% assign TMAEncaisse = contract.results.entities[0]['acq_tmaencaissees'] | string | split: ',' %}
+  {% assign TMAEncaisse = TMAEncaisse[0] %}
+
+  {% assign totalappele = contract.results.entities[0]['acq_totalappele'] | string | split: ',' %}
+  {% assign totalappele = totalappele[0] %}
+
+  {% assign totalencaisse = contract.results.entities[0]['acq_totalencaisse'] | string | split: ',' %}
+ {% assign totalencaisse = totalencaisse[0] %}  
+
+{% endif %}
+
+<div class="page-header-wrapper">
+  <div class="container">
+    <div id="block-pagetitle" class="block block-core block-page-title-block block-page-title">
+      <h1 class="page-title">Mon suivi financier <small>CONTRAT N°{{contractId}}</small></h1>
+    </div>
+  </div>
+</div>
+<div class="content-wrapper">
+  <div class="container">
+    <div class="block-system-content block-financial-content">
+      <div class="row clearfix">
+        <div class="content-col">
+          <div class="text-content">
+            <div id="block-contracttotal" class="block block-ce-contract block-ce-contract-total">
+              <div class="finance-total">
+                <h3 class="title">Total contrat</h3>
+                <div class="value">{{totalContrat}} €</div>
+              </div>
+            </div>
+            <div id="block-financetotal" class="block block-ce-contract block-ce-contract-finance-total">
+              <table class="finance-table" cellspacing="0" cellpadding="0">
+                <caption>
+                  <h3>Suivi financier</h3>
+                </caption>
+                <thead>
+                  <tr>
+                    <th class="finance-title"></th>
+                    <th class="finance-date">Appelé </th>
+                    <th class="finance-quote">Payé </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    
+
+
+                    <td>Total appels de fonds travaux</td>
+                    <td>{{appelsFondsEmis}} €</td>
+                    <td>{{appelsFondsEncaisse}} €</td>
+                  </tr>
+                  <tr>
+                    {% assign TMAEmis = TMAEmis | string | split: ',' %}
+                    {% assign TMAEmis = TMAEmis[0] %}
+                    {% assign TMAEncaisse = TMAEncaisse | string | split: ',' %}
+                    {% assign TMAEncaisse = TMAEncaisse[0] %}
+
+                    <td>Total TMAs</td>
+                    <td>{{TMAEmis}} €</td>
+                    <td>{{TMAEncaisse}} €</td>
+                  </tr>
+                </tbody>
+                <tbody>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    {% assign totalappele = totalappele | string | split: ',' %}
+                    {% assign totalappele = totalappele[0] %}
+                    {% assign totalencaisse = totalencaisse | string | split: ',' %}
+                    {% assign totalencaisse = totalencaisse[0] %}
+
+                    <td>TOTAL</td>
+                    <td>{{totalappele}} €</td>
+                    <td>{{totalencaisse}} €</td>
+                  </tr>
+                </tfoot>
+              </table>
+              <div class="table-accordion table-accordion-finance hidden-md hidden-lg">
+                <div class="table-caption">
+                  <h3>Suivi financier</h3>
+                </div>
+                <div class="item">
+                  <div class="item-title">Total appels de fonds travaux</div>
+                  <div class="item-content">
+                    <div class="cell"><span class="cell-title">Appelé </span>0 €</div>
+                    <div class="cell"><span class="cell-title">Payé </span>0 €</div>
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="item-title">Total TMAs</div>
+                  <div class="item-content">
+                    <div class="cell"><span class="cell-title">Appelé </span>0 €</div>
+                    <div class="cell"><span class="cell-title">Payé </span>0 €</div>
+                  </div>
+                </div>
+                <div class="table-footer">
+                  <div class="cell"><span class="cell-title">TOTAL Appelé </span>0 €</div>
+                  <div class="cell"><span class="cell-title">TOTAL Payé </span>0 €</div>
+                </div>
+              </div>
+              <div class="finance-result">
+                <div class="title">Mon solde au <span>04 09 2017 :</span></div>
+                <div class="value">450 000 €</div>
+              </div>
+            </div>
+            <div id="block-downloaddocument" class="block block-ce-contract block-ce-contract-document-download">
+              <div class="finance-button">
+                <a href="/document/download/18280_120___CAF__160913" class="btn btn-file" target="_blank">Consulter le calendrier prévisionnel d'appels de fonds</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sidebar-col">
+          <div id="block-cogedimfaqrightblock" class="block block-ce-faq block-ce-faq-right">
+            <div class="aside-contact aside-faq">
+              <div class="aside-label">FAQ</div>
+              <div class="title">Vous avez des questions ?</div>
+              <div class="faq-items">
+                <div class="item faq">
+                  <div class="item-label"><a href="/faq"><span>FAQ générale</span></a></div>
+                </div>
+              </div>
+              <div class="faq-actions">
+                <div class="item">
+                  <a href="https://www.mon-cogedim.com/user/contact-rrc" class="btn btn-consult-2">Contactez-nous</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

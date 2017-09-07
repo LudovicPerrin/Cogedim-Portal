@@ -9,31 +9,12 @@ body[data-sitemap-state="/page-not-found/:/"] #block-pagetitle{
 	margin-top: 65px;
 }
 
-select::after {
-    display: block;
-    width: 0;
-    height: 0;
-    content: " ";
-    position: absolute;
-    right: 28px;
-    top: 22px;
-    border-style: solid;
-    border-width: 5px 5px 0;
-    border-color: #a31a7e transparent transparent;
-    z-index: 6;
-    pointer-events: none;
-}
-
-textarea{
+textarea, select, footer .footer-top{
 	background: white !important;
 }
 
 footer .container{
 	padding-top: 50px !important;
-}
-
-footer .footer-top{
-	background-color: white;
 }
 
 .messages-iframe{
@@ -143,6 +124,34 @@ footer .footer-top{
 .panel-heading{
 	background-color: rgba(163, 26, 126, 0.75) !important;
 	border-bottom-color: #42145f !important; 
+}
+
+.select-contract-wrapper .select-contract::after {
+    display: block;
+    width: 0;
+    height: 0;
+    content: " ";
+    position: absolute;
+    right: 28px;
+    top: 22px;
+    border-style: solid;
+    border-width: 5px 5px 0;
+    border-color: #a31a7e transparent transparent;
+    z-index: 6;
+    pointer-events: none;
+}
+
+.select-contract-title{
+	padding-top: 0px !important;
+	padding-bottom: 5px !important;
+	margin-top: 0px !important;
+	border-top: none !important;
+}
+
+.select-contract-wrapper{
+	background: rgba(248, 248, 248, 0.5);
+	padding: 20px;
+	margin-bottom: 50px;
 }
 
 .well{

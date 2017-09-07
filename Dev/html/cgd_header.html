@@ -171,7 +171,7 @@
                 <ul class="dropdown-menu" aria-labelledby="contractLabel">
                   {% for contract in contracts.results.entities %}
                     <li class="menu-item {% if forloop.first %}menu-item--collapsed{% endif %}">
-                      <a href="{{contract_url | append: '?id=' | append: contract.acq_contratsid | append: '&parent=' | append: contract.acq_lotprincipal.id}}" {% if forloop.first %}menu-item--collapsed{% endif %}>Contrat - {{contract.acq_contratsid}}</a>
+                      <a href="{{contract_url | append: '?id=' | append: contract.acq_contratsid | append: '&parent=' | append: contract.acq_lotprincipal.id}}" contractId="{{contract.acq_contratsid}}" parentalLot="{{contract.acq_lotprincipal.id}}" {% if forloop.first %}menu-item--collapsed{% endif %}>Contrat - {{contract.acq_contratsid}}</a>
                     </li>
                   {% endfor %}
                 </ul>
@@ -387,11 +387,6 @@
         var file = 'https://localhost/SharePointService/Service.svc/GetFileByUrl?fileURl=' + path;
         var selector = '';
         var fileName = data[2].Value.substr(0, data[2].Value.indexOf('.'));
-        //var _obj = GetGoodDocClass(docType, linkType, actualPage, file, fileName, elementID);
-
-        //Add good document link into good "a" node
-        //$(_obj.class).append(_obj.selector);
-
         var _obj = new Object();
 
         switch(docType){
@@ -474,79 +469,6 @@
         console.log(textStatus + " " + errorThrown + " - " + xhr);
       }
     });
-  }
-
-  /*******************************************
-  
-  - docType: PortalTag Meta Info in SharePoint
-  - actualPage: Name of actual web page
-  - file: actual tested file
-  - fileName: name of actual tested file
-  - elementID: id of actual element
-  - linkType: 1 --> Doc linked to contract
-              2 --> Doc linked to lot
-              3 --> Doc linked to slice
-              4 --> Doc linked to program
-
-  *******************************************/
-  function GetGoodDocClass(docType, linkType, actualPage, file, fileName, elementID){
-
-    _returnObj = new Object();
-
-    switch(docType){
-
-      case 'ADV':
-      case 'ATV':
-      case 'RES':
-
-        if(linkType == 1){
-
-          _returnObj.class = '.contract-documents';
-          _returnObj.selector = '<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
-        }
-
-        break;
-
-      case 'PSS':
-      case 'PMA':
-      case 'LOG':
-      case 'ELE':
-      case 'CUI':
-      case 'EXC':
-
-        if(docType == 2 && actualPage == '/cgd_contract/'){
-
-          _returnObj.class = '[data-lot-id=' + elementID + '] .contract-documents-plans';
-          _returnObj.selector = '<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
-        }
-        else if(docType == 2 && actualPage == '/cgd_documents/'){
-
-          _returnObj.class = '.documents-box-plan .documents-list';
-          _returnObj.selector = '<div class="item"><a href="' + file + '">' + fileName + '</a></div>';
-        }
-
-        break;
-
-      case 'CHG':
-      case 'CHO':
-
-        if(linkType == 3){
-
-          _returnObj.class = '[data-lot-id=' + elementID + '] .contract-documents-presta';
-          _returnObj.selector = '<li><a href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
-        }
-
-        break;
-
-      case 'BRO':
-
-        _returnObj.class = '.links';
-        _returnObj.selector = '<li><a href="' + file + '">Télécharger la brochure</a></li>';
-
-        break;
-    }
-
-    return _returnObj;
   }
 
 </script>

@@ -78,6 +78,8 @@
 <script type="text/javascript" src="/cgd_slick.min.js"></script>
 <script type="text/javascript">
   
+  var _tab = [];
+
   $(window).ready(function(){    
 
     $('.menu-item a').removeClass('.is-active');
@@ -332,19 +334,39 @@
       }
     });
 
+    //Click on lot accordeon header (contract page)
     $('h3.lot-title').click(function(){
 
+      //Get lot id of selected lot
+      var lot_id = $(this).parent().attr('data-lot-id');
+
+      //Check if the id has already been added into the array
+      //These condition is used to call the web service only one time per lot section to show the documents
+      if(_tab.indexOf(lot_id) == -1){
+
+        //Display loader element
+        $(this).next().find('.downloads').append('<div class="loader"></div>');
+
+        //Check if there are document links to show into the accordeon detail
+        GetFilePaths(lot_id, 2, window.location.pathname);
+
+        //We add the id into the array
+        _tab.push(lot_id);
+      }
+      
+      //Add or remove "expanded" class to show or not the accordeon detail
       $(this).parent().hasClass('expanded') ?
         $(this).parent().removeClass('expanded') :
         $(this).parent().addClass('expanded');
     });
 
+    //Click on contract into carrousel (home page)
     $('.contract-item').click(function(){
 
       $('.contract-item').removeClass('selected-contract')
       $(this).addClass('selected-contract');
 
-      //Récupération des données du contrat sélectionné
+      //Get selected contract's data
       var rrc = $(this).attr('rrc');
       var trancheName = $(this).attr('trancheName');
       var lots = $(this).attr('lots').split('|');
@@ -356,7 +378,7 @@
       program.address1 = $(this).attr('address1');
       program.address2 = $(this).attr('address2');
 
-      //Mise à jour des données de la page
+      //Page data update
       $('.title .field--name-name').html(program.name);
       $('.title .address-1').html(program.address1);
       $('.title .address-3').html(program.address2);
@@ -364,11 +386,12 @@
       setCookie('contractId', contractId, 7);
       setCookie('parentalLot', parentalLot, 7);
 
+      //Set good link collection linked to selected contract
       for (var i = 0; i < lots.length - 1 ; i++) {
         $('.lot-items').append('<li class="field__item"><a href="{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot') + '"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>');
       }
 
-      //Initialise les bon liens vers le bon contrat     
+      //Initialize good links to good contract     
       $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
       $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
       $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
@@ -402,6 +425,27 @@
         $(this).parents('.message-row').addClass('expanded');  
     });
 
+    $('.contracts-dropdown .dropdown-menu a').click(function(){
+
+      var contractId = $(this).attr('contractId');
+      var parentalLot_id = $(this).attr('parentalLot');
+
+      setCookie('contractId', contractId, 7);
+      setCookie('parentalLot', parentalLot_id, 7);
+    });
+
+    $('.select-contract select').change(function(){
+
+      var contractId = $(this).find('option:selected').attr('value');
+      var parentalLot_id = $(this).find('option:selected').attr('parentalLot');
+
+      setCookie('contractId', contractId, 7);
+      setCookie('parentalLot', parentalLot_id, 7);
+
+      window.location.href = '{{documents_url}}?id=' + contractId + '&parent=' + parentalLot_id;
+    });
+
+    //Initialize carrousel on home page
     $('.contrat-slider-panel').slick({
       prevArrow: '<a href="#" class="slick-prev">prev</a>',
       nextArrow: '<a href="#" class="slick-next">next</a>',
@@ -416,6 +460,7 @@
       variableWidth: false
     });
 
+    //Initialize carrousel on contract page
     $('.contract-slider').slick({
       slidesToShow: 3,
       slidesToScroll: 3,
@@ -433,18 +478,25 @@
     });
 
     //Recherche des documents lorsque l'utilisateur est sur la page "mon contrat" ou "mes documents"
-    if(window.location.pathname == '{{contract_url}}' || window.location.pathname == '{{documents_url}}')
-      GetFilePaths("{{request.params['id']}}", 1, window.location.pathname);
+    if(window.location.pathname == '{{contract_url}}' || window.location.pathname == '{{documents_url}}'){
+
+      var parentalLot_id = $('.contrat-lots-wrapper .contrat-lot.expanded').attr('data-lot-id');
+      var contract_id = '{{request.params["id"]}}';
+      _tab.push(parentalLot_id);
+
+      GetFilePaths(contract_id, 1, window.location.pathname);
+      GetFilePaths(parentalLot_id, 2, window.location.pathname);
+    }
 
     $('.form-horizontal, .contact-us-form, #content_form').css('display', 'block');    
 
-    //Utilisateur sur la page "error 404"
+    //User on "error 404" page
     if($('#content_form .page-header .xrm-attribute-value').length > 0 && $('#content_form .page-header .xrm-attribute-value')[0].innerText == 'Page introuvable'){
       
       $('.page-heading').remove();
       $($('.container').get(1)).empty();
       $($('.container').get(1)).append('<div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title"></h1></div><div class="block-404-content"><h1 class="block-title">Page introuvable</h1><div class="content"><p>Il semblerait que la page recherchée n’existe pas</p><div class="button-return"><a href="/" class="btn btn-consult-3">RETOUR À L’ACCUEIL</a></div></div></div>');
     }
-  }); 
+  });
 
 </script>
