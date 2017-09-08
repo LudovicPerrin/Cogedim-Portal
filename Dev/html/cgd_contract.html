@@ -1,3 +1,4 @@
+{% assign financial_url = sitemarkers['Suivi Financier'].url %}
 {% assign contactus_url = sitemarkers['Contact Us'].url %}
 {% assign documents_url = sitemarkers['Documents'].url %}
 {% assign home_url = sitemarkers['Home'].url %}
@@ -48,6 +49,7 @@
   {% assign programAddress = lots.results.entities[0]['programme.acq_adresse1'] %}
   {% assign programCity =  lots.results.entities[0]['programme.acq_ville'] %}
   {% assign programPostCode = lots.results.entities[0]['programme.acq_codepostal'] %}
+  {% assign program3DView = lots.results.entities[0]['programme.acq_plans3durl'] %}
 
 {% endif %}
 
@@ -119,9 +121,11 @@
         </div>
         <div class="info-col col-2">
           <ul class="links">
-            <li>
-              <a href="http://altarea-cogedim.live.evimmo.fr/services/cogedim/iframe?p=42651" class="0" target="_blank">La résidence en 3D<span class="0"><span class="element-invisible"> </span></span></a>
-            </li>
+            {% if program3DView %}
+              <li>
+                <a href="http://altarea-cogedim.live.evimmo.fr/services/cogedim/iframe?p=42651" class="0" target="_blank">La résidence en 3D<span class="0"><span class="element-invisible"> </span></span></a>
+              </li>
+            {% endif %}
           </ul>
           <div class="action hidden-md hidden-lg">
             <a href="{{contactus_url}}" class="btn btn-consult">Contactez-nous</a>
@@ -139,7 +143,7 @@
     <div class="contrat-lots-wrapper">
       <div class="container">
         <div class="block-contrat-lots">
-          <div class="contrat-lot {% if forloop.first %}expanded first{% endif %}" data-lot-id="{{lot.acq_lotid}}">
+          <div class="contrat-lot {% if forloop.first %}expanded first{% endif %}" data-lot-id="{{lot.acq_lotid}}" data-lot-name="{{lot.acq_idlot}}">
             <h3 class="lot-title">
               <span class="title">{{lot.acq_typologie}}</span>
               <span class="num">(LOT N°{{lot.acq_numero}})</span>
@@ -232,7 +236,7 @@
             <div class="loader"></div> 
           </div>
           <div class="actions">
-            <a href="{{documents_url}}" class="btn btn-primary">Tous mes documents</a>
+            <a href="{{documents_url | append: '?id=' | append: contractId | append: '&parent=' | append: parentalLot}}" class="btn btn-primary">Tous mes documents</a>
           </div>
         </div>
         <div class="info-box financial">
@@ -264,17 +268,17 @@
             </ul>
           </div>
           <div class="actions">
-            <a href="https://www.mon-cogedim.com/financial/18280-990001-1" class="btn btn-primary">Voir le Détail</a>
+            <a href="{{financial_url | append: '?id=' | append: contractId | append: '&parent=' | append: parentalLot}}" class="btn btn-primary">Voir le Détail</a>
           </div>
         </div>
         <div class="info-box modifications">
           <h4 class="title h4-min">Mes Personnalisations</h4>
           <div class="downloads">
-            <ul><!-- <div class="empty">Vous n'avez pas encore de personnalisation</div> --></ul>
+            <ul class="tma-documents"><!-- <div class="empty">Vous n'avez pas encore de personnalisation</div> --></ul>
             <div class="loader"></div> 
           </div>
           <div class="actions">
-            <a href="{{documents_url}}" class="btn btn-primary">Tous mes documents</a>
+            <a href="{{documents_url | append: '?id=' | append: contractId | append: '&parent=' | append: parentalLot}}" class="btn btn-primary">Tous mes documents</a>
           </div>
         </div>
       </div>

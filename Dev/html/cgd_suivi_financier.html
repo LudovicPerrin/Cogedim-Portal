@@ -18,22 +18,25 @@
   {% assign totalContrat = totalContrat[0] %}
 
   {% assign appelsFondsEmis = contract.results.entities[0]['acq_appelsdefondstravauxemis'] | string | split: ',' %}
-  {% assign appelsFondsEmis = totappelsFondsEmisalContrat[0] %}
+  {% assign appelsFondsEmis = appelsFondsEmis[0] %}
 
   {% assign appelsFondsEncaisse = contract.results.entities[0]['acq_appelsdefondstravauxencaisses'] | string | split: ',' %}
   {% assign appelsFondsEncaisse = appelsFondsEncaisse[0] %}
 
-  {% assign TMAEmis = contract.results.entities[0]['acq_tmaemises'] | string | split: ',' %}
+  {% assign TMAEmis = contract.results.entities[0]['acq_tmasemises'] | string | split: ',' %}
   {% assign TMAEmis = TMAEmis[0] %}
 
-  {% assign TMAEncaisse = contract.results.entities[0]['acq_tmaencaissees'] | string | split: ',' %}
+  {% assign TMAEncaisse = contract.results.entities[0]['acq_tmasencaissees'] | string | split: ',' %}
   {% assign TMAEncaisse = TMAEncaisse[0] %}
 
   {% assign totalappele = contract.results.entities[0]['acq_totalappele'] | string | split: ',' %}
   {% assign totalappele = totalappele[0] %}
 
   {% assign totalencaisse = contract.results.entities[0]['acq_totalencaisse'] | string | split: ',' %}
- {% assign totalencaisse = totalencaisse[0] %}  
+  {% assign totalencaisse = totalencaisse[0] %}
+
+  {% assign solde = contract.results.entities[0]['acq_solde'] | string | split: ',' %}
+  {% assign solde = solde[0] %}  
 
 {% endif %}
 
@@ -70,19 +73,11 @@
                 </thead>
                 <tbody>
                   <tr>
-                    
-
-
                     <td>Total appels de fonds travaux</td>
                     <td>{{appelsFondsEmis}} €</td>
                     <td>{{appelsFondsEncaisse}} €</td>
                   </tr>
                   <tr>
-                    {% assign TMAEmis = TMAEmis | string | split: ',' %}
-                    {% assign TMAEmis = TMAEmis[0] %}
-                    {% assign TMAEncaisse = TMAEncaisse | string | split: ',' %}
-                    {% assign TMAEncaisse = TMAEncaisse[0] %}
-
                     <td>Total TMAs</td>
                     <td>{{TMAEmis}} €</td>
                     <td>{{TMAEncaisse}} €</td>
@@ -92,11 +87,6 @@
                 </tbody>
                 <tfoot>
                   <tr>
-                    {% assign totalappele = totalappele | string | split: ',' %}
-                    {% assign totalappele = totalappele[0] %}
-                    {% assign totalencaisse = totalencaisse | string | split: ',' %}
-                    {% assign totalencaisse = totalencaisse[0] %}
-
                     <td>TOTAL</td>
                     <td>{{totalappele}} €</td>
                     <td>{{totalencaisse}} €</td>
@@ -110,25 +100,25 @@
                 <div class="item">
                   <div class="item-title">Total appels de fonds travaux</div>
                   <div class="item-content">
-                    <div class="cell"><span class="cell-title">Appelé </span>0 €</div>
-                    <div class="cell"><span class="cell-title">Payé </span>0 €</div>
+                    <div class="cell"><span class="cell-title">Appelé </span>{{appelsFondsEmis}} €</div>
+                    <div class="cell"><span class="cell-title">Payé </span>{{appelsFondsEncaisse}} €</div>
                   </div>
                 </div>
                 <div class="item">
                   <div class="item-title">Total TMAs</div>
                   <div class="item-content">
-                    <div class="cell"><span class="cell-title">Appelé </span>0 €</div>
-                    <div class="cell"><span class="cell-title">Payé </span>0 €</div>
+                    <div class="cell"><span class="cell-title">Appelé </span>{{TMAEmis}} €</div>
+                    <div class="cell"><span class="cell-title">Payé </span>{{TMAEncaisse}} €</div>
                   </div>
                 </div>
                 <div class="table-footer">
-                  <div class="cell"><span class="cell-title">TOTAL Appelé </span>0 €</div>
-                  <div class="cell"><span class="cell-title">TOTAL Payé </span>0 €</div>
+                  <div class="cell"><span class="cell-title">TOTAL Appelé </span>{{totalappele}} €</div>
+                  <div class="cell"><span class="cell-title">TOTAL Payé </span>{{totalencaisse}} €</div>
                 </div>
               </div>
               <div class="finance-result">
-                <div class="title">Mon solde au <span>04 09 2017 :</span></div>
-                <div class="value">450 000 €</div>
+                <div class="title">Mon solde au <span>{{ 'now' | date: 'dd MM yyyy' }} :</span></div>
+                <div class="value">{{solde}} €</div>
               </div>
             </div>
             <div id="block-downloaddocument" class="block block-ce-contract block-ce-contract-document-download">

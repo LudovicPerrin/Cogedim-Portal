@@ -5,6 +5,74 @@
 {% assign messages_url = sitemarkers['Messages'].url %}
 {% assign home_url = sitemarkers['Home'].url %}
 
+{% if request.params['id'] %}
+
+  {% assign contractId = request.params['id'] %}
+  {% assign parentalLot = request.params['parent'] %}
+
+  {% fetchxml contract %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+      <entity name="acq_contrats">
+        <all-attributes />
+        <filter>
+          <condition attribute="acq_contratsid" operator="eq" value="{{contractId}}" />
+        </filter>
+        <order attribute="createdon" descending="true" />
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  {% fetchxml lots %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+      <entity name="acq_lot">
+        <all-attributes />
+        <filter type="or" >
+          <condition attribute="acq_lot" operator="eq" value="{{contractId}}" />
+          <condition attribute="acq_lotparent" operator="eq" value="{{parentalLot}}" />
+        </filter>
+        <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche" >
+          <all-attributes/>
+          <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme" >
+            <all-attributes/>
+          </link-entity>
+        </link-entity>
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  {% fetchxml firstLots %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+      <entity name="acq_lot">
+        <all-attributes />
+        <filter type="or">
+          <condition attribute="acq_lot" operator="eq" value="{{contractId}}" />
+          <condition attribute="acq_lotparent" operator="eq" value="{{parentalLot}}" />
+        </filter>
+        <filter type="and">
+          <filter type="or">
+            <condition attribute="acq_typedelot" operator="eq" value="805090000" />
+            <condition attribute="acq_typedelot" operator="eq" value="805090001" />
+          </filter>
+        </filter>
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  {% assign contractName = contract.results.entities[0]['acq_name'] | replace: ' ', '' %}
+  {% assign contractPath = contractName | append: '_' | append: contractId %}
+
+  {% assign lotPath = lots.results.entities[0]['acq_idlot'] | replace: ' ', '' | append: '_' | append: lots.results.entities[0]['acq_lotid'] %}
+
+  {% assign trancheName = lots.results.entities[0]['tranche.acq_name'] | replace: ' ', '' %}
+  {% assign trancheId = lots.results.entities[0]['tranche.acq_trancheid'] %}
+  {% assign tranchePath = trancheName | append: '_' | append: trancheId %}
+
+  {% assign programmeName = lots.results.entities[0]['programme.acq_name'] | replace: ' ', '' %}
+  {% assign programmeId = lots.results.entities[0]['programme.acq_programmesid'] %}
+  {% assign programmePath = programmeName | append: '_' | append: programmeId %}
+
+{% endif %}
+
 <footer class="region wrapper-main-footer region-footer">
   <div class="container">
     <div id="block-footer-site-branding" class="block block-system block-system-branding-block">
@@ -337,21 +405,41 @@
     //Click on lot accordeon header (contract page)
     $('h3.lot-title').click(function(){
 
-      //Get lot id of selected lot
-      var lot_id = $(this).parent().attr('data-lot-id');
+      //Get lot id and name of selected lot
+      var lot = new Object();
+      lot.id = $(this).parent().attr('data-lot-id');
+      lot.name = $(this).parent().attr('data-lot-name').replace(/ /g, '');
+      lot.path = lot.name + '_' + lot.id;
 
       //Check if the id has already been added into the array
       //These condition is used to call the web service only one time per lot section to show the documents
-      if(_tab.indexOf(lot_id) == -1){
+      if(_tab.indexOf(lot.id) == -1){
 
         //Display loader element
         $(this).next().find('.downloads').append('<div class="loader"></div>');
 
         //Check if there are document links to show into the accordeon detail
-        GetFilePaths(lot_id, 2, window.location.pathname);
+        var posts = [
+          { 
+            selectedLot: lot.id, 
+            properties: ['PortalTag'], 
+            linkType: 2, 
+            actualPage: window.location.pathname, 
+            relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path 
+          },
+          {
+            selectedLot: lot.id,
+            properties: ['PortalTag'], 
+            linkType: 3, 
+            actualPage: window.location.pathname, 
+            relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' }}"
+          }
+        ];
+
+        GetFilePaths(posts);
 
         //We add the id into the array
-        _tab.push(lot_id);
+        _tab.push(lot.id);
       }
       
       //Add or remove "expanded" class to show or not the accordeon detail
@@ -477,15 +565,79 @@
       ]
     });
 
-    //Recherche des documents lorsque l'utilisateur est sur la page "mon contrat" ou "mes documents"
-    if(window.location.pathname == '{{contract_url}}' || window.location.pathname == '{{documents_url}}'){
+    //Recherche des documents lorsque l'utilisateur est sur la page "mon contrat"
+    if(window.location.pathname == '{{contract_url}}'){
 
-      var parentalLot_id = $('.contrat-lots-wrapper .contrat-lot.expanded').attr('data-lot-id');
       var contract_id = '{{request.params["id"]}}';
-      _tab.push(parentalLot_id);
+      var lot = new Object();
+      lot.id = $('.contrat-lots-wrapper .contrat-lot.expanded').attr('data-lot-id');
+      lot.name = $('.contrat-lots-wrapper .contrat-lot.expanded').attr('data-lot-name').replace(/ /g, '');
+      lot.path = lot.name + '_' + lot.id;
 
-      GetFilePaths(contract_id, 1, window.location.pathname);
-      GetFilePaths(parentalLot_id, 2, window.location.pathname);
+      _tab.push(lot.id);
+
+      var posts = [
+        { 
+          selectedLot: lot.id,
+          properties: ['PortalTag'], 
+          linkType: 1, 
+          actualPage: window.location.pathname, 
+          relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath }}" 
+        },
+        {
+          selectedLot: lot.id,
+          properties: ['PortalTag'], 
+          linkType: 2, 
+          actualPage: window.location.pathname, 
+          relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path
+        },
+        {
+          selectedLot: lot.id,
+          properties: ['PortalTag'], 
+          linkType: 3, 
+          actualPage: window.location.pathname, 
+          relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' }}"
+        }
+      ];
+
+      GetFilePaths(posts);
+    }
+
+    //Recherche des documents lorsque l'utilisateur est sur la page "mon contrat"
+    if(window.location.pathname == '{{documents_url}}'){
+
+      var contract_id = '{{request.params["id"]}}';
+      var posts = [
+        { 
+          selectedLot: contract_id,
+          properties: ['PortalTag'], 
+          linkType: 1, 
+          actualPage: window.location.pathname, 
+          relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath }}" 
+        },
+        {
+          selectedLot: contract_id,
+          properties: ['PortalTag'], 
+          linkType: 4, 
+          actualPage: window.location.pathname, 
+          relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' }}"
+        }
+      ];
+
+      {% for lot in firstLots.results.entities %}
+        
+        var _postObj = new Object();
+        _postObj.selectedLot = '{{lot.acq_lotid}}';
+        _postObj.properties = ['PortalTag'];
+        _postObj.linkType = 2;
+        _postObj.actualPage = window.location.pathname;
+        _postObj.relativeUrl = "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' | append: lot.acq_idlot | replace: ' ', '' | append: '_' | append: lot.acq_lotid }}";
+
+        posts.push(_postObj);
+
+      {% endfor %}
+
+      GetFilePaths(posts);
     }
 
     $('.form-horizontal, .contact-us-form, #content_form').css('display', 'block');    
@@ -498,5 +650,150 @@
       $($('.container').get(1)).append('<div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title"></h1></div><div class="block-404-content"><h1 class="block-title">Page introuvable</h1><div class="content"><p>Il semblerait que la page recherchée n’existe pas</p><div class="button-return"><a href="/" class="btn btn-consult-3">RETOUR À L’ACCUEIL</a></div></div></div>');
     }
   });
+
+  function Check(data, response){
+
+    if(response.length == 0) 
+      return;
+
+    for (var i = 0; i < response.length; i++){
+      
+      var docType = response[i].properties[0].Value;
+      var path = response[i].relativeUrl;
+      var file = 'https://localhost:448/Service.svc/GetFileByUrl?fileURl=' + path + '&display=true';
+      var selector = '';
+      var fileName = response[i].Name;
+      var _obj = new Object();
+
+      if(data.actualPage == '/cgd_documents/' && data.linkType == 1){
+
+        _obj.class = '.documents-box-doc-achat .documents-list';
+        _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + fileName + '</a></div>';
+      }
+      else if(data.actualPage == '/cgd_documents/' && data.linkType == 4){
+        _obj.class = '.documents-box-doc-programme .documents-list';
+        _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + fileName + '</a></div>';
+      }
+      else{
+
+        switch(docType){
+
+          case 'ADV':
+          case 'ATV':
+          case 'RES':
+
+            if(data.linkType == 1){
+
+              _obj.class = '.contract-documents';
+              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+            }
+
+            break;
+
+          case 'PSS':
+          case 'PMA':
+          case 'LOG':
+          case 'ELE':
+          case 'CUI':
+          case 'EXC':
+
+            if(data.linkType == 2 && data.actualPage == '/cgd_contract/'){
+
+              _obj.class = '[data-lot-id=' + data.selectedLot + '] .contract-documents-plans';
+              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+            }
+            else if(data.linkType == 2 && data.actualPage == '/cgd_documents/'){
+
+              _obj.class = '[data-lot-id=' + data.selectedLot + '] .documents-box-plan .documents-list';
+              _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + fileName + '</a></div>';
+            }
+
+            break;
+
+          case 'CHG':
+          case 'CHO':
+
+            if(data.linkType == 2 || data.linkType == 3){
+
+              _obj.class = '[data-lot-id=' + data.selectedLot + '] .contract-documents-presta';
+              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+            }
+
+            break;
+
+          case 'TMA':
+
+            if(data.linkType == 1){
+
+              _obj.class = '.tma-documents';
+              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+            }
+
+            break;
+
+          case 'BRO':
+
+            if(data.linkType == 1){
+
+              _obj.class = '.links';
+              _obj.selector = '<li><a target="_blank" href="' + file + '">Télécharger la brochure</a></li>';
+            }
+
+            break;
+        }
+      }
+
+      //Set the good document link to the good place into the contract web page
+      $(_obj.class).append(_obj.selector);
+    }
+  }
+
+  function GetFilePaths(postData){
+
+    var looper = $.Deferred().resolve();
+
+    //Set var which will be tested into the JQuery "each" function
+    this.postData = postData;
+    var self = this;
+
+    $.each(postData, function(i, data) {
+
+      looper = looper.then(function() {
+        
+        return $.ajax({
+          data: JSON.stringify(data),
+          method: 'post',
+          url: 'https://localhost:448/Service.svc/ListFilesByFolderRelativeUrl',
+          contentType: "text/plain"
+        }).done(function(response) {
+
+          Check(data, response);
+
+          if(i == self.postData.length - 1){
+
+            //End of the loading time, disable load spinner
+            $('.loader').css('display', 'none'); 
+          }
+        });
+      });
+    });
+  }
+
+  function GetFileContent(pathName){
+
+    //Call Web Service
+    $.ajax({
+      type: "GET",
+      url: 'https://localhost/SharePointService/Service.svc/GetFileMetaInfo?fileURl=' + pathName,
+      dataType: "json",
+      async: true,
+      success: function(data){
+        return data;
+      },
+      error: function(xhr, textStatus, errorThrown){
+        console.log(textStatus + " " + errorThrown + " - " + xhr);
+      }
+    });
+  }
 
 </script>

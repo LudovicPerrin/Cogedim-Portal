@@ -153,36 +153,19 @@
               </div>
             </div>
             <div class="documents-row">
-              <div class="documents-box">
+              <div class="documents-box documents-box-doc-achat">
                 <h4 class="documents-label">MES DOCUMENTS D’ACHAT</h4>
-                <div class="documents-list">
-                  <div class="item">
-                    <a href="/document/download/18280-990001-1_ATV_NA_161222" target="_blank">Attestation d’acte de vente</a>
-                  </div>
-                  <div class="item">
-                    <a href="/document/download/18280-990001-1_ATV_NA_161221" target="_blank">Attestation d’acte de vente</a>
-                  </div>
-                </div>
+                <div class="documents-list"></div>
               </div>
-              <div class="documents-box">
+              <div class="documents-box documents-box-doc-programme">
                 <h4 class="documents-label">INFORMATIONS PROGRAMME</h4>
-                <div class="documents-list">
-                  <div class="item">
-                    <a href="/document/download/18280____ANF__160623" target="_blank">Attestation NF Habitat</a>
-                  </div>
-                  <div class="item">
-                    <a href="/document/download/18280____BRO__160630" target="_blank">Brochure</a>
-                  </div>
-                  <div class="item">
-                    <a href="/document/download/18280____DH2__160623" target="_blank">Déclaration H2</a>
-                  </div>
-                </div>
+                <div class="documents-list"></div>
               </div>
             </div>
             {% for lot in lots.results.entities %}  
               {% if lot.acq_typedelot.label == 'Maison' or lot.acq_typedelot.label == 'Appartement' %}
                 <h3>Documents du <span>{{lot.acq_idlot}}</span></h3>
-                <div class="documents-row">
+                <div class="documents-row" data-lot-id="{{lot.acq_lotid}}">
                   <div class="documents-box documents-box-plan">
                     <h4 class="documents-label">PLANS</h4>
                     <div class="documents-list">

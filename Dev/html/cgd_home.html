@@ -151,6 +151,7 @@
         {% assign preSelectedProgramCity =  programCity %}
         {% assign preSelectedProgramPostCode = programPostCode %}
         {% assign contractId = contract.acq_contratsid %}
+        {% assign parentalLot = contract.acq_lotprincipal.id %}
       {% endif %}
 
       {% if contracts.results.entities.size > 1 %}
@@ -198,7 +199,7 @@
                       <ul class="lot-items">
                         {% for lot in preSelectedContractLots %}
                           <li class="field__item">
-                            <a href="{{contract_url | append: '?id=' | append: contractId}}">
+                            <a href="{{contract_url | append: '?id=' | append: contractId | append: '&parent=' | append: parentalLot}}">
                               <article role="article">
                                 <div class="content">
                                   {{lot}}
@@ -211,7 +212,7 @@
                       </ul>
                     </div>
                     <div class="action">
-                      <a class="btn btn-white contract-url" href="{{contract_url | append: '?id=' | append: contractId}}" class="btn btn-white"> Voir Mon contrat</a>
+                      <a class="btn btn-white contract-url" href="{{contract_url | append: '?id=' | append: contractId | append: '&parent=' | append: parentalLot}}" class="btn btn-white"> Voir Mon contrat</a>
                     </div>
                   </div>
                 </div>
