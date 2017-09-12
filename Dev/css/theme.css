@@ -24,6 +24,8 @@ footer .container{
 
 #info-test, 
 #InsertButton,
+#guide-pratique,
+#guide-acquereur,
 .change-email .btn, 
 #submit-signin-local,
 .change-password .btn,
@@ -43,7 +45,9 @@ footer .container{
 }
 
 #InsertButton,
-.change-email .btn, 
+.change-email .btn,
+#guide-pratique,
+#guide-acquereur,
 #submit-signin-local, 
 .change-password .btn,
 #submit-forgot-password,
@@ -52,6 +56,13 @@ footer .container{
 	padding: 12px 40px !important;
 	text-transform: uppercase !important;
 	margin-top: 10px !important;
+}
+
+#guide-pratique,
+#guide-acquereur{
+	width: 100% !important;
+	font-size: 14px !important;
+	padding: 17px 0px !important;
 }
 
 .change-email .btn, 
@@ -378,10 +389,13 @@ footer .container{
 .btn.btn-consult-2::before,
 .slick-prev::before,
 .slick-next::before,
+.finance-button .btn-file::before,
 .form-connexion .form-identifiant::after, 
 .form-connexion .form-mot-de-passe::after,
 .block-contrat-lots .lot-title::after,
 #Username::after,
+#guide-pratique::before,
+#guide-acquereur::before,
 .top-bar .bell > a::before{
 	background-position: 0px !important;
 	background-size: cover !important;
@@ -419,12 +433,21 @@ footer .container{
 	background-image: url("cgd_user.png");
 }
 
+#guide-pratique::before,
+#guide-acquereur::before{
+	background-image: url("cgd_file.png");
+}
+
 .form-connexion .form-mot-de-passe::after{
 	background-image: url("cgd_password_key.png");
 }
 
 .top-bar .bell > a::before{
 	background-image: url("cgd_alert.png");
+}
+
+.finance-button .btn-file::before{
+	background-image: url("cgd_financial_call.png");
 }
 
 .cogedim-about-wrapper{

@@ -146,6 +146,7 @@
 <script type="text/javascript" src="/cgd_slick.min.js"></script>
 <script type="text/javascript">
   
+  //Array which contains all folders searched by the Web Service
   var _tab = [];
 
   $(window).ready(function(){    
@@ -169,15 +170,19 @@
         $('.menu-header').addClass('expanded');
     });
 
+    //Click on contracts dropdown --> Desktop resolution only (Header)
     $('.menu-bar-toggle').click(function(){
 
+      //Add or not "menu-expanded" class to show or not the dropdown menu detail
       $('.main-header-wrapper').hasClass('menu-expanded') ?
         $('.main-header-wrapper').removeClass('menu-expanded') :
         $('.main-header-wrapper').addClass('menu-expanded');
     });
 
+    //Click on contracts dropdown --> Mobile resolution only (Header)
     $('.menu-bar-inner .menu-user-mobile a, .menu-bar-inner .contracts-mobile a').click(function(){
 
+      //Add or not "menu-expanded" class to show or not the dropdown menu detail
       if($(this).hasClass('expanded')){
         $(this).removeClass('expanded');
         $(this).next().addClass('hidden');
@@ -188,7 +193,7 @@
       }
     });
 
-    //Click on lot accordeon header (contract page)
+    //Click on lot accordeon header (Contract page)
     $('h3.lot-title').click(function(){
 
       //Get lot id and name of selected lot
@@ -202,13 +207,23 @@
         $(this).next().find('.downloads').append('<div class="loader"></div>');
 
         //Check if there are document links to show into the accordeon detail
+        /****************************
+
+        linkType (folder level):
+
+          --> 1: Contract
+          --> 2: Lot
+          --> 3: Slice
+          --> 4: Program
+
+        ****************************/
         var posts = [
           { 
             selectedLot: lot.id, 
-            properties: ['Type document:Désignation', 'Type document:Code'], 
-            linkType: 2, 
-            actualPage: window.location.pathname, 
-            relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path 
+            properties: ['Type document:Désignation', 'Type document:Code'], //Properties to get from the SharePoint file
+            linkType: 2, //Foler level code
+            actualPage: window.location.pathname, //Actual web page
+            relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path //Folder level path
           },
           {
             selectedLot: lot.id,
@@ -235,10 +250,11 @@
     //Click on contract into carrousel (home page)
     $('.contract-item').click(function(){
 
+      //Change the color type of the selected item (selected --> purple, not selected --> white)
       $('.contract-item').removeClass('selected-contract')
       $(this).addClass('selected-contract');
 
-      //Get selected contract's data
+      //Get selected contract's data (from selected HTML item attributes)
       var rrc = $(this).attr('rrc');
       var trancheName = $(this).attr('trancheName');
       var lots = $(this).attr('lots').split('|');
@@ -267,8 +283,10 @@
       InitLinks(getCookie('contractId'), getCookie('parentalLot'));
     });
 
+    //Click on "message expand" item (Message page)
     $('.block-messages-content .message-row .info .response .expand, .block-messages-content .message-row .info .response .open-text, .block-messages-content .message-row .info .response .close-text').click(function(){
 
+      //Get origin data from the selected conversation
       var message = new Object();
       var subject = $(this).parents('.node--view-mode-message').next().children().first().attr('subject');
       var iframe = $(this).parents('.node--view-mode-message').next().find('iframe');
@@ -286,35 +304,42 @@
         "&precedent_id=" + message.precedent_id + 
         "&precedent_name=" + message.precedent_name;
 
+      //Set the good URL into the good IFrame
       if(iframe.attr('src') == "")
         iframe.attr('src', newUrl);
 
+      //Add/Remove "expanded" class to show or hide the conversation detail
       $(this).parents('.message-row').hasClass('expanded') ?
         $(this).parents('.message-row').removeClass('expanded') :
         $(this).parents('.message-row').addClass('expanded');  
     });
 
+    //Click on contracts dropdown --> Desktop resolution only (Header)
     $('.contracts-dropdown .dropdown-menu a').click(function(){
 
+      //Get the actual contractId and parentalLot 
       var contractId = $(this).attr('contractId');
       var parentalLot_id = $(this).attr('parentalLot');
 
+      //Set the data into cookies
       setCookie('contractId', contractId, 7);
       setCookie('parentalLot', parentalLot_id, 7);
     });
 
+    //Change contract from select field (Document page)
     $('.select-contract select').change(function(){
 
+      //Get the actual contractId and parentalLot 
       var contractId = $(this).find('option:selected').attr('value');
       var parentalLot_id = $(this).find('option:selected').attr('parentalLot');
 
+      //Set the data into cookies
       setCookie('contractId', contractId, 7);
       setCookie('parentalLot', parentalLot_id, 7);
 
+      //Redirect to good URL
       window.location.href = '{{documents_url}}?id=' + contractId + '&parent=' + parentalLot_id;
-    });
-
-    $('.form-horizontal, .contact-us-form, #content_form').css('display', 'block');          
+    });       
   });
 
   //Initialize all the site data
@@ -324,6 +349,7 @@
     $('.menu-item a').removeClass('.is-active');
     $('.contract-multi-selection').css('display', 'block');
     $('[data-toggle="popover"]').popover(); 
+    $('.form-horizontal, .contact-us-form, #content_form').css('display', 'block');   
 
     //Initialise liens pour tomber sur le bon contrat
     $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
@@ -628,7 +654,7 @@
         properties: ['PortalTag', 'Type document:Désignation', 'Type document:Code'], 
         linkType: 2, 
         actualPage: window.location.pathname, 
-        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path 
       },
       {
         selectedLot: lot.id,
@@ -714,6 +740,7 @@
     if(response.length == 0) 
       return;
 
+    //For each file retrieved by the web service
     for (var i = 0; i < response.length; i++){
       
       //Get document data
@@ -728,17 +755,26 @@
         _obj.class = '.documents-box-doc-achat .documents-list';
         _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + docMetaData['Type document:Désignation'] + '</a></div>';
       }
-      else if(data.actualPage == '/cgd_documents/' && data.linkType == 4 && docMetaData["Type document:Code"] != 'GDA' && docMetaData["Type document:Code"] != 'PRA'){
-        _obj.class = '.documents-box-doc-programme .documents-list';
-        _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + docMetaData['Type document:Désignation'] + '</a></div>';
+      else if(data.actualPage == '/cgd_documents/' && data.linkType == 4){
+
+        if(docMetaData["Type document:Code"] != 'GDA' && docMetaData["Type document:Code"] != 'PRA'){
+
+          _obj.class = '.documents-box-doc-programme .documents-list';
+          _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + docMetaData['Type document:Désignation'] + '</a></div>';
+        }
+        else{
+
+          var id = docMetaData["Type document:Code"] == 'GDA' ? 'guide-pratique' : 'guide-acquereur';
+
+          _obj.class = '.faq-actions';
+          _obj.selector = '<a id="' + id + '" class="btn btn-primary" target="_blank" href="' + file + '">' + id.replace(/-/g, ' ') + '</a>';
+        }
       }
       else{
 
         switch(docMetaData["Type document:Code"]){
 
-          case 'ADV':
-          case 'ATV':
-          case 'RES':
+          case 'ADV': case 'ATV': case 'RES':
 
             if(data.linkType == 1){
 
@@ -748,12 +784,7 @@
 
             break;
 
-          case 'PSS':
-          case 'PMA':
-          case 'LOG':
-          case 'ELE':
-          case 'CUI':
-          case 'EXC':
+          case 'PSS': case 'PMA': case 'LOG': case 'ELE': case 'CUI': case 'EXC':
 
             if(data.linkType == 2 && data.actualPage == '/cgd_contract/'){
 
@@ -768,8 +799,7 @@
 
             break;
 
-          case 'CHG':
-          case 'CHO':
+          case 'CHG': case 'CHO':
 
             if((data.linkType == 2 || data.linkType == 3) && data.actualPage == '/cgd_contract/'){
 
