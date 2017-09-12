@@ -71,7 +71,9 @@
 {% endfor %}
 
 {% assign array = allContracts | split: ',' %}
-{% assign tags = array[1] %}
+
+
+{% assign tags = array[0] %}
 
 {% for item in array %}
   {% unless tags contains item %}
@@ -80,6 +82,7 @@
 {% endfor %}
 
 {% assign allContracts = tags | split: '|' %}
+
 
 {% fetchxml contracts %}
   <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
@@ -106,13 +109,13 @@
       {% assign contractName =  contract.acq_name %}
 
       {% fetchxml lots %}
-        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+        <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
           <entity name="acq_lot">
             <all-attributes />
-            <filter type="or" >
-              <condition attribute="acq_lot" operator="eq" value="{{contract.acq_contratsid}}" />
-              <condition attribute="acq_lotparent" operator="eq" value="{{contract.acq_lotprincipal.id}}" />
+            <filter>
+              <condition entityname="acq_acq_contrats_acq_lots" attribute="acq_contratsid" operator="eq" value="{{contract.acq_contratsid}}" />
             </filter>
+            <link-entity name="acq_acq_contrats_acq_lots" from="acq_lotid" to="acq_lotid" intersect="true" />
             <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche" >
               <all-attributes/>
               <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme" >

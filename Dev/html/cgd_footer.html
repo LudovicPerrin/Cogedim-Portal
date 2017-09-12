@@ -23,13 +23,13 @@
   {% endfetchxml %}
 
   {% fetchxml lots %}
-    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
       <entity name="acq_lot">
         <all-attributes />
-        <filter type="or" >
-          <condition attribute="acq_lot" operator="eq" value="{{contractId}}" />
-          <condition attribute="acq_lotparent" operator="eq" value="{{parentalLot}}" />
+        <filter>
+          <condition entityname="acq_acq_contrats_acq_lots" attribute="acq_contratsid" operator="eq" value="{{contractId}}" />
         </filter>
+        <link-entity name="acq_acq_contrats_acq_lots" from="acq_lotid" to="acq_lotid" intersect="true" />
         <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche" >
           <all-attributes/>
           <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme" >
@@ -44,9 +44,8 @@
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
       <entity name="acq_lot">
         <all-attributes />
-        <filter type="or">
-          <condition attribute="acq_lot" operator="eq" value="{{contractId}}" />
-          <condition attribute="acq_lotparent" operator="eq" value="{{parentalLot}}" />
+        <filter>
+          <condition entityname="acq_acq_contrats_acq_lots" attribute="acq_contratsid" operator="eq" value="{{contractId}}" />
         </filter>
         <filter type="and">
           <filter type="or">
@@ -54,6 +53,7 @@
             <condition attribute="acq_typedelot" operator="eq" value="805090001" />
           </filter>
         </filter>
+        <link-entity name="acq_acq_contrats_acq_lots" from="acq_lotid" to="acq_lotid" intersect="true" />
       </entity>
     </fetch>
   {% endfetchxml %}
@@ -150,231 +150,17 @@
 
   $(window).ready(function(){    
 
-    $('.menu-item a').removeClass('.is-active');
-    $('.contract-multi-selection').css('display', 'block');
+    //Initialie all the web site data
+    Init();
 
-    //Initialise les liens pour tomber sur le bon contrat
-    $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-    $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-    $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-    $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-    
-    //Utilisateur sur la page d'accueil
-    if(window.location.pathname == '{{home_url}}')
-      $('.menu-item-accueil a').addClass('is-active');
-
-    //Utilisateur sur la page "contactez nous" ou "Message"
-    if(window.location.pathname == '{{contactus_url}}' || window.location.pathname == '{{messages_url}}'){
-
-      //Add classes to add good styles
-      if(window.location.pathname == '{{contactus_url}}')
-        $('.menu-item-contact a').addClass('is-active');
-
-      $('#description').addClass('form-textarea resize-vertical'); 
-      $('#subject').addClass('form-control form-text chosen-disable');
-      $('#InsertButton').addClass('button js-form-submit form-submit');
-
-      //Add place holder in the correct fields
-      $('#subject').attr('placeholder', 'Écrivez un sujet');
-      $('#description').attr('placeholder', 'Saisissez votre message…');
-      
-      //Change settings of radio buttons
-      $('#acq_direction_0').removeAttr('checked');
-      $('#acq_direction_1').prop("checked", true);
-
-      //Hide some fields
-      if(window.location.pathname == '{{messages_url}}')
-        $('#subject').parents('tr:first').css('display', 'none');
-
-      $('#acq_webuser_name').parents('tr:first').css('display', 'none');
-      $('#acq_direction_label').parents('tr:first').css('display', 'none');
-      $('#acq_messageorigine_name').parents('tr:first').css('display', 'none');
-      $('#acq_messageprecedent_name').parents('tr:first').css('display', 'none');
-      $('td.form-control-cell.datetime').parents('tr:first').css('display', 'none');
-      $('#acq_messageprecedent_name').parents('tr:first').next().css('display', 'none');
-    }
-
-    //Utilisateur sur la page de connexion
-    if(window.location.pathname == '/SignIn'){
-
-      //Remove all don't wanted HTML Elements
-      $('#content').children().first().remove();
-      $('#content').children().children('.row').children().last().remove();
-      $('#RememberMe').parents('.form-group').remove();
-      $('#Username').parent().prev().remove();
-      $('#Password').parent().prev().remove();
-      $('#content fieldset legend').remove();
-
-      //Create some HTML elements
-      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">CONNEXION</h1></div></div></div>';
-      $('#content fieldset').prepend(html);
-
-      //Add classes to add styles
-      $('#Username').addClass("form-control form-text required");
-      $('#Password').addClass("form-control form-pass form-text required");
-      $('#content').find('.col-md-6').attr('class', 'col-md-12');
-      $('#content').find('.col-sm-8').attr('class', 'col-sm-12');
-      $('#submit-signin-local')[0].innerText = 'connexion';
-      $('#submit-signin-local').next().attr('class', '');
-
-      //Add style
-      $('#submit-signin-local').parent().css('text-align', 'center');
-      $('#Username').parents('.form-group').css('margin-bottom', '25px');
-      $('#Password').parents('.form-group').css('margin-bottom', '48px');
-
-      //Add place holder in the correct fields
-      $('#Password').attr('placeholder', 'Mot de passe');
-      $('#Username').attr('placeholder', 'Votre identifiant');      
-    }
-
-    //Utilisateur sur la page "Mot de passe oublié"
-    if(window.location.pathname == '/Account/Login/ForgotPassword'){
-
-      //Remove all don't wanted HTML Elements
-      $('#Email').parents('.form-group').find('p, label').remove();
-      $('#content fieldset legend').remove();
-
-      //Create some HTML elements
-      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Mot de passe oublié?</h1></div></div></div>';
-      $('#content fieldset').prepend(html);
-      html = '<div class="container"><div class="text-content"><p>Merci d\'entrer votre identifiant pour recevoir un mail qui vous permettra de réinitialiser votre mot de passe.</p></div></div>';
-      $(html).insertAfter('#content .page-header-wrapper');
-      $('<div class="preface-bottom"></div>').insertAfter('#content');
-
-      //Add classes to add styles
-      $('#Email').addClass('form-control form-text required');
-      $('#Email').parents('.form-group').css('margin-top', '76px');
-
-      //Add style
-      $('#content').find('.col-sm-offset-2.col-sm-10').attr('class', 'col-sm-12');
-      $('#content').find('.col-sm-10').attr('class', 'col-sm-12');
-
-      //Add place holder in the correct fields
-      $('#Email').attr('placeholder', 'Votre identifiant');
-
-      //Add other HTML elements next to the form
-      $('<div class="wrapper-home-video"><div class="container"><div id="block-homepage-video" class="block block-block-content block-block-content82a11756-728a-4171-8d00-e26a166b909e"><div class="field field--name-field-node field--type-entity-reference field--label-hidden field__items"><div class="field__item"><div class="block-title"><span class="field field--name-title field--type-string field--label-hidden">Découvrez l\'Espace Client COGEDIM</span></div><div class="video-player"><figure class="youtube-container"><iframe src="https://www.youtube.com/embed/hPRi1jnjqIA?rel=0&amp;enablejsapi=1&amp;origin=https%3A//www.mon-cogedim.com&amp;wmode=opaque" id="youtube-video-88" class="youtube-field-player" title="Embedded video for Découvrez l\'Espace Client COGEDIM" allowfullscreen="" <a href="https://www.youtube.com/embed/hPRi1jnjqIA?rel=0&amp;enablejsapi=1&amp;origin=https%3A//www.mon-cogedim.com&amp;wmode=opaque">Embedded video for Découvrez l&#039;Espace Client COGEDIM</a></iframe></figure><div class="overlay"><span class="play-button"></span></div></div></div></div></div></div></div><div class="wrapper-home-articles"><div class="container"><div class="views-element-container block block-views block-views-blockautopromos-block-autopromos block-home-articles" id="block-views-block-autopromos-block-autopromos"><div class="view view-autopromos view-id-autopromos view-display-id-block_autopromos js-view-dom-id-0a4ff5e71ccba00b20956f281f3e61491f450bcca1448effb5c3081a735e7f76"><div class="view-header"><article role="article" about="/cogedim-facilite-votre-achat-dans-le-neuf" class="node node--type-custom-page node--view-mode-teaser" lang="en"><div class="block-title"><span class="field field--name-title field--type-string field--label-hidden">Cogedim facilite votre achat dans le neuf</span></div><div class="content"><div class="description field field--name-body field--type-text-with-summary field--label-hidden field__item"><p>Chez Cogedim, vous êtes accompagné personnellement, de A à Z. Aide pour le financement, personnalisation de votre logement, suivi des travaux…votre interlocuteur attitré répond à toutes vos questions. Mieux informé et mieux guidé, vous achetez avec sérénité.</p></div></div></article></div><div class="view-content"><div class="articles-list"><div class="articles-content"><div class="views-row article"><article role="article" about="/votre-responsable-relation-client-vous-accompagne" class="node node--type-autopromo node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">A votre écoute</div></a></div><div class="title"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><span class="field field--name-title field--type-string field--label-hidden">Votre Responsable Relation Client vous accompagne</span></a></div></article></div><div class="views-row article"><article role="article" about="/de-la-reservation-a-la-remise-de-vos-cles" class="node node--type-autopromo node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /les-grandes-etapes-de-votre-achat-chez-cogedim"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">Les étapes clés</div></a></div><div class="title"><a href="  /les-grandes-etapes-de-votre-achat-chez-cogedim"><span class="field field--name-title field--type-string field--label-hidden">De la réservation à la remise de vos clés</span></a></div></article></div><div class="views-row article"><article role="article" about="/les-avantages-dacheter-chez-cogedim-0" class="node node--type-autopromo node--promoted node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /les-avantages-dacheter-chez-cogedim"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /les-avantages-dacheter-chez-cogedim"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">Les + COGEDIM</div></a></div><div class="title"><a href="  /les-avantages-dacheter-chez-cogedim"><span class="field field--name-title field--type-string field--label-hidden">Les avantages d\'acheter chez Cogedim </span></a></div></article></div></div></div></div></div></div></div></div><div class="region region-bottom"><div id="block-prehomebanner" class="block block-ce-footer block-ce-prehome-banner"><div class="wrapper-home-banner"><div class="container"><div class="block-home-banner"><div class="block-title">Découvrez tous nos programmes près de chez vous</div><div class="block-title-mobile">Découvrez tous nos programmes près de chez vous</div><div class="content"><div class="banner-link"><a href="http://www.cogedim-logement.com/" class="btn btn-white 0" target="_blank">COGEDIM.COM<span class="0"><span class="element-invisible"> </span></span></a></div></div></div></div></div></div></div>').insertAfter('#content-container');
-    }
-
-    //Utilisateur sur la page de son profil
-    if(window.location.pathname == '/profile/'){
-
-      //Remove all don't wanted HTML Elements
-      $('.xrm-editable-adx_weblinkset').remove();
-      $('#content_form').find('.page-heading').remove();
-      $('#content_form').find('.row .weblinks-depth-1').remove();
-      $('#content_form').find('.row .col-md-8 .xrm-editable-html').remove();
-
-      //Create some HTML elements
-      $('<div class="item-label">NOM</div>').insertBefore('#lastname');
-      $('<div class="item-label">PRÉNOM</div>').insertBefore('#firstname');
-      $('<div class="item-label">EMAIL</div>').insertBefore('#emailaddress1');
-      $('<div class="item-label">CIVILITÉ</div>').insertBefore('#acq_civilite');
-      $('<div class="item-label">ADRESSE LIGNE 1</div>').insertBefore('#address1_line1');
-      $('<div class="item-label">ADRESSE LIGNE 2</div>').insertBefore('#address1_line2');
-      $('<div class="item-label">ADRESSE LIGNE 3</div>').insertBefore('#address1_line3');
-      $('<div class="item-label">CODE POSTAL</div>').insertBefore('#address1_postalcode');
-      $('<div class="item-label">VILLE</div>').insertBefore('#address1_city');
-      $('<div class="item-label">TEL. PORTABLE</div>').insertBefore('#mobilephone');
-      $('<div class="item-label">TEL.DOMICILE</div>').insertBefore('#telephone2');
-      $('<div class="item-label">TEL.PROFESSIONNEL</div>').insertBefore('#telephone1');
-
-      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Mon Profil</h1></div></div></div>';
-      $('#content_form').prepend(html);
-
-
-      //Separateurs entre les différentes sections du profil
-      $('<tr><td class="clearfix cell text form-control-cell" colspan="2" rowspan="1"><hr></td></tr>').insertAfter($('#firstname, #address1_city, #emailaddress1').parents('tr'));
-
-      //Add classes to add styles
-      $('#firstname, #lastname, #emailaddress1, #telephone1, #acq_civilite, #address1_line1, #address1_line2, #address1_line3, #address1_postalcode, #address1_city, #mobilephone, #telephone2').addClass('form-control form-text');
-
-    }
-
-    //Utilisateur sur la page "changer mon mot de passe" ou "Changer d'adresse email" ou "Changer de login" ou "confirmation du changement de l'adresse email"
-    if(window.location.pathname.includes('Account/Manage/ChangePassword') || window.location.pathname.includes('Account/Manage/ChangeEmail') || window.location.pathname.includes('Account/Manage/ChangeLogin') || window.location.pathname.includes('Account/Manage/ConfirmEmailRequest')){
-
-      //Remove all don't wanted HTML Elements
-      $('.page-heading').remove(); 
-      $('.xrm-editable-html').remove();
-      $('.row .weblinks-depth-1').remove();
-      $('.xrm-editable-adx_weblinkset').remove();
-      $('.form-horizontal .form-group label').remove();
-
-      //Utilisateur sur la page "Changer mon mot de passe"
-      if(window.location.pathname.includes('Account/Manage/ChangePassword')){
-
-        //Create some HTML elements
-        $('<div class="item-label">NOM D\'UTILISATEUR</div>').insertBefore('#Username');
-        $('<div class="item-label">ANCIEN MOT DE PASSE</div>').insertBefore('#OldPassword');
-        $('<div class="item-label">NOUVEAU MOT DE PASSE</div>').insertBefore('#NewPassword');
-        $('<div class="item-label">CONFIRMATION DU MOT DE PASSE</div>').insertBefore('#ConfirmPassword');
-
-        var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer le mot de passe</h1></div></div></div>';
-        $(html).insertBefore($('body .container').get(1));
-
-        //Add classes to add styles
-        $('.form-horizontal').addClass('change-password');
-        $('.form-horizontal .form-group .col-sm-8').attr('class', 'col-sm-12');
-        $('#Username, #OldPassword, #NewPassword, #ConfirmPassword').addClass('form-control form-text');
-      }
-
-      //Utilisateur sur la page "changer mon adresse email"
-      else if(window.location.pathname.includes('Account/Manage/ChangeEmail')){
-
-        //Create some HTML elements
-        $('<div class="item-label">ADRESSE MAIL</div>').insertBefore('#Email');
-        $('#Email').addClass('form-control form-text');
-        var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer l\'adresse de messagerie</h1></div></div></div>';
-        $(html).insertBefore($('body .container').get(1));
-
-        //Add classes to add styles
-        $('.form-horizontal .form-group .col-sm-10, .form-horizontal .form-group .col-sm-offset-2.col-sm-10').attr('class', 'col-sm-12');
-        $('.form-horizontal').addClass('change-email');
-
-        //Add style
-        $($('body .container').get(2)).css('margin-bottom', '100px');
-      }
-
-      //Utilisateur sur la page "changer mon login"
-      else if(window.location.pathname.includes('Account/Manage/ChangeLogin')){
-
-        //Create some HTML elements
-        var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Gérer les authentifications externes</h1></div></div></div>';
-        $(html).insertBefore($('body .container').get(1));
-
-        //Add classes to add styles
-        $('.form-horizontal').addClass('change-login');
-
-        //Add style
-        $($('body .container').get(2)).css('margin-bottom', '100px');
-      }
-
-      //Utilisateur sur la page "confirmation du changement d'adresse email"
-      else if(window.location.pathname.includes('Account/Manage/ConfirmEmailRequest')){
-
-        //Create some HTML elements
-        $('<div class="item-label">ADRESSE MAIL</div>').insertBefore('#Email');
-        var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer l\'adresse de messagerie</h1></div></div></div>';
-        $(html).insertBefore($('body .container').get(1));
-
-        //Add classes to add style
-        $('#Email').addClass('form-control form-text');
-
-        //Add style
-        $($('body .container').get(2)).css('margin-bottom', '100px');
-      }
-    }
-
+    //Event which catch scrolling to zoom or not COGEDIM logo
     $(window).scroll(function(){
 
       if($(document).scrollTop() > 0)
         $('header').addClass('header-scrolled');
       else
         $('header').removeClass('header-scrolled');
-    });
-
-    $('[data-toggle="popover"]').popover();  
+    }); 
 
     $('.menu-header-toggle').click(function(){
 
@@ -406,10 +192,7 @@
     $('h3.lot-title').click(function(){
 
       //Get lot id and name of selected lot
-      var lot = new Object();
-      lot.id = $(this).parent().attr('data-lot-id');
-      lot.name = $(this).parent().attr('data-lot-name').replace(/ /g, '');
-      lot.path = lot.name + '_' + lot.id;
+      var lot = GetSelectedLotData($(this));
 
       //Check if the id has already been added into the array
       //These condition is used to call the web service only one time per lot section to show the documents
@@ -422,20 +205,21 @@
         var posts = [
           { 
             selectedLot: lot.id, 
-            properties: ['PortalTag'], 
+            properties: ['Type document:Désignation', 'Type document:Code'], 
             linkType: 2, 
             actualPage: window.location.pathname, 
             relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path 
           },
           {
             selectedLot: lot.id,
-            properties: ['PortalTag'], 
+            properties: ['Type document:Désignation', 'Type document:Code'], 
             linkType: 3, 
             actualPage: window.location.pathname, 
             relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' }}"
           }
         ];
 
+        //Search all the wanted documents and put them to the right place into the web page
         GetFilePaths(posts);
 
         //We add the id into the array
@@ -479,11 +263,8 @@
         $('.lot-items').append('<li class="field__item"><a href="{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot') + '"><article role="article"><div class="content">' + lots[i] + '</div></article></a></li>');
       }
 
-      //Initialize good links to good contract     
-      $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-      $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-      $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-      $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+      //Initialize good links to good contract
+      InitLinks(getCookie('contractId'), getCookie('parentalLot'));
     });
 
     $('.block-messages-content .message-row .info .response .expand, .block-messages-content .message-row .info .response .open-text, .block-messages-content .message-row .info .response .close-text').click(function(){
@@ -533,6 +314,56 @@
       window.location.href = '{{documents_url}}?id=' + contractId + '&parent=' + parentalLot_id;
     });
 
+    $('.form-horizontal, .contact-us-form, #content_form').css('display', 'block');          
+  });
+
+  //Initialize all the site data
+  function Init(){
+
+    //Maj du header
+    $('.menu-item a').removeClass('.is-active');
+    $('.contract-multi-selection').css('display', 'block');
+    $('[data-toggle="popover"]').popover(); 
+
+    //Initialise liens pour tomber sur le bon contrat
+    $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+    $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+    $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+    $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
+
+
+    //Utilisateur sur la page d'accueil
+    if(window.location.pathname == '{{home_url}}')
+      $('.menu-item-accueil a').addClass('is-active');
+
+    //Utilisateur sur la page "contactez nous" ou "Message"
+    if(window.location.pathname == '{{contactus_url}}' || window.location.pathname == '{{messages_url}}')
+      InitContactUs_Messages();
+
+    //Utilisateur sur la page de connexion
+    if(window.location.pathname == '/SignIn')
+      InitSignIn();
+
+    //Utilisateur sur la page "Mot de passe oublié"
+    if(window.location.pathname == '/Account/Login/ForgotPassword')
+      InitForgotPassword();
+
+    //Utilisateur sur la page de son profil
+    if(window.location.pathname == '/profile/')
+      InitProfile();
+
+    //Utilisateur sur la page "changer mon mot de passe" ou "Changer d'adresse email" ou "Changer de login" ou "confirmation du changement de l'adresse email"
+    if(window.location.pathname.includes('Account/Manage/ChangePassword') || window.location.pathname.includes('Account/Manage/ChangeEmail') || window.location.pathname.includes('Account/Manage/ChangeLogin') || window.location.pathname.includes('Account/Manage/ConfirmEmailRequest'))
+      InitProfileOptions();
+
+    //Recherche des documents lorsque l'utilisateur est sur la page "Mon contrat"
+    if(window.location.pathname == '{{contract_url}}')
+      InitContract();
+
+    //Recherche des documents lorsque l'utilisateur est sur la page "Mes documents"
+    if(window.location.pathname == '{{documents_url}}')
+      InitDocument();
+
     //Initialize carrousel on home page
     $('.contrat-slider-panel').slick({
       prevArrow: '<a href="#" class="slick-prev">prev</a>',
@@ -565,118 +396,345 @@
       ]
     });
 
-    //Recherche des documents lorsque l'utilisateur est sur la page "mon contrat"
-    if(window.location.pathname == '{{contract_url}}'){
-
-      var contract_id = '{{request.params["id"]}}';
-      var lot = new Object();
-      lot.id = $('.contrat-lots-wrapper .contrat-lot.expanded').attr('data-lot-id');
-      lot.name = $('.contrat-lots-wrapper .contrat-lot.expanded').attr('data-lot-name').replace(/ /g, '');
-      lot.path = lot.name + '_' + lot.id;
-
-      _tab.push(lot.id);
-
-      var posts = [
-        { 
-          selectedLot: lot.id,
-          properties: ['PortalTag'], 
-          linkType: 1, 
-          actualPage: window.location.pathname, 
-          relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath }}" 
-        },
-        {
-          selectedLot: lot.id,
-          properties: ['PortalTag'], 
-          linkType: 2, 
-          actualPage: window.location.pathname, 
-          relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path
-        },
-        {
-          selectedLot: lot.id,
-          properties: ['PortalTag'], 
-          linkType: 3, 
-          actualPage: window.location.pathname, 
-          relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' }}"
-        }
-      ];
-
-      GetFilePaths(posts);
-    }
-
-    //Recherche des documents lorsque l'utilisateur est sur la page "mon contrat"
-    if(window.location.pathname == '{{documents_url}}'){
-
-      var contract_id = '{{request.params["id"]}}';
-      var posts = [
-        { 
-          selectedLot: contract_id,
-          properties: ['PortalTag'], 
-          linkType: 1, 
-          actualPage: window.location.pathname, 
-          relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath }}" 
-        },
-        {
-          selectedLot: contract_id,
-          properties: ['PortalTag'], 
-          linkType: 4, 
-          actualPage: window.location.pathname, 
-          relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' }}"
-        }
-      ];
-
-      {% for lot in firstLots.results.entities %}
-        
-        var _postObj = new Object();
-        _postObj.selectedLot = '{{lot.acq_lotid}}';
-        _postObj.properties = ['PortalTag'];
-        _postObj.linkType = 2;
-        _postObj.actualPage = window.location.pathname;
-        _postObj.relativeUrl = "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' | append: lot.acq_idlot | replace: ' ', '' | append: '_' | append: lot.acq_lotid }}";
-
-        posts.push(_postObj);
-
-      {% endfor %}
-
-      GetFilePaths(posts);
-    }
-
-    $('.form-horizontal, .contact-us-form, #content_form').css('display', 'block');    
-
     //User on "error 404" page
-    if($('#content_form .page-header .xrm-attribute-value').length > 0 && $('#content_form .page-header .xrm-attribute-value')[0].innerText == 'Page introuvable'){
-      
-      $('.page-heading').remove();
-      $($('.container').get(1)).empty();
-      $($('.container').get(1)).append('<div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title"></h1></div><div class="block-404-content"><h1 class="block-title">Page introuvable</h1><div class="content"><p>Il semblerait que la page recherchée n’existe pas</p><div class="button-return"><a href="/" class="btn btn-consult-3">RETOUR À L’ACCUEIL</a></div></div></div>');
-    }
-  });
+    if($('#content_form .page-header .xrm-attribute-value').length > 0 && $('#content_form .page-header .xrm-attribute-value')[0].innerText == 'Page introuvable')
+      Init404();
+  }
 
+  //Initialise the "Contact Us" web page
+  //Initialise the "Messages" web page
+  function InitContactUs_Messages(){
+
+    //Add classes to add good styles
+    if(window.location.pathname == '{{contactus_url}}')
+      $('.menu-item-contact a').addClass('is-active');
+
+    $('#description').addClass('form-textarea resize-vertical'); 
+    $('#subject').addClass('form-control form-text chosen-disable');
+    $('#InsertButton').addClass('button js-form-submit form-submit');
+
+    //Add place holder in the correct fields
+    $('#subject').attr('placeholder', 'Écrivez un sujet');
+    $('#description').attr('placeholder', 'Saisissez votre message…');
+    
+    //Change settings of radio buttons
+    $('#acq_direction_0').removeAttr('checked');
+    $('#acq_direction_1').prop("checked", true);
+
+    //Hide some fields
+    if(window.location.pathname == '{{messages_url}}')
+      $('#subject').parents('tr:first').css('display', 'none');
+
+    $('#acq_webuser_name').parents('tr:first').css('display', 'none');
+    $('#acq_direction_label').parents('tr:first').css('display', 'none');
+    $('#acq_messageorigine_name').parents('tr:first').css('display', 'none');
+    $('#acq_messageprecedent_name').parents('tr:first').css('display', 'none');
+    $('td.form-control-cell.datetime').parents('tr:first').css('display', 'none');
+    $('#acq_messageprecedent_name').parents('tr:first').next().css('display', 'none');
+  }
+
+  //Initialise the "Sign In" web page
+  function InitSignIn(){
+
+    //Remove all don't wanted HTML Elements
+    $('#content').children().first().remove();
+    $('#content').children().children('.row').children().last().remove();
+    $('#RememberMe').parents('.form-group').remove();
+    $('#Username').parent().prev().remove();
+    $('#Password').parent().prev().remove();
+    $('#content fieldset legend').remove();
+
+    //Create some HTML elements
+    var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">CONNEXION</h1></div></div></div>';
+    $('#content fieldset').prepend(html);
+
+    //Add classes to add styles
+    $('#Username').addClass("form-control form-text required");
+    $('#Password').addClass("form-control form-pass form-text required");
+    $('#content').find('.col-md-6').attr('class', 'col-md-12');
+    $('#content').find('.col-sm-8').attr('class', 'col-sm-12');
+    $('#submit-signin-local')[0].innerText = 'connexion';
+    $('#submit-signin-local').next().attr('class', '');
+
+    //Add style
+    $('#submit-signin-local').parent().css('text-align', 'center');
+    $('#Username').parents('.form-group').css('margin-bottom', '25px');
+    $('#Password').parents('.form-group').css('margin-bottom', '48px');
+
+    //Add place holder in the correct fields
+    $('#Password').attr('placeholder', 'Mot de passe');
+    $('#Username').attr('placeholder', 'Votre identifiant');     
+  }
+
+  //Initialise the "Forgot password" web page
+  function InitForgotPassword(){
+
+    //Remove all don't wanted HTML Elements
+    $('#Email').parents('.form-group').find('p, label').remove();
+    $('#content fieldset legend').remove();
+
+    //Create some HTML elements
+    var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Mot de passe oublié?</h1></div></div></div>';
+    $('#content fieldset').prepend(html);
+    html = '<div class="container"><div class="text-content"><p>Merci d\'entrer votre identifiant pour recevoir un mail qui vous permettra de réinitialiser votre mot de passe.</p></div></div>';
+    $(html).insertAfter('#content .page-header-wrapper');
+    $('<div class="preface-bottom"></div>').insertAfter('#content');
+
+    //Add classes to add styles
+    $('#Email').addClass('form-control form-text required');
+    $('#Email').parents('.form-group').css('margin-top', '76px');
+
+    //Add style
+    $('#content').find('.col-sm-offset-2.col-sm-10').attr('class', 'col-sm-12');
+    $('#content').find('.col-sm-10').attr('class', 'col-sm-12');
+
+    //Add place holder in the correct fields
+    $('#Email').attr('placeholder', 'Votre identifiant');
+
+    //Add other HTML elements next to the form
+    $('<div class="wrapper-home-video"><div class="container"><div id="block-homepage-video" class="block block-block-content block-block-content82a11756-728a-4171-8d00-e26a166b909e"><div class="field field--name-field-node field--type-entity-reference field--label-hidden field__items"><div class="field__item"><div class="block-title"><span class="field field--name-title field--type-string field--label-hidden">Découvrez l\'Espace Client COGEDIM</span></div><div class="video-player"><figure class="youtube-container"><iframe src="https://www.youtube.com/embed/hPRi1jnjqIA?rel=0&amp;enablejsapi=1&amp;origin=https%3A//www.mon-cogedim.com&amp;wmode=opaque" id="youtube-video-88" class="youtube-field-player" title="Embedded video for Découvrez l\'Espace Client COGEDIM" allowfullscreen="" <a href="https://www.youtube.com/embed/hPRi1jnjqIA?rel=0&amp;enablejsapi=1&amp;origin=https%3A//www.mon-cogedim.com&amp;wmode=opaque">Embedded video for Découvrez l&#039;Espace Client COGEDIM</a></iframe></figure><div class="overlay"><span class="play-button"></span></div></div></div></div></div></div></div><div class="wrapper-home-articles"><div class="container"><div class="views-element-container block block-views block-views-blockautopromos-block-autopromos block-home-articles" id="block-views-block-autopromos-block-autopromos"><div class="view view-autopromos view-id-autopromos view-display-id-block_autopromos js-view-dom-id-0a4ff5e71ccba00b20956f281f3e61491f450bcca1448effb5c3081a735e7f76"><div class="view-header"><article role="article" about="/cogedim-facilite-votre-achat-dans-le-neuf" class="node node--type-custom-page node--view-mode-teaser" lang="en"><div class="block-title"><span class="field field--name-title field--type-string field--label-hidden">Cogedim facilite votre achat dans le neuf</span></div><div class="content"><div class="description field field--name-body field--type-text-with-summary field--label-hidden field__item"><p>Chez Cogedim, vous êtes accompagné personnellement, de A à Z. Aide pour le financement, personnalisation de votre logement, suivi des travaux…votre interlocuteur attitré répond à toutes vos questions. Mieux informé et mieux guidé, vous achetez avec sérénité.</p></div></div></article></div><div class="view-content"><div class="articles-list"><div class="articles-content"><div class="views-row article"><article role="article" about="/votre-responsable-relation-client-vous-accompagne" class="node node--type-autopromo node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">A votre écoute</div></a></div><div class="title"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><span class="field field--name-title field--type-string field--label-hidden">Votre Responsable Relation Client vous accompagne</span></a></div></article></div><div class="views-row article"><article role="article" about="/de-la-reservation-a-la-remise-de-vos-cles" class="node node--type-autopromo node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /les-grandes-etapes-de-votre-achat-chez-cogedim"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">Les étapes clés</div></a></div><div class="title"><a href="  /les-grandes-etapes-de-votre-achat-chez-cogedim"><span class="field field--name-title field--type-string field--label-hidden">De la réservation à la remise de vos clés</span></a></div></article></div><div class="views-row article"><article role="article" about="/les-avantages-dacheter-chez-cogedim-0" class="node node--type-autopromo node--promoted node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /les-avantages-dacheter-chez-cogedim"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /les-avantages-dacheter-chez-cogedim"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">Les + COGEDIM</div></a></div><div class="title"><a href="  /les-avantages-dacheter-chez-cogedim"><span class="field field--name-title field--type-string field--label-hidden">Les avantages d\'acheter chez Cogedim </span></a></div></article></div></div></div></div></div></div></div></div><div class="region region-bottom"><div id="block-prehomebanner" class="block block-ce-footer block-ce-prehome-banner"><div class="wrapper-home-banner"><div class="container"><div class="block-home-banner"><div class="block-title">Découvrez tous nos programmes près de chez vous</div><div class="block-title-mobile">Découvrez tous nos programmes près de chez vous</div><div class="content"><div class="banner-link"><a href="http://www.cogedim-logement.com/" class="btn btn-white 0" target="_blank">COGEDIM.COM<span class="0"><span class="element-invisible"> </span></span></a></div></div></div></div></div></div></div>').insertAfter('#content-container');
+  }
+
+  //Initialise the "Profile" web page
+  function InitProfile(){
+
+    //Remove all don't wanted HTML Elements
+    $('.xrm-editable-adx_weblinkset').remove();
+    $('#content_form').find('.page-heading').remove();
+    $('#content_form').find('.row .weblinks-depth-1').remove();
+    $('#content_form').find('.row .col-md-8 .xrm-editable-html').remove();
+
+    //Create some HTML elements
+    $('<div class="item-label">NOM</div>').insertBefore('#lastname');
+    $('<div class="item-label">PRÉNOM</div>').insertBefore('#firstname');
+    $('<div class="item-label">EMAIL</div>').insertBefore('#emailaddress1');
+    $('<div class="item-label">CIVILITÉ</div>').insertBefore('#acq_civilite');
+    $('<div class="item-label">ADRESSE LIGNE 1</div>').insertBefore('#address1_line1');
+    $('<div class="item-label">ADRESSE LIGNE 2</div>').insertBefore('#address1_line2');
+    $('<div class="item-label">ADRESSE LIGNE 3</div>').insertBefore('#address1_line3');
+    $('<div class="item-label">CODE POSTAL</div>').insertBefore('#address1_postalcode');
+    $('<div class="item-label">VILLE</div>').insertBefore('#address1_city');
+    $('<div class="item-label">TEL. PORTABLE</div>').insertBefore('#mobilephone');
+    $('<div class="item-label">TEL.DOMICILE</div>').insertBefore('#telephone2');
+    $('<div class="item-label">TEL.PROFESSIONNEL</div>').insertBefore('#telephone1');
+
+    var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Mon Profil</h1></div></div></div>';
+    $('#content_form').prepend(html);
+
+
+    //Separateurs entre les différentes sections du profil
+    $('<tr><td class="clearfix cell text form-control-cell" colspan="2" rowspan="1"><hr></td></tr>').insertAfter($('#firstname, #address1_city, #emailaddress1').parents('tr'));
+
+    //Add classes to add styles
+    $('#firstname, #lastname, #emailaddress1, #telephone1, #acq_civilite, #address1_line1, #address1_line2, #address1_line3, #address1_postalcode, #address1_city, #mobilephone, #telephone2').addClass('form-control form-text');
+  }
+
+  //Initialise the sub pages of the "Profile" web page
+  function InitProfileOptions(){
+
+    //Remove all don't wanted HTML Elements
+    $('.page-heading').remove(); 
+    $('.xrm-editable-html').remove();
+    $('.row .weblinks-depth-1').remove();
+    $('.xrm-editable-adx_weblinkset').remove();
+    $('.form-horizontal .form-group label').remove();
+
+    //Utilisateur sur la page "Changer mon mot de passe"
+    if(window.location.pathname.includes('Account/Manage/ChangePassword')){
+
+      //Create some HTML elements
+      $('<div class="item-label">NOM D\'UTILISATEUR</div>').insertBefore('#Username');
+      $('<div class="item-label">ANCIEN MOT DE PASSE</div>').insertBefore('#OldPassword');
+      $('<div class="item-label">NOUVEAU MOT DE PASSE</div>').insertBefore('#NewPassword');
+      $('<div class="item-label">CONFIRMATION DU MOT DE PASSE</div>').insertBefore('#ConfirmPassword');
+
+      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer le mot de passe</h1></div></div></div>';
+      $(html).insertBefore($('body .container').get(1));
+
+      //Add classes to add styles
+      $('.form-horizontal').addClass('change-password');
+      $('.form-horizontal .form-group .col-sm-8').attr('class', 'col-sm-12');
+      $('#Username, #OldPassword, #NewPassword, #ConfirmPassword').addClass('form-control form-text');
+    }
+
+    //Utilisateur sur la page "changer mon adresse email"
+    else if(window.location.pathname.includes('Account/Manage/ChangeEmail')){
+
+      //Create some HTML elements
+      $('<div class="item-label">ADRESSE MAIL</div>').insertBefore('#Email');
+      $('#Email').addClass('form-control form-text');
+      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer l\'adresse de messagerie</h1></div></div></div>';
+      $(html).insertBefore($('body .container').get(1));
+
+      //Add classes to add styles
+      $('.form-horizontal .form-group .col-sm-10, .form-horizontal .form-group .col-sm-offset-2.col-sm-10').attr('class', 'col-sm-12');
+      $('.form-horizontal').addClass('change-email');
+
+      //Add style
+      $($('body .container').get(2)).css('margin-bottom', '100px');
+    }
+
+    //Utilisateur sur la page "changer mon login"
+    else if(window.location.pathname.includes('Account/Manage/ChangeLogin')){
+
+      //Create some HTML elements
+      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Gérer les authentifications externes</h1></div></div></div>';
+      $(html).insertBefore($('body .container').get(1));
+
+      //Add classes to add styles
+      $('.form-horizontal').addClass('change-login');
+
+      //Add style
+      $($('body .container').get(2)).css('margin-bottom', '100px');
+    }
+
+    //Utilisateur sur la page "confirmation du changement d'adresse email"
+    else if(window.location.pathname.includes('Account/Manage/ConfirmEmailRequest')){
+
+      //Create some HTML elements
+      $('<div class="item-label">ADRESSE MAIL</div>').insertBefore('#Email');
+      var html =  '<div class="page-header-wrapper"><div class="container"><div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title">Changer l\'adresse de messagerie</h1></div></div></div>';
+      $(html).insertBefore($('body .container').get(1));
+
+      //Add classes to add style
+      $('#Email').addClass('form-control form-text');
+
+      //Add style
+      $($('body .container').get(2)).css('margin-bottom', '100px');
+    }
+  }
+
+  //Initialise the "My contract" web page
+  function InitContract(){
+
+    var contract_id = '{{request.params["id"]}}';
+    var lot = new Object();
+    lot.id = $('.contrat-lots-wrapper .contrat-lot.expanded').attr('data-lot-id');
+    lot.name = $('.contrat-lots-wrapper .contrat-lot.expanded').attr('data-lot-name').replace(/ /g, '');
+    lot.path = lot.name + '_' + lot.id;
+
+    _tab.push(lot.id);
+
+    var posts = [
+      { 
+        selectedLot: lot.id,
+        properties: ['PortalTag', 'Type document:Désignation', 'Type document:Code'], 
+        linkType: 1, 
+        actualPage: window.location.pathname, 
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath }}" 
+      },
+      {
+        selectedLot: lot.id,
+        properties: ['PortalTag', 'Type document:Désignation', 'Type document:Code'], 
+        linkType: 2, 
+        actualPage: window.location.pathname, 
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path
+      },
+      {
+        selectedLot: lot.id,
+        properties: ['PortalTag', 'Type document:Désignation', 'Type document:Code'], 
+        linkType: 3, 
+        actualPage: window.location.pathname, 
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' }}"
+      }
+    ];
+
+    GetFilePaths(posts);
+  }
+
+  //Initialise the "My documents" web page
+  function InitDocument(){
+
+    var contract_id = '{{request.params["id"]}}';
+    var posts = [
+      { 
+        selectedLot: contract_id,
+        properties: ['Type document:Désignation', 'Type document:Code'], 
+        linkType: 1, 
+        actualPage: window.location.pathname, 
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath }}" 
+      },
+      {
+        selectedLot: contract_id,
+        properties: ['Type document:Désignation', 'Type document:Code'], 
+        linkType: 4, 
+        actualPage: window.location.pathname, 
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' }}"
+      }
+    ];
+
+    {% for lot in firstLots.results.entities %}
+      
+      var _postObj = new Object();
+      _postObj.selectedLot = '{{lot.acq_lotid}}';
+      _postObj.properties = ['Type document:Désignation', 'Type document:Code'];
+      _postObj.linkType = 2;
+      _postObj.actualPage = window.location.pathname;
+      _postObj.relativeUrl = "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' | append: lot.acq_idlot | replace: ' ', '' | append: '_' | append: lot.acq_lotid }}";
+
+      posts.push(_postObj);
+
+    {% endfor %}
+
+    GetFilePaths(posts);
+  }
+
+  //Initialise the "Error 404" web page
+  function Init404(){
+
+    $('.page-heading').remove();
+    $($('.container').get(1)).empty();
+    $($('.container').get(1)).append('<div id="block-pagetitle" class="block block-core block-page-title-block block-page-title"><h1 class="page-title"></h1></div><div class="block-404-content"><h1 class="block-title">Page introuvable</h1><div class="content"><p>Il semblerait que la page recherchée n’existe pas</p><div class="button-return"><a href="/" class="btn btn-consult-3">RETOUR À L’ACCUEIL</a></div></div></div>');
+  }
+
+  //Initialize good redirections links to good "a" node into the web page
+  function InitLinks(contractId, parentId){
+
+    $('a.site-logo').attr('href', '{{home_url}}?id=' + contractId + '&parent=' + parentId);
+    $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + contractId + '&parent=' + parentId);
+    $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + contractId + '&parent=' + parentId);
+    $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + contractId + '&parent=' + parentId);
+  }
+
+  //Get the data linked to selected lot from "My contract" page
+  function GetSelectedLotData(selectedLot){
+
+    var lot = new Object();
+    lot.id = selectedLot.parent().attr('data-lot-id');
+    lot.name = selectedLot.parent().attr('data-lot-name').replace(/ /g, '');
+    lot.path = lot.name + '_' + lot.id;
+
+    return lot;
+  }
+
+  //Check the type of selected document and create its link to the good place into the web page
   function Check(data, response){
 
+    //If no link then do nothing
     if(response.length == 0) 
       return;
 
     for (var i = 0; i < response.length; i++){
       
-      var docType = response[i].properties[0].Value;
+      //Get document data
+      var docMetaData = JSON.parse(response[i].properties);
       var path = response[i].relativeUrl;
       var file = 'https://localhost:448/Service.svc/GetFileByUrl?fileURl=' + path + '&display=true';
       var selector = '';
-      var fileName = response[i].Name;
       var _obj = new Object();
 
       if(data.actualPage == '/cgd_documents/' && data.linkType == 1){
 
         _obj.class = '.documents-box-doc-achat .documents-list';
-        _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + fileName + '</a></div>';
+        _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + docMetaData['Type document:Désignation'] + '</a></div>';
       }
-      else if(data.actualPage == '/cgd_documents/' && data.linkType == 4){
+      else if(data.actualPage == '/cgd_documents/' && data.linkType == 4 && docMetaData["Type document:Code"] != 'GDA' && docMetaData["Type document:Code"] != 'PRA'){
         _obj.class = '.documents-box-doc-programme .documents-list';
-        _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + fileName + '</a></div>';
+        _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + docMetaData['Type document:Désignation'] + '</a></div>';
       }
       else{
 
-        switch(docType){
+        switch(docMetaData["Type document:Code"]){
 
           case 'ADV':
           case 'ATV':
@@ -685,7 +743,7 @@
             if(data.linkType == 1){
 
               _obj.class = '.contract-documents';
-              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + docMetaData['Type document:Désignation'] + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
             }
 
             break;
@@ -700,12 +758,12 @@
             if(data.linkType == 2 && data.actualPage == '/cgd_contract/'){
 
               _obj.class = '[data-lot-id=' + data.selectedLot + '] .contract-documents-plans';
-              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + docMetaData['Type document:Désignation'] + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
             }
             else if(data.linkType == 2 && data.actualPage == '/cgd_documents/'){
 
               _obj.class = '[data-lot-id=' + data.selectedLot + '] .documents-box-plan .documents-list';
-              _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + fileName + '</a></div>';
+              _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + docMetaData['Type document:Désignation'] + '</a></div>';
             }
 
             break;
@@ -713,20 +771,30 @@
           case 'CHG':
           case 'CHO':
 
-            if(data.linkType == 2 || data.linkType == 3){
+            if((data.linkType == 2 || data.linkType == 3) && data.actualPage == '/cgd_contract/'){
 
               _obj.class = '[data-lot-id=' + data.selectedLot + '] .contract-documents-presta';
-              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + docMetaData['Type document:Désignation'] + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+            }
+            else if((data.linkType == 2 || data.linkType == 3) && data.actualPage == '/cgd_documents/'){
+
+              _obj.class = '[data-lot-id=' + data.selectedLot + '] .documents-box-choix .documents-list';
+              _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + docMetaData['Type document:Désignation'] + '</a></div>';
             }
 
             break;
 
           case 'TMA':
 
-            if(data.linkType == 1){
+            if(data.linkType == 1 && data.actualPage == '/cgd_contract/'){
 
               _obj.class = '.tma-documents';
-              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + fileName + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+              _obj.selector = '<li><a target="_blank" href="' + file + '"><span>' + docMetaData['Type document:Désignation'] + '</span></a><a href="' + file + '" class="download">Télécharger</a></li>';
+            }
+            else if(data.linkType == 1 && data.actualPage == '/cgd_documents/'){
+
+              _obj.class = '[data-lot-id=' + data.selectedLot + '] .documents-box-tma .documents-list';
+              _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + docMetaData['Type document:Désignation'] + '</a></div>';
             }
 
             break;
@@ -748,6 +816,7 @@
     }
   }
 
+  //Use the web service to get all the files from each sended folders (param)
   function GetFilePaths(postData){
 
     var looper = $.Deferred().resolve();
@@ -776,23 +845,6 @@
           }
         });
       });
-    });
-  }
-
-  function GetFileContent(pathName){
-
-    //Call Web Service
-    $.ajax({
-      type: "GET",
-      url: 'https://localhost/SharePointService/Service.svc/GetFileMetaInfo?fileURl=' + pathName,
-      dataType: "json",
-      async: true,
-      success: function(data){
-        return data;
-      },
-      error: function(xhr, textStatus, errorThrown){
-        console.log(textStatus + " " + errorThrown + " - " + xhr);
-      }
     });
   }
 

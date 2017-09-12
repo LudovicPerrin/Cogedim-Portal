@@ -4,7 +4,7 @@
 {% assign home_url = sitemarkers['Home'].url %}
 
 {% if request.params['id'] %}
-
+  
   {% assign contractId = request.params['id'] %}
   {% assign parentalLot = request.params['parent'] %}
 
@@ -21,13 +21,13 @@
   {% endfetchxml %}
 
   {% fetchxml lots %}
-    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
       <entity name="acq_lot">
         <all-attributes />
-        <filter type="or" >
-          <condition attribute="acq_lot" operator="eq" value="{{contractId}}" />
-          <condition attribute="acq_lotparent" operator="eq" value="{{parentalLot}}" />
+        <filter>
+          <condition entityname="acq_acq_contrats_acq_lots" attribute="acq_contratsid" operator="eq" value="{{contractId}}" />
         </filter>
+        <link-entity name="acq_acq_contrats_acq_lots" from="acq_lotid" to="acq_lotid" intersect="true" />
         <link-entity name="acq_tranche" from="acq_trancheid" to="acq_tranche" alias="tranche" >
           <all-attributes/>
           <link-entity name="acq_programmes" from="acq_programmesid" to="acq_programme" alias="programme" >
@@ -37,7 +37,7 @@
       </entity>
     </fetch>
   {% endfetchxml %}
-
+  
   {% assign cpt = 1 %}
   {% assign contractLots = '' %}
   {% assign contractMontantTotal = contract.results.entities[0]['acq_montanttotal'] %}

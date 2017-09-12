@@ -21,7 +21,9 @@
     </fetch>
   {% endfetchxml %}
 
-  {% assign society_id = society.results.entities[0]['account.accountid'] %}
+  {% if society.results.entities.size >= 1 %}
+    {% assign society_id = society.results.entities[0]['account.accountid'] %}
+  {% endif %}
 
   {% fetchxml gesionnaireContracts %}
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
@@ -40,7 +42,9 @@
       <entity name="acq_contrats" >
         <attribute name="acq_contratsid" />
         <filter type="or" >
-          <condition entityname="acq_acq_contrats_account" attribute="accountid" operator="eq" value="{{society_id}}" />
+          {% if society.results.entities.size >= 1 %}
+            <condition entityname="acq_acq_contrats_account" attribute="accountid" operator="eq" value="{{society_id}}" />
+          {% endif %}
           <condition entityname="account" attribute="primarycontactid" operator="eq" value="{{user.id}}" />
         </filter>
         <order attribute="createdon" descending="true" />
@@ -78,7 +82,8 @@
   {% endfor %}
 
   {% assign array = allContracts | split: ',' %}
-  {% assign tags = array[1] %}
+
+  {% assign tags = array[0] %}
 
   {% for item in array %}
     {% unless tags contains item %}
@@ -87,6 +92,7 @@
   {% endfor %}
 
   {% assign allContracts = tags | split: '|' %}
+
 
   {% fetchxml contracts %}
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
