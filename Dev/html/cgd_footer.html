@@ -487,6 +487,10 @@
     //Initialise liens pour tomber sur le bon contrat
     InitLinks(getCookie('contractId'), getCookie('parentalLot'));
 
+    //IFrame
+    if(window.location.pathname == '/cgd_messages_iframe/')
+      $('header, footer').css('display', 'none');
+
     //Utilisateur sur la page d'accueil
     if(window.location.pathname == '{{home_url}}')
       InitHome();
