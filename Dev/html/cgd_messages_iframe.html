@@ -1,9 +1,4 @@
 <head>
-  <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="/cgd_screen.css">
-  <link rel="stylesheet" type="text/css" href="/theme_perso.css">
   <style type="text/css">
 
     body{
@@ -23,7 +18,10 @@
 
 {% if request.params['subject'] %}
   {% assign subject = request.params['subject'] %}
+  {% assign subjectId = request.params['subjectId'] %}
+  {% assign contractId = request.params['contractId'] %}
   {% assign origine_id = request.params['origine_id'] %}
+  {% assign contractName = request.params['contractName'] %}
   {% assign origine_name = request.params['origine_name'] %}
   {% assign precedent_id = request.params['precedent_id'] %}
   {% assign precedent_name = request.params['precedent_name'] %}
@@ -40,20 +38,25 @@
     {% if subject %}
 
       $('#description').addClass('form-textarea resize-vertical');
-      $('#subject').addClass('form-control form-text chosen-disable');
+      $('#acq_sujet').addClass('form-control form-text chosen-disable');
       $('#InsertButton').addClass('button js-form-submit form-submit');
 
       //Add place holder in the correct fiels
-      $('#subject').attr('placeholder', 'Écrivez un sujet');
+      $('#acq_sujet').attr('placeholder', 'Écrivez un sujet');
       $('#description').attr('placeholder', 'Saisissez votre message…');
       
       //Auto populate fields
-      $('#subject').val('{{subject}}');
+      $('#acq_sujet').val('{{subjectId}}');
       $('#acq_messageorigine_name').attr('value', '{{origine_name}}');
       $('#acq_messageorigine').attr('value', '{{origine_id}}');
       $('#acq_messageprecedent_name').attr('value', '{{precedent_name}}');
       $('#acq_messageprecedent').attr('value', '{{precedent_id}}');
       $('#acq_messageprecedent_entityname, #acq_messageorigine_entityname').attr('value', 'acq_message');
+
+      //Set hide lookup field to link selected contract to the message (only on Contact us page)
+      $('#acq_contrat_name').attr('value', '{{contractName}}');
+      $('#acq_contrat').attr('value', '{{contractId}}');
+      $('#acq_contrat_entityname').attr('value', 'acq_contrats');
 
       //Change settings of radio buttons
       $('#acq_direction_0').removeAttr('checked');
@@ -61,6 +64,8 @@
 
       //Hide some fields
       $('#subject').parents('tr:first').css('display', 'none');
+      $('#acq_sujet').parents('tr:first').css('display', 'none');
+      $('#acq_contrat_name').parents('tr:first').css('display', 'none');
       $('#acq_webuser_name').parents('tr:first').css('display', 'none');
       $('#acq_direction_label').parents('tr:first').css('display', 'none');
       $('#acq_messageorigine_name').parents('tr:first').css('display', 'none');
@@ -68,7 +73,13 @@
       $('td.form-control-cell.datetime').parents('tr:first').css('display', 'none');
       $('#acq_messageprecedent_name').parents('tr:first').next().css('display', 'none');
 
+      $('#description').parents('.tab-column').next().remove()
+
     {% endif %}
+
+    $('#liquid_form').bind('ajax:complete', function(){
+      window.parent.location.href = 'https://cogedimacq.microsoftcrmportals.com/cgd_messages/';
+    });
   });
 
 </script>

@@ -122,7 +122,7 @@
 
   {% assign gender = profile.results.entities[0]['gendercode'].value %}
 
-  <header class="region region-header main-header-wrapper">
+  <header class="region region-header main-header-wrapper" {% if page.url contains '/cgd_messages_iframe/' %}style="display: none;"{% endif %}>
     <div class="container">
       <div class="main-header">
         <div id="block-cogedim-branding" class="block block-system block-system-branding-block">
@@ -256,7 +256,7 @@
     </div>
   </header>
 {% else %}
-  <header class="region region-header header-wrapper">
+  <header class="region region-header header-wrapper" {% if page.url contains '/cgd_messages_iframe/' %}style="display: none;"{% endif %}>
     <div class="container">
       <div class="header">
         <div id="block-cogedim-branding" class="block block-system block-system-branding-block">

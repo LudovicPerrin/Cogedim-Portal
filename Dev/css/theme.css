@@ -252,6 +252,11 @@ footer .container{
 	color: #FFFFFF;
 }
 
+.contracts-row-loading{
+	margin-bottom: 50px;
+	margin-bottom: 50px;
+}
+
 .contract-multi-selection .contract-item{
   background-size: 100% 100% !important;
   background: url("http://www.cogedim-logement.com/sites/default/files/assets/images/18280_presentation_6.jpg");

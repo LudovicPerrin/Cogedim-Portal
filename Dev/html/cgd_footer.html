@@ -10,6 +10,106 @@
   {% assign contractId = request.params['id'] %}
   {% assign parentalLot = request.params['parent'] %}
 
+  <!-- Get society of actual contact -->
+  {% fetchxml society %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+      <entity name="contact" >
+        <filter>
+          <condition attribute="contactid" operator="eq" value="{{user.id}}" />
+        </filter>
+        <link-entity name="account" from="accountid" to="parentcustomerid" alias="account">
+          <attribute name="accountid" />
+        </link-entity>
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  {% assign society_id = society.results.entities[0]['account.accountid'] %}
+
+  <!-- Get contracts of actual contact when contact is "Gestionnaire de bien" -->
+  {% fetchxml gesionnaireContracts %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
+      <entity name="acq_contrats">
+        <attribute name="acq_contratsid" />
+        <filter>
+          <condition attribute="acq_gestionnairedubien" operator="eq" value="{{user.id}}" />
+        </filter>
+        <order attribute="createdon" descending="true" />
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  <!-- Get contracts of actual contact when the contact's society "Acquéreur" -->
+  {% fetchxml societyContracts %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+      <entity name="acq_contrats" >
+        <attribute name="acq_contratsid" />
+        <filter type="or" >
+          <condition entityname="acq_acq_contrats_account" attribute="accountid" operator="eq" value="{{society_id}}" />
+          <condition entityname="account" attribute="primarycontactid" operator="eq" value="{{user.id}}" />
+        </filter>
+        <order attribute="createdon" descending="true" />
+        <link-entity name="acq_acq_contrats_account" from="acq_contratsid" to="acq_contratsid" intersect="true" >
+          <link-entity name="account" from="accountid" to="accountid" />
+        </link-entity>
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  <!-- Get contracts of actual contact when contact is "Acquéreur" -->
+  {% fetchxml contactContracts %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+      <entity name="acq_contrats" >
+        <attribute name="acq_contratsid" />
+        <filter>
+          <condition entityname="acq_acq_contrats_contact" attribute="contactid" operator="eq" value="{{user.id}}" />
+        </filter>
+        <link-entity name="acq_acq_contrats_contact" from="acq_contratsid" to="acq_contratsid" intersect="true" />
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  {% assign allContracts = '' %}
+
+  {% for contract in gesionnaireContracts.results.entities %}
+    {% assign allContracts = allContracts | append: contract.acq_contratsid | append: ',' %} 
+  {% endfor %}
+
+  {% for contract in societyContracts.results.entities %}
+    {% assign allContracts = allContracts | append: contract.acq_contratsid | append: ',' %} 
+  {% endfor %}
+
+  {% for contract in contactContracts.results.entities %}
+      {% assign allContracts = allContracts | append: contract.acq_contratsid | append: ',' %}
+  {% endfor %}
+
+  {% assign array = allContracts | split: ',' %}
+  {% assign tags = array[1] %}
+
+  {% for item in array %}
+    {% unless tags contains item %}
+      {% capture tags %}{{tags}}|{{item}}{% endcapture %}
+    {% endunless %}
+  {% endfor %}
+
+  {% assign allContracts = tags | split: '|' %}
+
+  <!-- Get all contracts of actual contact -->
+  {% fetchxml allAcqContracts %}
+    <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
+      <entity name="acq_contrats">
+        <all-attributes />
+        <filter type="or">
+          {% for contract in allContracts %}
+            <condition attribute="acq_contratsid" operator="eq" value="{{contract}}" />
+          {% endfor %}
+        </filter>
+        <order attribute="createdon" descending="true" />
+      </entity>
+    </fetch>
+  {% endfetchxml %}
+
+  <!-- Get actual contract of actual contact -->
   {% fetchxml contract %}
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true" >
       <entity name="acq_contrats">
@@ -22,6 +122,9 @@
     </fetch>
   {% endfetchxml %}
 
+  {% assign contractName = contract.results.entities[0]['acq_name'] %}
+
+  <!-- Get all lots linked to actual contract of actual contact -->
   {% fetchxml lots %}
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
       <entity name="acq_lot">
@@ -40,6 +143,7 @@
     </fetch>
   {% endfetchxml %}
 
+  <!-- Get all firstLots (Appartement & Maison) linked to actual contract of actual contact -->
   {% fetchxml firstLots %}
     <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
       <entity name="acq_lot">
@@ -73,8 +177,8 @@
 
 {% endif %}
 
-<footer class="region wrapper-main-footer region-footer">
-  <div class="container">
+<footer class="region wrapper-main-footer region-footer" {% if page.url contains '/cgd_messages_iframe/' %}style="display: none;"{% endif %}>
+  <div class="container">  
     <div id="block-footer-site-branding" class="block block-system block-system-branding-block">
       <div class="footer-logo hidden-xs hidden-sm">
         <div class="logo">
@@ -146,8 +250,9 @@
 <script type="text/javascript" src="/cgd_slick.min.js"></script>
 <script type="text/javascript">
   
-  //Array which contains all folders searched by the Web Service
-  var _tab = [];
+  
+  var _tab = [];                  //Array which contains all folders searched by the Web Service
+  var _prog_picture_array = [];   //Array which contains all link to SharePoint program picture
 
   $(window).ready(function(){    
 
@@ -223,14 +328,14 @@
             properties: ['Type document:Désignation', 'Type document:Code'], //Properties to get from the SharePoint file
             linkType: 2, //Foler level code
             actualPage: window.location.pathname, //Actual web page
-            relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path //Folder level path
+            relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/Programmes/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path //Folder level path
           },
           {
             selectedLot: lot.id,
             properties: ['Type document:Désignation', 'Type document:Code'], 
             linkType: 3, 
             actualPage: window.location.pathname, 
-            relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' }}"
+            relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/Programmes/' | append: '/' | append: tranchePath | append: '/' }}"
           }
         ];
 
@@ -263,6 +368,7 @@
       var parentalLot = $(this).attr('parentalLot');
       var program = new Object();
       program.name = $(this).attr('programName');
+      program.id = $(this).attr('programId');
       program.address1 = $(this).attr('address1');
       program.address2 = $(this).attr('address2');
 
@@ -273,6 +379,18 @@
       $('.info .field__item').remove();
       setCookie('contractId', contractId, 7);
       setCookie('parentalLot', parentalLot, 7);
+
+      //Search good program picture url to update src of selected item
+      for (var i = 0; i < _prog_picture_array.length; i++) {
+        
+        //If the program id is found, update
+        if(_prog_picture_array[i].id == program.id){
+
+          //Main section picture update
+          $('.image .field__item img').attr('src', _prog_picture_array[i].url);
+          break;
+        }
+      }
 
       //Set good link collection linked to selected contract
       for (var i = 0; i < lots.length - 1 ; i++) {
@@ -289,6 +407,9 @@
       //Get origin data from the selected conversation
       var message = new Object();
       var subject = $(this).parents('.node--view-mode-message').next().children().first().attr('subject');
+      var subjectId = $(this).parents('.node--view-mode-message').next().children().first().attr('subjectId');
+      var selected_contract_id = $(this).parents('.node--view-mode-message').next().children().first().attr('contractId');
+      var selected_contract_name = $(this).parents('.node--view-mode-message').next().children().first().attr('contractName');
       var iframe = $(this).parents('.node--view-mode-message').next().find('iframe');
 
       message.origine_id = $(this).parents('.node--view-mode-message').next().children().first().attr('id');
@@ -298,7 +419,10 @@
 
       //Create the good URL to let the Entity Form add the data at the good place
       var newUrl = "/cgd_messages_iframe/?" + 
-        "subject=" + subject + 
+        "contractId=" + selected_contract_id +
+        "&contractName=" + selected_contract_name +
+        "&subject=" + subject + 
+        "&subjectId=" + subjectId +
         "&origine_id=" + message.origine_id + 
         "&origine_name=" + message.origine_name +
         "&precedent_id=" + message.precedent_id + 
@@ -326,20 +450,29 @@
       setCookie('parentalLot', parentalLot_id, 7);
     });
 
-    //Change contract from select field (Document page)
-    $('.select-contract select').change(function(){
+    //Change contract from select field (Document page & Contact us page)
+    $('.select-contract select, #acq_good_contract').change(function(){
 
       //Get the actual contractId and parentalLot 
       var contractId = $(this).find('option:selected').attr('value');
+      var contractName = $(this).find('option:selected').attr('contractName');
       var parentalLot_id = $(this).find('option:selected').attr('parentalLot');
 
       //Set the data into cookies
       setCookie('contractId', contractId, 7);
       setCookie('parentalLot', parentalLot_id, 7);
 
-      //Redirect to good URL
-      window.location.href = '{{documents_url}}?id=' + contractId + '&parent=' + parentalLot_id;
-    });       
+      //Redirect to good URL (only on Document page)
+      if($(this).attr('id') != 'acq_good_contract')
+        window.location.href = '{{documents_url}}?id=' + contractId + '&parent=' + parentalLot_id;
+      else{
+
+        //Set hide lookup field to link selected contract to the message (only on Contact us page)
+        $('#acq_contrat_name').attr('value', contractName);
+        $('#acq_contrat').attr('value', contractId);
+        $('#acq_contrat_entityname').attr('value', 'acq_contrats');
+      }
+    });    
   });
 
   //Initialize all the site data
@@ -352,15 +485,11 @@
     $('.form-horizontal, .contact-us-form, #content_form').css('display', 'block');   
 
     //Initialise liens pour tomber sur le bon contrat
-    $('a.site-logo').attr('href', '{{home_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-    $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-    $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-    $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + getCookie('contractId') + '&parent=' + getCookie('parentalLot'));
-
+    InitLinks(getCookie('contractId'), getCookie('parentalLot'));
 
     //Utilisateur sur la page d'accueil
     if(window.location.pathname == '{{home_url}}')
-      $('.menu-item-accueil a').addClass('is-active');
+      InitHome();
 
     //Utilisateur sur la page "contactez nous" ou "Message"
     if(window.location.pathname == '{{contactus_url}}' || window.location.pathname == '{{messages_url}}')
@@ -427,8 +556,43 @@
       Init404();
   }
 
-  //Initialise the "Contact Us" web page
-  //Initialise the "Messages" web page
+  //Initialize the "Home" web page
+  function InitHome(){
+
+    $('.menu-item-accueil a').addClass('is-active');
+
+    //Get all the programs
+    var _prog = $('.contract-item');
+    var posts = [];
+
+    //Create an array with all program's id & name
+    $.each(_prog, function(i, data){
+
+      //Create program object
+      var program = new Object();
+      program.id = $(data).attr('programId');
+      program.name = $(data).attr('programName');
+      program.relativeUrl = '/sites/ACP/Contact/Programmes/' + program.name.replace(/ /g, '') + '_' + program.id;
+
+      //Create an object to prepare a Web Service call
+      var post = {
+        selectedLot: program.id,
+        properties: ['Type document:Désignation', 'Type document:Code'],
+        linkType: 4,
+        actualPage: window.location.pathname, 
+        relativeUrl: program.relativeUrl
+      }
+
+      //Add the program object into the array if it is not already added
+      if(!IsObjInArray(posts, post))
+        posts.push(post);
+    });
+
+    GetFilePaths(posts);
+  }
+
+  //Initialize the "Contact Us" web page
+  //Initialize the "Messages" web page
   function InitContactUs_Messages(){
 
     //Add classes to add good styles
@@ -436,11 +600,10 @@
       $('.menu-item-contact a').addClass('is-active');
 
     $('#description').addClass('form-textarea resize-vertical'); 
-    $('#subject').addClass('form-control form-text chosen-disable');
     $('#InsertButton').addClass('button js-form-submit form-submit');
+    $('#acq_sujet').addClass('form-control form-select');
 
     //Add place holder in the correct fields
-    $('#subject').attr('placeholder', 'Écrivez un sujet');
     $('#description').attr('placeholder', 'Saisissez votre message…');
     
     //Change settings of radio buttons
@@ -449,17 +612,60 @@
 
     //Hide some fields
     if(window.location.pathname == '{{messages_url}}')
-      $('#subject').parents('tr:first').css('display', 'none');
+      $('#acq_sujet').parents('tr:first').css('display', 'none');
+    else
+      $('#acq_sujet option[value=""]')[0].innerHTML = "Choisissez un sujet";
 
+    $('#subject').parents('tr:first').css('display', 'none');
+    $('#acq_contrat_name').parents('tr:first').css('display', 'none');
     $('#acq_webuser_name').parents('tr:first').css('display', 'none');
     $('#acq_direction_label').parents('tr:first').css('display', 'none');
     $('#acq_messageorigine_name').parents('tr:first').css('display', 'none');
     $('#acq_messageprecedent_name').parents('tr:first').css('display', 'none');
     $('td.form-control-cell.datetime').parents('tr:first').css('display', 'none');
     $('#acq_messageprecedent_name').parents('tr:first').next().css('display', 'none');
+
+
+    var selectHTMLCode = '' + 
+      '<tr>' +
+        '<td colspan="1" rowspan="1" class="clearfix cell lookup form-control-cell">' +
+          '<div class="info required">' +
+            '<label for="acq_good_contract" id="acq_good_contract_label">Sujet principale</label>' +
+            '<div class="validators">' +
+              '<span id="RequiredFieldValidatoracq_good_contract" style="display:none;">*</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="control">' +
+            '<select id="acq_good_contract" required="" class="form-control form-select" placeholder="Selectionnez un sujet">' +
+              {% for contract in allAcqContracts.results.entities %}
+                {% if forloop.first %}
+                  {% for contract_bis in allAcqContracts.results.entities %}
+                    {% if contract_bis.acq_contratsid == contractId %}
+                      '<option value="{{contract_bis.acq_contratsid}}" contractName="{{contract_bis.acq_name}}" parentalLot="{{contract_bis.acq_lotprincipal.id}}">{{contract_bis.acq_name}}</option>' + 
+                      {% break %}
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
+                {% unless contract.acq_contratsid == contractId %}
+                  '<option value="{{contract.acq_contratsid}}" contractName="{{contract.acq_name}}" parentalLot="{{contract.acq_lotprincipal.id}}">{{contract.acq_name}}</option>' +
+                {% endunless %}
+              {% endfor %}
+            '</select>' +
+          '</div>' +
+        '</td>' +
+        '<td class="cell zero-cell"></td>' +
+      '</tr>';
+
+    //Create specific field
+    $(selectHTMLCode).insertBefore($('#acq_sujet').parents('tr:first'));
+
+    //Set hide lookup field to link selected contract to the message (only on Contact us page)
+    $('#acq_contrat_name').attr('value', '{{contractName}}');
+    $('#acq_contrat').attr('value', '{{contractId}}');
+    $('#acq_contrat_entityname').attr('value', 'acq_contrats');
   }
 
-  //Initialise the "Sign In" web page
+  //Initialize the "Sign In" web page
   function InitSignIn(){
 
     //Remove all don't wanted HTML Elements
@@ -492,7 +698,7 @@
     $('#Username').attr('placeholder', 'Votre identifiant');     
   }
 
-  //Initialise the "Forgot password" web page
+  //Initialize the "Forgot password" web page
   function InitForgotPassword(){
 
     //Remove all don't wanted HTML Elements
@@ -521,7 +727,7 @@
     $('<div class="wrapper-home-video"><div class="container"><div id="block-homepage-video" class="block block-block-content block-block-content82a11756-728a-4171-8d00-e26a166b909e"><div class="field field--name-field-node field--type-entity-reference field--label-hidden field__items"><div class="field__item"><div class="block-title"><span class="field field--name-title field--type-string field--label-hidden">Découvrez l\'Espace Client COGEDIM</span></div><div class="video-player"><figure class="youtube-container"><iframe src="https://www.youtube.com/embed/hPRi1jnjqIA?rel=0&amp;enablejsapi=1&amp;origin=https%3A//www.mon-cogedim.com&amp;wmode=opaque" id="youtube-video-88" class="youtube-field-player" title="Embedded video for Découvrez l\'Espace Client COGEDIM" allowfullscreen="" <a href="https://www.youtube.com/embed/hPRi1jnjqIA?rel=0&amp;enablejsapi=1&amp;origin=https%3A//www.mon-cogedim.com&amp;wmode=opaque">Embedded video for Découvrez l&#039;Espace Client COGEDIM</a></iframe></figure><div class="overlay"><span class="play-button"></span></div></div></div></div></div></div></div><div class="wrapper-home-articles"><div class="container"><div class="views-element-container block block-views block-views-blockautopromos-block-autopromos block-home-articles" id="block-views-block-autopromos-block-autopromos"><div class="view view-autopromos view-id-autopromos view-display-id-block_autopromos js-view-dom-id-0a4ff5e71ccba00b20956f281f3e61491f450bcca1448effb5c3081a735e7f76"><div class="view-header"><article role="article" about="/cogedim-facilite-votre-achat-dans-le-neuf" class="node node--type-custom-page node--view-mode-teaser" lang="en"><div class="block-title"><span class="field field--name-title field--type-string field--label-hidden">Cogedim facilite votre achat dans le neuf</span></div><div class="content"><div class="description field field--name-body field--type-text-with-summary field--label-hidden field__item"><p>Chez Cogedim, vous êtes accompagné personnellement, de A à Z. Aide pour le financement, personnalisation de votre logement, suivi des travaux…votre interlocuteur attitré répond à toutes vos questions. Mieux informé et mieux guidé, vous achetez avec sérénité.</p></div></div></article></div><div class="view-content"><div class="articles-list"><div class="articles-content"><div class="views-row article"><article role="article" about="/votre-responsable-relation-client-vous-accompagne" class="node node--type-autopromo node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">A votre écoute</div></a></div><div class="title"><a href="  /votre-responsable-relation-client-un-interlocuteur-attentif-a-votre-ecoute"><span class="field field--name-title field--type-string field--label-hidden">Votre Responsable Relation Client vous accompagne</span></a></div></article></div><div class="views-row article"><article role="article" about="/de-la-reservation-a-la-remise-de-vos-cles" class="node node--type-autopromo node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /les-grandes-etapes-de-votre-achat-chez-cogedim"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">Les étapes clés</div></a></div><div class="title"><a href="  /les-grandes-etapes-de-votre-achat-chez-cogedim"><span class="field field--name-title field--type-string field--label-hidden">De la réservation à la remise de vos clés</span></a></div></article></div><div class="views-row article"><article role="article" about="/les-avantages-dacheter-chez-cogedim-0" class="node node--type-autopromo node--promoted node--view-mode-teaser clearfix"><header></header><div class="image"><a href="  /les-avantages-dacheter-chez-cogedim"><div class="field field--name-field-image field--type-image field--label-hidden field__item">  <img src="/cgd_picture_test.jpg" alt="" typeof="foaf:Image" class="image-style-_05x168-sc"></div></a></div><div class="category"><a href="  /les-avantages-dacheter-chez-cogedim"><div class="field field--name-field-kicker field--type-string field--label-hidden field__item">Les + COGEDIM</div></a></div><div class="title"><a href="  /les-avantages-dacheter-chez-cogedim"><span class="field field--name-title field--type-string field--label-hidden">Les avantages d\'acheter chez Cogedim </span></a></div></article></div></div></div></div></div></div></div></div><div class="region region-bottom"><div id="block-prehomebanner" class="block block-ce-footer block-ce-prehome-banner"><div class="wrapper-home-banner"><div class="container"><div class="block-home-banner"><div class="block-title">Découvrez tous nos programmes près de chez vous</div><div class="block-title-mobile">Découvrez tous nos programmes près de chez vous</div><div class="content"><div class="banner-link"><a href="http://www.cogedim-logement.com/" class="btn btn-white 0" target="_blank">COGEDIM.COM<span class="0"><span class="element-invisible"> </span></span></a></div></div></div></div></div></div></div>').insertAfter('#content-container');
   }
 
-  //Initialise the "Profile" web page
+  //Initialize the "Profile" web page
   function InitProfile(){
 
     //Remove all don't wanted HTML Elements
@@ -555,7 +761,7 @@
     $('#firstname, #lastname, #emailaddress1, #telephone1, #acq_civilite, #address1_line1, #address1_line2, #address1_line3, #address1_postalcode, #address1_city, #mobilephone, #telephone2').addClass('form-control form-text');
   }
 
-  //Initialise the sub pages of the "Profile" web page
+  //Initialize the sub pages of the "Profile" web page
   function InitProfileOptions(){
 
     //Remove all don't wanted HTML Elements
@@ -630,7 +836,7 @@
     }
   }
 
-  //Initialise the "My contract" web page
+  //Initialize the "My contract" web page
   function InitContract(){
 
     var contract_id = '{{request.params["id"]}}';
@@ -647,28 +853,28 @@
         properties: ['PortalTag', 'Type document:Désignation', 'Type document:Code'], 
         linkType: 1, 
         actualPage: window.location.pathname, 
-        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath }}" 
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/Programmes/' | append: '/' | append: tranchePath | append: '/' | append: contractPath }}" 
       },
       {
         selectedLot: lot.id,
         properties: ['PortalTag', 'Type document:Désignation', 'Type document:Code'], 
         linkType: 2, 
         actualPage: window.location.pathname, 
-        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path 
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/Programmes/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' }}" + lot.path 
       },
       {
         selectedLot: lot.id,
         properties: ['PortalTag', 'Type document:Désignation', 'Type document:Code'], 
         linkType: 3, 
         actualPage: window.location.pathname, 
-        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' }}"
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/Programmes/' | append: '/' | append: tranchePath | append: '/' }}"
       }
     ];
 
     GetFilePaths(posts);
   }
 
-  //Initialise the "My documents" web page
+  //Initialize the "My documents" web page
   function InitDocument(){
 
     var contract_id = '{{request.params["id"]}}';
@@ -678,14 +884,14 @@
         properties: ['Type document:Désignation', 'Type document:Code'], 
         linkType: 1, 
         actualPage: window.location.pathname, 
-        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath }}" 
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/Programmes/' | append: '/' | append: tranchePath | append: '/' | append: contractPath }}" 
       },
       {
         selectedLot: contract_id,
         properties: ['Type document:Désignation', 'Type document:Code'], 
         linkType: 4, 
         actualPage: window.location.pathname, 
-        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/' }}"
+        relativeUrl: "{{ programmePath | prepend: '/sites/ACP/Contact/Programmes/' }}"
       }
     ];
 
@@ -696,7 +902,7 @@
       _postObj.properties = ['Type document:Désignation', 'Type document:Code'];
       _postObj.linkType = 2;
       _postObj.actualPage = window.location.pathname;
-      _postObj.relativeUrl = "{{ programmePath | prepend: '/sites/ACP/Contact/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' | append: lot.acq_idlot | replace: ' ', '' | append: '_' | append: lot.acq_lotid }}";
+      _postObj.relativeUrl = "{{ programmePath | prepend: '/sites/ACP/Contact/Programmes/' | append: '/' | append: tranchePath | append: '/' | append: contractPath | append: '/' | append: lot.acq_idlot | replace: ' ', '' | append: '_' | append: lot.acq_lotid }}";
 
       posts.push(_postObj);
 
@@ -705,7 +911,7 @@
     GetFilePaths(posts);
   }
 
-  //Initialise the "Error 404" web page
+  //Initialize the "Error 404" web page
   function Init404(){
 
     $('.page-heading').remove();
@@ -720,6 +926,7 @@
     $('#block-user-navigation-menu .contract-url').attr('href', '{{contract_url}}?id=' + contractId + '&parent=' + parentId);
     $('#block-user-navigation-menu .documents-url').attr('href', '{{documents_url}}?id=' + contractId + '&parent=' + parentId);
     $('#block-views-block-user-user-contracts .info a.btn').attr('href', '{{contract_url}}?id=' + contractId + '&parent=' + parentId);
+    $('.messages-notify a').attr('href', '{{contactus_url}}?id=' + contractId + '&parent=' + parentId);
   }
 
   //Get the data linked to selected lot from "My contract" page
@@ -731,6 +938,20 @@
     lot.path = lot.name + '_' + lot.id;
 
     return lot;
+  }
+
+  //Verify if object is already in an array
+  function IsObjInArray(array, obj){
+
+    //Check all obj.id in array
+    for (var i = 0; i < array.length; i++){
+
+      //If an obj.id is similar in array, the element already exists
+      if(array[i].relativeUrl == obj.relativeUrl)
+        return true;
+    }
+
+    return false;
   }
 
   //Check the type of selected document and create its link to the good place into the web page
@@ -750,7 +971,26 @@
       var selector = '';
       var _obj = new Object();
 
-      if(data.actualPage == '/cgd_documents/' && data.linkType == 1){
+      //If the user is on the home page
+      if(data.actualPage == '/'){
+
+        if(data.linkType == 4 && docMetaData["Type document:Code"] == 'PPG'){
+
+          if($('.selected-contract').attr('programId') == data.selectedLot)
+            $('.image .field__item img').attr('src', file);
+
+          $('.contract-item[programId="' + data.selectedLot + '"').css('background', 'url("' + file + '")');
+
+          //Add program in array
+          _prog_picture_array.push({
+            id: data.selectedLot,
+            url: file
+          });
+        }  
+
+        continue; 
+      }
+      else if(data.actualPage == '/cgd_documents/' && data.linkType == 1){
 
         _obj.class = '.documents-box-doc-achat .documents-list';
         _obj.selector = '<div class="item"><a target="_blank" href="' + file + '">' + docMetaData['Type document:Désignation'] + '</a></div>';
@@ -772,9 +1012,17 @@
       }
       else{
 
+        //Switch which tests document's type metadata of actual tested file
         switch(docMetaData["Type document:Code"]){
 
-          case 'ADV': case 'ATV': case 'RES':
+          //Program Photo
+          case 'PPG':
+  
+
+
+          case 'ADV': 
+          case 'ATV': 
+          case 'RES':
 
             if(data.linkType == 1){
 
@@ -784,7 +1032,12 @@
 
             break;
 
-          case 'PSS': case 'PMA': case 'LOG': case 'ELE': case 'CUI': case 'EXC':
+          case 'PSS': 
+          case 'PMA': 
+          case 'LOG': 
+          case 'ELE': 
+          case 'CUI': 
+          case 'EXC':
 
             if(data.linkType == 2 && data.actualPage == '/cgd_contract/'){
 
@@ -871,7 +1124,10 @@
           if(i == self.postData.length - 1){
 
             //End of the loading time, disable load spinner
-            $('.loader').css('display', 'none'); 
+            $('.loader').css('display', 'none');
+
+            if(window.location.pathname == '/')
+              $('.contract-multi-selection').css('display', 'block');
           }
         });
       });

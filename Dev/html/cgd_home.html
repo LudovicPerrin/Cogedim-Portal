@@ -131,6 +131,7 @@
       {% assign trancheName =  lots.results.entities[0]['tranche.acq_name'] %}
       {% assign RRCName = lots.results.entities[0]['programme.ownerid_owneridyominame'] %}
       {% assign programName =  lots.results.entities[0]['programme.acq_name'] %}
+      {% assign programId =  lots.results.entities[0]['programme.acq_programmesid'] %}
       {% assign programAddress = lots.results.entities[0]['programme.acq_adresse1'] %}
       {% assign programCity =  lots.results.entities[0]['programme.acq_ville'] %}
       {% assign programPostCode = lots.results.entities[0]['programme.acq_codepostal'] %}
@@ -163,7 +164,7 @@
             <div class="contract-slider">
         {% endif%}
         
-        <div class="contract-item {% if forloop.first %}{% unless request.params['contractId'] %}selected-contract{% endunless %}{% endif %}{% if request.params['contractId'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programName="{{programName}}" address1="{{programAddress}}" address2="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" parentalLot="{{contract.acq_lotprincipal.id}}" rrc="{{RRCName}}">
+        <div class="contract-item {% if forloop.first %}{% unless request.params['contractId'] %}selected-contract{% endunless %}{% endif %}{% if request.params['contractId'] == contract.acq_contratsid %}selected-contract{% endif %}" contractName="{{contractName}}" contractId="{{contract.acq_contratsid}}" programId="{{programId}}" programName="{{programName}}" address1="{{programAddress}}" address2="{{programPostCode | append: ' - ' | append: programCity}}" trancheName="{{trancheName}}" lots="{% for lot in contractLots %}{{lot | append: '|'}}{% endfor %}" parentalLot="{{contract.acq_lotprincipal.id}}" rrc="{{RRCName}}">
           <p class="contract-item-text">{{programName}}</p>
         </div>
         
@@ -176,6 +177,7 @@
 
     {% endfor %}
 
+    <!-- <div class="loader contracts-row-loading"></div> -->
     <div id="block-views-block-user-user-contracts" class="block block-views block-views-blockuser-user-contracts block-contract-boxes">
       <div class="content">
         <div class="view view-user view-id-user view-display-id-user_contracts js-view-dom-id-d332c544557e6e973ddf470b032d764c295ec0401a2e5ee6924c8c205d7204ad">
@@ -186,7 +188,7 @@
                   <div class="image">
                     <div class="field field--name-field-media field--type-cogedim-media field--label-hidden field__items">
                       <div class="field__item">
-                        <img src="http://www.cogedim-logement.com/sites/default/files/assets/images/18280_presentationn_17.jpg" alt="" typeof=" foaf:Image">
+                        <img src="http://www.cogedim-logement.com/sites/default/files/assets/images/18280_presentation_6.jpg" alt="" typeof=" foaf:Image">
                       </div>
                     </div>
                   </div>
@@ -304,3 +306,13 @@
     </div>
   </div>
 </div>
+
+<script type="text/javascript">
+  
+  $(document).ready(function(){
+
+    setCookie('contractId', '{{contractId}}');
+    setCookie('parentalLot', '{{parentalLot}}');
+  });
+
+</script>

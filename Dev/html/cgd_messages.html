@@ -3,17 +3,10 @@
 {% fetchxml orgiginMessages %}
   <fetch version="1.0" output-format="xml-platform" mapping="logical" distinct="true">
     <entity name="acq_message">
-      <attribute name="description" />
-      <attribute name="createdon" />
-      <attribute name="subject" />
-      <attribute name="activityid" />
-      <attribute name="acq_webuser" />
-      <attribute name="acq_direction" />
-      <attribute name="acq_messageorigine" />
-      <attribute name="acq_messageprecedent" />
+      <all-attributes/>
       <filter>
         <condition attribute="acq_webuser" operator="eq" value="{{user.id}}" />
-        <condition attribute="acq_messageoriginename" operator="null" />
+        <condition attribute="acq_messageorigine" operator="null" />
       </filter>
       <order attribute="createdon" />
     </entity>
@@ -45,7 +38,7 @@
                 <div class="message-row">
                   <div role="article" about="/rattacher-ses-contrats-5" class="node node--type-message node--view-mode-message clearfix info" data-message-id="201" id="message-201">
                     <div class="date">{{message.createdon | string | truncate: 10, ""}}</div>
-                    <div class="subject"><span class="field field--name-title field--type-string field--label-hidden">{{message.subject}}</span>
+                    <div class="subject"><span class="field field--name-title field--type-string field--label-hidden">{{message.acq_sujet.name}}</span>
                     </div>
                     <div class="response nothing-new">
                       <span class="open-text">Lire</span>
@@ -54,7 +47,7 @@
                     </div>
                   </div>
                   <div class="message-data">
-                    <div class="item" id="{{message.activityid}}" subject="{{message.subject}}">
+                    <div class="item" id="{{message.activityid}}" subject="{{message.acq_sujet.name}}" contractId="{{message.acq_contrat.id}}" contractName="{{message.acq_contrat.name}}" subjectId='{{message.acq_sujet.id}}'>
                       <div class="content">
                         <div class="field field--name-field-message field--type-string-long field--label-hidden field__item">{{message.description}}</div>
                       </div>
@@ -65,7 +58,7 @@
                         <entity name="acq_message">
                           <attribute name="description" />
                           <attribute name="createdon" />
-                          <attribute name="subject" />
+                          <attribute name="acq_sujet" />
                           <attribute name="activityid" />
                           <attribute name="acq_webuser" />
                           <attribute name="acq_direction" />
@@ -82,7 +75,7 @@
 
                     {% for linkedMessage in linkedMessages.results.entities %}
                       <!-- <a id="linkedMessages.activityid"></a> -->
-                      <div id="{{linkedMessage.activityid}}" subject="{{linkedMessage.subject}}" data-comment-user-id="173" class="js-comment item {% unless linkedMessage.acq_direction %}response{% endunless %}">
+                      <div id="{{linkedMessage.activityid}}" subject="{{linkedMessage.acq_sujet.name}}" data-comment-user-id="173" class="js-comment item {% unless linkedMessage.acq_direction %}response{% endunless %}">
                         <mark class="hidden" data-comment-timestamp="1481816137"></mark>
 
                         {% unless linkedMessage.acq_direction %}
